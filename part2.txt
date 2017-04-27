@@ -1,0 +1,20 @@
+Due: 5/5/2017 @ 11:59pm
+
+
+(1) What did you end up doing?
+
+
+(2) What was hard?
+
+
+(3) What did you learn?
+
+
+(4) What should your score be (out of 100)?
+
+
+(5) Give me clear and concise instruction that would help me:
+
+     (a) run your code and see that it worked
+     (b) browse your code
+
