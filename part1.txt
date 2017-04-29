@@ -2,13 +2,28 @@ Due 4/28/2017 @ 11:59pm
 
 
 (1) Describe what you're going to do
+I am going to build an emulator for either the Atari 2600 or the Nintendo Entertainment System (NES). Both use a variant of the MOS 6502 CPU.
+
+My goal for this week-long assignment is not to implement a fully functional emulator, but to have one (or a few) games mostly functional.
 
 
 (2) What was the hardest assignment?
+p9/pa (the pipelining assignments), because debugging was very difficult, and small errors could manifest themselves in arcane ways
 
 
 (3) Why is your proposal harder than your answer to question #2?
+The difficulty of this project largely depends on how much I need to research and understand. This was the main source of difficulty in pc, and will likely be a large source of difficulty in this project.
+
+Another possible source of difficulty is, as was in the pipelining projects, debugging. I would have to find/make test cases that would test specific pieces of functionality. Creating test cases would introduce another layer of difficulty -- being able to program for the architecture (though if I am able to emulate the architecture, I imagine this wouldn't be as hard).
+
+Specifically for the Atari 2600, gragraphics processing is handled in a unit separate from the CPU (called the TIA -- Television Interface Adapter), and there are strict timing requirements between the number of cycles taken by the CPU and those done by the TIA. I imagine because of the TV technology of the time (CRTs), similar technology is in the NES's PPU (picture processing unit).
+
+Further, there are some bugs in the NES and Atari hardware that I might have to implement in order to get some games working correctly.
+
+All of these, combined with the issue of debugging being tricky (because we're not emulating just one processor -- there's the CPU and the TIA/PPU, at least), should make this project at least as difficult as pa.
 
 
 (4) Why is this interesting?
+For pc, we implemented a very limited subset of the ARMv8 instruction set. For me at least, I found it very disappointing with how little we could do (or more specifically, how clunky it was to do basic tasks). With an older architecture (the MOS 6502), the instruction set should be limited enough that I can implement most (or all) of it. Further, after some research, the work for I/O (graphics and controllers) does not seem unreasonable to implement during the scope of this project.
 
+Further, being able to sucecsfully run test cases (i.e. games) that aren't tailored to our project would be new in the scope of many of our class projects. These would be programs that were once used in the "real world", and I think it would be interesting to expand the scope of our class projects to beyond just the classroom.
