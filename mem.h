@@ -3,9 +3,12 @@
 
 #include "cpu.h"
 
-#define MEM_SIZE 128
+#define RAM_SIZE 128
+#define CART_SIZE (1<<12)
+#define MEM_MAX (1<<13)
 
-extern byte mem[];
+extern byte pia_mem[RAM_SIZE];
+extern byte cart_mem[CART_SIZE];
 
 extern void mem_init();
 //extern void mem_map(ushrt guest);

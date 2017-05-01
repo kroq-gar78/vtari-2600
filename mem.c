@@ -2,9 +2,11 @@
 #include <stdio.h>
 #include <limits.h>
 
+#include "cpu.h"
 #include "mem.h"
 
-byte mem[MEM_SIZE];
+byte pia_mem[RAM_SIZE];
+byte cart_mem[CART_SIZE];
 
 void mem_init()
 {
@@ -14,7 +16,7 @@ void mem_init()
 
 void mem_set8(ushrt addr, byte value)
 {
-    mem[addr] = value;
+    /*mem[addr] = value;*/
 }
 
 /*void mem_copy(byte* host, ushrt guest, ushrt size)
@@ -27,7 +29,33 @@ void mem_set8(ushrt addr, byte value)
 
 byte mem_get8(ushrt addr)
 {
-    return mem[addr];
+    // all memory is mirrored every 0x2000 bytes
+    addr &= (MEM_MAX-1);
+
+    // TIA mirrors
+    if((addr & 0x1080) == 0)
+    {
+        MISSING();
+    }
+    // PIA RAM mirrors
+    else if((addr & 0x1280) == 0x80)
+    {
+        addr &= RAM_SIZE-1;
+        return pia_mem[addr];
+    }
+    // PIA I/O mirrors
+    else if((addr & 0x1280) == 0x280)
+    {
+        MISSING();
+    }
+    // cartridge mirrors
+    else if((addr & 0x2000) == 0x2000)
+    {
+        addr &= 0xfff;
+        return cart_mem[addr];
+    }
+
+    return addr;
 }
 short mem_get16(ushrt addr)
 {

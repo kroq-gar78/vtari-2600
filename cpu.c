@@ -389,7 +389,7 @@ int sbc(byte a, byte b)
     // TODO: overflow, carry flags
     setflag_nz(result);
 
-    return result
+    return result;
 }
 
 // vim regex: s/;/\r{\r    return 0;\r}/g

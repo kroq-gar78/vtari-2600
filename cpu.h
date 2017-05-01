@@ -5,14 +5,12 @@
 
 #include <limits.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 // from: pa (kernel/vmm.c)
 #define MISSING() do { \
-    putStr(__FILE__); \
-    putStr(":"); \
-    putDec(__LINE__); \
-    putStr(" is missing\n"); \
-    exit(); \
+    printf("%s:%d is missing\n", __FILE__, __LINE__); \
+    exit(1); \
 } while (0)
 
 // debug from: http://stackoverflow.com/a/1644898
