@@ -9,8 +9,6 @@ byte reg_y;
 byte sp;
 byte reg_p = 0x20;
 
-bool setflag_z(byte num);
-
 int adc_abs(short addr);
 int adc_abs_x(short addr);
 int adc_abs_y(short addr);
@@ -186,6 +184,8 @@ int main(int argc, char* argv[])
     return 0;
 }
 
+
+// flag setter helper methods
 bool setflag_z(byte num)
 {
     if(num == 0)
@@ -209,6 +209,33 @@ bool setflag_n(byte num)
     else
     {
         reg_p &= ~FLAGS_NEGATIVE;
+        return false;
+    }
+}
+// just set the flag to whatever you want (nothing smart like above)
+bool setflag_c_direct(bool status) // carry
+{
+    if(status)
+    {
+        reg_p |= FLAGS_CARRY;
+        return true;
+    }
+    else
+    {
+        reg_p &= ~FLAGS_CARRY;
+        return false;
+    }
+}
+bool setflag_v_direct(bool status) // overflow
+{
+    if(status)
+    {
+        reg_p |= FLAGS_OVERFLOW;
+        return true;
+    }
+    else
+    {
+        reg_p &= ~FLAGS_OVERFLOW;
         return false;
     }
 }
@@ -237,6 +264,33 @@ int and(byte a, byte b)
     byte result = a&b;
 
     setflag_n(result);
+    setflag_z(result);
+
+    return result;
+}
+
+// `b` is the number of shifts
+int asl(byte a, byte b)
+{
+    byte result = a<<b;
+
+    setflag_n(result);
+    setflag_z(result);
+
+    // carry flag
+    setflag_c_direct( (result>>(8-b)) != 0 );
+
+    return result;
+}
+
+int bit(byte a, byte b)
+{
+    byte result = a&b;
+
+    reg_p &= (~FLAGS_NEGATIVE) & (~FLAGS_OVERFLOW);
+    reg_p |= (b & FLAGS_NEGATIVE);
+    reg_p |= (b & FLAGS_OVERFLOW);
+
     setflag_z(result);
 
     return result;
