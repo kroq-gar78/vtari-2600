@@ -6,6 +6,19 @@
 #include <limits.h>
 #include <stdbool.h>
 
+// from: pa (kernel/vmm.c)
+#define MISSING() do { \
+    putStr(__FILE__); \
+    putStr(":"); \
+    putDec(__LINE__); \
+    putStr(" is missing\n"); \
+    exit(); \
+} while (0)
+
+// debug from: http://stackoverflow.com/a/1644898
+#define debug_print(fmt, ...) \
+    do { if (DEBUG_TEST) fprintf(stderr, fmt, ##__VA_ARGS__); } while (0)
+
 typedef unsigned char byte;
 typedef unsigned short ushrt;
 typedef int (*F1)(short a0); // from p6

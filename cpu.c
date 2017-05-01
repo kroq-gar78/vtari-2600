@@ -212,6 +212,10 @@ bool setflag_n(byte num)
         return false;
     }
 }
+bool setflag_nz(byte num)
+{
+    return setflag_n(num) | setflag_z(num);
+}
 // just set the flag to whatever you want (nothing smart like above)
 bool setflag_c_direct(bool status) // carry
 {
@@ -242,6 +246,7 @@ bool setflag_v_direct(bool status) // overflow
 
 int adc(byte a, byte b)
 {
+    if(reg_p & FLAGS_DECIMAL) MISSING();
     byte result = a+b;
 
     // check overflow
@@ -294,6 +299,97 @@ int bit(byte a, byte b)
     setflag_z(result);
 
     return result;
+}
+
+// register in `a`
+int cmp(byte a, byte b)
+{
+    byte result = a >= b;
+
+    setflag_c_direct(a >= b); // TODO: is this a signed comparison?
+    setflag_z(a-b);
+    setflag_n(a);
+
+    return result;
+}
+
+int dec(byte a)
+{
+    byte result = a-1;
+
+    setflag_nz(result);
+
+    return result;
+}
+
+int eor(byte a, byte b)
+{
+    byte result = a^b;
+
+    setflag_nz(result);
+
+    return result;
+}
+
+int inc(byte a)
+{
+    byte result = a+1;
+
+    setflag_nz(result);
+
+    return result;
+}
+
+int lsr(byte a)
+{
+    byte result = (a>>1);
+
+    setflag_z(result);
+    setflag_c_direct(a&1);
+
+    return result;
+}
+
+int or(byte a, byte b)
+{
+    byte result = a|b;
+
+    setflag_nz(result);
+
+    return result;
+}
+
+int rol(byte a)
+{
+    byte result = a<<1;
+    result &= (byte)(~1);
+    result |= ((reg_p & FLAGS_CARRY) != 0);
+
+    setflag_c_direct(result>>7);
+
+    return result;
+}
+
+int ror(byte a)
+{
+    byte result = a>>1;
+    result &= ((reg_p & FLAGS_CARRY) != 0) << 7;
+    
+    setflag_c_direct(result&1);
+
+    return result;
+}
+
+int sbc(byte a, byte b)
+{
+    if(reg_p & FLAGS_DECIMAL) MISSING();
+
+    byte result = a - b - ((reg_p & FLAGS_CARRY) != 0);
+
+    // TODO: overflow, carry flags
+    setflag_nz(result);
+
+    return result
 }
 
 // vim regex: s/;/\r{\r    return 0;\r}/g
@@ -427,18 +523,22 @@ int bvs_rel(short addr)
 }
 int clc_impl(short addr)
 {
+    reg_p &= (~FLAGS_CARRY);
     return 0;
 }
 int cld_impl(short addr)
 {
+    reg_p &= (~FLAGS_DECIMAL);
     return 0;
 }
 int cli_impl(short addr)
 {
+    reg_p &= (~FLAGS_IRQ_DISABLE);
     return 0;
 }
 int clv_impl(short addr)
 {
+    reg_p &= (~FLAGS_OVERFLOW);
     return 0;
 }
 int cmp_abs(short addr)
