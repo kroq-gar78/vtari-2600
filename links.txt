@@ -1,0 +1,9 @@
+# Other sources
+
+ * mem.[ch] modeled after my pc mem.[ch]
+
+# Links
+http://problemkaputt.de/2k6specs.htm
+http://www.masswerk.at/6502/6502_instruction_set.html
+https://www.dwheeler.com/6502/oneelkruns/asm1step.html
+http://www.emulator101.com.s3-website-us-east-1.amazonaws.com/6502-addressing-modes.html
