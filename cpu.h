@@ -1,21 +1,24 @@
 #ifndef CPU_H
 #define CPU_H
 
-#include <limits.h>
 #include <stdlib.h>
 
-#define FLAGS_CARRY 1<<0
-#define FLAGS_ZERO 1<<1
-#define FLAGS_IRQ_DISABLE 1<<2
-#define FLAGS_DECIMAL 1<<3
-#define FLAGS_BREAK 1<<4
-#define FLAGS_OVERFLOW 1<<6
-#define FLAGS_NEGATIVE 1<<7
-
-#define OPCODE_BAD 0x777
+#include <limits.h>
+#include <stdbool.h>
 
 typedef unsigned char byte;
+typedef unsigned short ushrt;
 typedef int (*F1)(short a0); // from p6
+
+#define FLAGS_CARRY (byte)(1<<0)
+#define FLAGS_ZERO (byte)(1<<1)
+#define FLAGS_IRQ_DISABLE (byte)(1<<2)
+#define FLAGS_DECIMAL (byte)(1<<3)
+#define FLAGS_BREAK (byte)(1<<4)
+#define FLAGS_OVERFLOW (byte)(1<<6)
+#define FLAGS_NEGATIVE (byte)(1<<7)
+
+#define OPCODE_BAD 0x777
 
 extern int pc;
 extern byte reg_a;

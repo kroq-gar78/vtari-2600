@@ -9,6 +9,7 @@ byte reg_y;
 byte sp;
 byte reg_p = 0x20;
 
+bool setflag_z(byte num);
 
 int adc_abs(short addr);
 int adc_abs_x(short addr);
@@ -185,7 +186,61 @@ int main(int argc, char* argv[])
     return 0;
 }
 
+bool setflag_z(byte num)
+{
+    if(num == 0)
+    {
+        reg_p |= FLAGS_ZERO;
+        return true;
+    }
+    else
+    {
+        reg_p &= ~FLAGS_ZERO;
+        return false;
+    }
+}
+bool setflag_n(byte num)
+{
+    if(((num >> 7) & 1) == 1)
+    {
+        reg_p |= FLAGS_NEGATIVE;
+        return true;
+    }
+    else
+    {
+        reg_p &= ~FLAGS_NEGATIVE;
+        return false;
+    }
+}
 
+int adc(byte a, byte b)
+{
+    byte result = a+b;
+
+    // check overflow
+    if(result >= USHRT_MAX)
+    {
+        reg_p |= FLAGS_CARRY | FLAGS_OVERFLOW;
+    }
+    else
+    {
+        reg_p &= (~FLAGS_CARRY) & (~FLAGS_OVERFLOW);
+    }
+
+    setflag_z(result);
+
+    return result;
+}
+
+int and(byte a, byte b)
+{
+    byte result = a&b;
+
+    setflag_n(result);
+    setflag_z(result);
+
+    return result;
+}
 
 // vim regex: s/;/\r{\r    return 0;\r}/g
 int adc_abs(short addr)
