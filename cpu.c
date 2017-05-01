@@ -201,6 +201,15 @@ byte* ldr_mmap_file(char *filename)
         cart_mem[i] = p[i];
     }
 
+    // mirror onto second half if it's <=2K
+    if(length <= CART_SIZE/2)
+    {
+        for(int i = 0; i < length; i++)
+        {
+            cart_mem[i+2048] = p[i];
+        }
+    }
+
     if(p == MAP_FAILED)
     {
         fprintf(stderr, "mmap failed\n");
@@ -435,6 +444,54 @@ int sbc(byte a, byte b)
     setflag_nz(result);
 
     return result;
+}
+
+// addressing modes
+// they take in the address of the start of the operands
+ushrt addr_abs(short addr)
+{
+    ushrt b0 = mem_get8(addr);
+    ushrt b1 = mem_get8(addr);
+
+    return (b1<<8) | (b0 & 0xff);
+}
+ushrt addr_abs_x(short addr)
+{
+    return addr_abs(addr) + reg_x;
+}
+ushrt addr_abs_y(short addr)
+{
+    return addr_abs(addr) + reg_y;
+}
+ushrt addr_ind(short addr)
+{
+    return mem_get16(mem_get16(addr));
+}
+// TODO: carry?
+ushrt addr_x_ind(short addr)
+{
+    return mem_get16_zpg(mem_get8(addr)+reg_x);
+}
+ushrt addr_ind_y(short addr)
+{
+    return mem_get16_zpg(mem_get8(addr))+reg_y;
+}
+ushrt addr_rel(short addr)
+{
+    short rel = mem_get8(addr);
+    return pc + rel;
+}
+ushrt addr_zpg(short addr)
+{
+    return mem_get8(addr);
+}
+ushrt addr_zpg_x(short addr)
+{
+    return (mem_get8(addr)+reg_x) & 0xff;
+}
+ushrt addr_zpg_y(short addr)
+{
+    return (mem_get8(addr)+reg_y) & 0xff;
 }
 
 // vim regex: s/;/\r{\r    return 0;\r}/g
@@ -960,14 +1017,17 @@ int sbc_zpg_x(short addr)
 }
 int sec_impl(short addr)
 {
+    reg_p |= FLAGS_CARRY;
     return 0;
 }
 int sed_impl(short addr)
 {
+    reg_p |= FLAGS_DECIMAL;
     return 0;
 }
 int sei_impl(short addr)
 {
+    reg_p |= FLAGS_IRQ_DISABLE;
     return 0;
 }
 int sta_abs(short addr)

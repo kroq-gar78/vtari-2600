@@ -7,6 +7,7 @@
 
 byte pia_mem[RAM_SIZE];
 byte cart_mem[CART_SIZE];
+byte tia_mem[TIA_SIZE];
 
 void mem_init()
 {
@@ -59,10 +60,26 @@ byte mem_get8(ushrt addr)
 }
 short mem_get16(ushrt addr)
 {
+    // all memory is mirrored every 0x2000 bytes
+    addr &= (MEM_MAX-1);
+
     byte b0 = mem_get8(addr);
     byte b1 = mem_get8(addr+1);
+
     return (b1<<8) | (b0 & 0xff);
 }
+
+// because zero-page addressing can wrap around, we need a separate method
+short mem_get16_zpg(ushrt addr)
+{
+    addr &= 0xff; // get the lower byte (because zero-page)
+
+    byte b0 = mem_get8(addr);
+    byte b1 = mem_get8((addr+1)&0xff);
+
+    return (b1<<0) | (b0 & 0xff);
+}
+
 int mem_get32(ushrt addr)
 {
     short n0 = mem_get16(addr);
