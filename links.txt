@@ -7,6 +7,7 @@ Sources:
 # Other sources
 
  * mem.[ch] modeled after my pc mem.[ch]
+ * file loading from loader.c in my pc
 
 # Links
 http://problemkaputt.de/2k6specs.htm

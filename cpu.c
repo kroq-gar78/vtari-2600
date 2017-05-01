@@ -1,6 +1,11 @@
 #include <stdio.h>
+#include <sys/mman.h> // mmap
+#include <sys/stat.h> // filesize
+
+#include <fcntl.h> // file control
 
 #include "cpu.h"
+#include "mem.h"
 
 int pc;
 byte reg_a;
@@ -8,6 +13,7 @@ byte reg_x;
 byte reg_y;
 byte sp;
 byte reg_p = 0x20;
+byte* mmap_p; // pointer to mmap'd file
 
 int adc_abs(short addr);
 int adc_abs_x(short addr);
@@ -179,10 +185,49 @@ bne_rel, cmp_ind_y, (F1) OPCODE_BAD, (F1) OPCODE_BAD, (F1) OPCODE_BAD, cmp_zpg_x
 cpx_imm, sbc_x_ind, (F1) OPCODE_BAD, (F1) OPCODE_BAD, cpx_zpg, sbc_zpg, inc_zpg, (F1) OPCODE_BAD, inx_impl, sbc_imm, nop_impl, (F1) OPCODE_BAD, cpx_abs, sbc_abs, inc_abs, (F1) OPCODE_BAD, 
 beq_rel, sbc_ind_y, (F1) OPCODE_BAD, (F1) OPCODE_BAD, (F1) OPCODE_BAD, sbc_zpg_x, inc_zpg_x, (F1) OPCODE_BAD, sed_impl, sbc_abs_y, (F1) OPCODE_BAD, (F1) OPCODE_BAD, (F1) OPCODE_BAD, sbc_abs_x, inc_abs_x, (F1) OPCODE_BAD};
 
+struct stat st;
+byte* ldr_mmap_file(char *filename)
+{
+    stat(filename, &st);
+
+    int fd = open(filename, O_RDONLY);
+
+    byte* p = mmap(0, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
+
+    // pick the minimum of the max cartrige size, and the filesize
+    int length = st.st_size < CART_SIZE ? st.st_size : CART_SIZE;
+    for(int i = 0; i < length; i++)
+    {
+        cart_mem[i] = p[i];
+    }
+
+    if(p == MAP_FAILED)
+    {
+        fprintf(stderr, "mmap failed\n");
+        perror("mmap");
+    }
+    return p;
+}
+
 int main(int argc, char* argv[])
 {
+    if(argc < 2)
+    {
+        fprintf(stderr, "Not enough arguments\n");
+        exit(1);
+    }
+
+    mmap_p = ldr_mmap_file(argv[1]);
+
+    if(munmap(mmap_p, st.st_size) == -1)
+    {
+        perror("mmap");
+        exit(1);
+    }
+
     return 0;
 }
+
 
 
 // flag setter helper methods
