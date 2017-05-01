@@ -1,3 +1,9 @@
+
+Sources:
+ * kernels (for testing image rendering): http://www.randomterrain.com/atari-2600-memories-tutorial-andrew-davie-08.html
+ * `macro.h` and `vcs.h`: from DASM
+
+
 # Other sources
 
  * mem.[ch] modeled after my pc mem.[ch]
