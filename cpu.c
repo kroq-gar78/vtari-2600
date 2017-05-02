@@ -472,7 +472,7 @@ ushrt addr_ind_y(ushrt addr)
 ushrt addr_rel(ushrt addr)
 {
     short rel = mem_get8(addr);
-    return pc + rel;
+    return next_pc + rel;
 }
 ushrt addr_zpg(ushrt addr)
 {
@@ -718,6 +718,7 @@ short inst_bpl(ushrt addr, int addr_mode)
     {
         next_pc = addr_e;
     }
+    printf("bpl take %d target %x\n", take, addr_e);
     return take;
 }
 short inst_brk(ushrt addr, int addr_mode)
