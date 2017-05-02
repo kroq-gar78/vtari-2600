@@ -446,6 +446,15 @@ int sbc(byte a, byte b)
     return result;
 }
 
+int transfer(byte* a, byte* b)
+{
+    *a = *b;
+
+    setflag_nz(*a);
+
+    return *a;
+}
+
 // addressing modes
 // they take in the address of the start of the operands
 ushrt addr_abs(short addr)
@@ -493,133 +502,17 @@ ushrt addr_zpg_y(short addr)
 {
     return (mem_get8(addr)+reg_y) & 0xff;
 }
+ushrt addr_imm(short addr) // for compatibility
+{
+    return addr;
+}
+ushrt addr_impl(short addr) // for compatibility
+{
+    return addr;
+}
 
 // vim regex: s/;/\r{\r    return 0;\r}/g
-int adc_abs(short addr)
-{
-    return 0;
-}
-int adc_abs_x(short addr)
-{
-    return 0;
-}
-int adc_abs_y(short addr)
-{
-    return 0;
-}
-int adc_imm(short addr)
-{
-    return 0;
-}
-int adc_ind_y(short addr)
-{
-    return 0;
-}
-int adc_x_ind(short addr)
-{
-    return 0;
-}
-int adc_zpg(short addr)
-{
-    return 0;
-}
-int adc_zpg_x(short addr)
-{
-    return 0;
-}
-int and_abs(short addr)
-{
-    return 0;
-}
-int and_abs_x(short addr)
-{
-    return 0;
-}
-int and_abs_y(short addr)
-{
-    return 0;
-}
-int and_imm(short addr)
-{
-    return 0;
-}
-int and_ind_y(short addr)
-{
-    return 0;
-}
-int and_x_ind(short addr)
-{
-    return 0;
-}
-int and_zpg(short addr)
-{
-    return 0;
-}
-int and_zpg_x(short addr)
-{
-    return 0;
-}
-int asl_a(short addr)
-{
-    return 0;
-}
-int asl_abs(short addr)
-{
-    return 0;
-}
-int asl_abs_x(short addr)
-{
-    return 0;
-}
-int asl_zpg(short addr)
-{
-    return 0;
-}
-int asl_zpg_x(short addr)
-{
-    return 0;
-}
-int bcc_rel(short addr)
-{
-    return 0;
-}
-int bcs_rel(short addr)
-{
-    return 0;
-}
-int beq_rel(short addr)
-{
-    return 0;
-}
-int bit_abs(short addr)
-{
-    return 0;
-}
-int bit_zpg(short addr)
-{
-    return 0;
-}
-int bmi_rel(short addr)
-{
-    return 0;
-}
-int bne_rel(short addr)
-{
-    return 0;
-}
-int bpl_rel(short addr)
-{
-    return 0;
-}
 int brk_impl(short addr)
-{
-    return 0;
-}
-int bvc_rel(short addr)
-{
-    return 0;
-}
-int bvs_rel(short addr)
 {
     return 0;
 }
@@ -643,131 +536,11 @@ int clv_impl(short addr)
     reg_p &= (~FLAGS_OVERFLOW);
     return 0;
 }
-int cmp_abs(short addr)
-{
-    return 0;
-}
-int cmp_abs_x(short addr)
-{
-    return 0;
-}
-int cmp_abs_y(short addr)
-{
-    return 0;
-}
-int cmp_imm(short addr)
-{
-    return 0;
-}
-int cmp_ind_y(short addr)
-{
-    return 0;
-}
-int cmp_x_ind(short addr)
-{
-    return 0;
-}
-int cmp_zpg(short addr)
-{
-    return 0;
-}
-int cmp_zpg_x(short addr)
-{
-    return 0;
-}
-int cpx_abs(short addr)
-{
-    return 0;
-}
-int cpx_imm(short addr)
-{
-    return 0;
-}
-int cpx_zpg(short addr)
-{
-    return 0;
-}
-int cpy_abs(short addr)
-{
-    return 0;
-}
-int cpy_imm(short addr)
-{
-    return 0;
-}
-int cpy_zpg(short addr)
-{
-    return 0;
-}
-int dec_abs(short addr)
-{
-    return 0;
-}
-int dec_abs_x(short addr)
-{
-    return 0;
-}
-int dec_zpg(short addr)
-{
-    return 0;
-}
-int dec_zpg_x(short addr)
-{
-    return 0;
-}
 int dex_impl(short addr)
 {
     return 0;
 }
 int dey_impl(short addr)
-{
-    return 0;
-}
-int eor_abs(short addr)
-{
-    return 0;
-}
-int eor_abs_x(short addr)
-{
-    return 0;
-}
-int eor_abs_y(short addr)
-{
-    return 0;
-}
-int eor_imm(short addr)
-{
-    return 0;
-}
-int eor_ind_y(short addr)
-{
-    return 0;
-}
-int eor_x_ind(short addr)
-{
-    return 0;
-}
-int eor_zpg(short addr)
-{
-    return 0;
-}
-int eor_zpg_x(short addr)
-{
-    return 0;
-}
-int inc_abs(short addr)
-{
-    return 0;
-}
-int inc_abs_x(short addr)
-{
-    return 0;
-}
-int inc_zpg(short addr)
-{
-    return 0;
-}
-int inc_zpg_x(short addr)
 {
     return 0;
 }
@@ -779,143 +552,7 @@ int iny_impl(short addr)
 {
     return 0;
 }
-int jmp_abs(short addr)
-{
-    return 0;
-}
-int jmp_ind(short addr)
-{
-    return 0;
-}
-int jsr_abs(short addr)
-{
-    return 0;
-}
-int lda_abs(short addr)
-{
-    return 0;
-}
-int lda_abs_x(short addr)
-{
-    return 0;
-}
-int lda_abs_y(short addr)
-{
-    return 0;
-}
-int lda_imm(short addr)
-{
-    return 0;
-}
-int lda_ind_y(short addr)
-{
-    return 0;
-}
-int lda_x_ind(short addr)
-{
-    return 0;
-}
-int lda_zpg(short addr)
-{
-    return 0;
-}
-int lda_zpg_x(short addr)
-{
-    return 0;
-}
-int ldx_abs(short addr)
-{
-    return 0;
-}
-int ldx_abs_y(short addr)
-{
-    return 0;
-}
-int ldx_imm(short addr)
-{
-    return 0;
-}
-int ldx_zpg(short addr)
-{
-    return 0;
-}
-int ldx_zpg_y(short addr)
-{
-    return 0;
-}
-int ldy_abs(short addr)
-{
-    return 0;
-}
-int ldy_abs_x(short addr)
-{
-    return 0;
-}
-int ldy_imm(short addr)
-{
-    return 0;
-}
-int ldy_zpg(short addr)
-{
-    return 0;
-}
-int ldy_zpg_x(short addr)
-{
-    return 0;
-}
-int lsr_a(short addr)
-{
-    return 0;
-}
-int lsr_abs(short addr)
-{
-    return 0;
-}
-int lsr_abs_x(short addr)
-{
-    return 0;
-}
-int lsr_zpg(short addr)
-{
-    return 0;
-}
-int lsr_zpg_x(short addr)
-{
-    return 0;
-}
 int nop_impl(short addr)
-{
-    return 0;
-}
-int ora_abs(short addr)
-{
-    return 0;
-}
-int ora_abs_x(short addr)
-{
-    return 0;
-}
-int ora_abs_y(short addr)
-{
-    return 0;
-}
-int ora_imm(short addr)
-{
-    return 0;
-}
-int ora_ind_y(short addr)
-{
-    return 0;
-}
-int ora_x_ind(short addr)
-{
-    return 0;
-}
-int ora_zpg(short addr)
-{
-    return 0;
-}
-int ora_zpg_x(short addr)
 {
     return 0;
 }
@@ -935,83 +572,11 @@ int plp_impl(short addr)
 {
     return 0;
 }
-int rol_a(short addr)
-{
-    return 0;
-}
-int rol_abs(short addr)
-{
-    return 0;
-}
-int rol_abs_x(short addr)
-{
-    return 0;
-}
-int rol_zpg(short addr)
-{
-    return 0;
-}
-int rol_zpg_x(short addr)
-{
-    return 0;
-}
-int ror_a(short addr)
-{
-    return 0;
-}
-int ror_abs(short addr)
-{
-    return 0;
-}
-int ror_abs_x(short addr)
-{
-    return 0;
-}
-int ror_zpg(short addr)
-{
-    return 0;
-}
-int ror_zpg_x(short addr)
-{
-    return 0;
-}
 int rti_impl(short addr)
 {
     return 0;
 }
 int rts_impl(short addr)
-{
-    return 0;
-}
-int sbc_abs(short addr)
-{
-    return 0;
-}
-int sbc_abs_x(short addr)
-{
-    return 0;
-}
-int sbc_abs_y(short addr)
-{
-    return 0;
-}
-int sbc_imm(short addr)
-{
-    return 0;
-}
-int sbc_ind_y(short addr)
-{
-    return 0;
-}
-int sbc_x_ind(short addr)
-{
-    return 0;
-}
-int sbc_zpg(short addr)
-{
-    return 0;
-}
-int sbc_zpg_x(short addr)
 {
     return 0;
 }
@@ -1028,58 +593,6 @@ int sed_impl(short addr)
 int sei_impl(short addr)
 {
     reg_p |= FLAGS_IRQ_DISABLE;
-    return 0;
-}
-int sta_abs(short addr)
-{
-    return 0;
-}
-int sta_abs_x(short addr)
-{
-    return 0;
-}
-int sta_abs_y(short addr)
-{
-    return 0;
-}
-int sta_ind_y(short addr)
-{
-    return 0;
-}
-int sta_x_ind(short addr)
-{
-    return 0;
-}
-int sta_zpg(short addr)
-{
-    return 0;
-}
-int sta_zpg_x(short addr)
-{
-    return 0;
-}
-int stx_abs(short addr)
-{
-    return 0;
-}
-int stx_zpg(short addr)
-{
-    return 0;
-}
-int stx_zpg_y(short addr)
-{
-    return 0;
-}
-int sty_abs(short addr)
-{
-    return 0;
-}
-int sty_zpg(short addr)
-{
-    return 0;
-}
-int sty_zpg_x(short addr)
-{
     return 0;
 }
 int tax_impl(short addr)

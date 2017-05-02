@@ -13,7 +13,7 @@ TESTFILES = ${patsubst %.S,%,${SFILES}}
 
 TESTDIR=testdir/
 
-CFLAGS = -std=c99 -g -O0 -Wall -Werror
+CFLAGS = -std=c99 -g -O0 -Wall -Werror -Wno-unused-variable
 
 all : $(TARGET)
 

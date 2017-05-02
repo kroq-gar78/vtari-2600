@@ -57,3 +57,21 @@ for inst in sorted(d.iterkeys()):
         print "int %s_%s(short addr);" % (inst, addr)
 
 print "F1 opcodes[256] = {%s};" % opcodes_table_str
+
+print
+print
+
+for inst in sorted(d.iterkeys()):
+    for addr in sorted(d[inst]):
+        if addr == "impl": continue
+        print "int %s_%s(short addr)" % (inst, addr)
+        print "{"
+        print "    ushrt addr_e = addr_%s(addr);" % addr
+        print "    byte val_8 = mem_get8(addr_e);"
+        if("zpg" in addr):
+            print "    byte val_16 = mem_get16_zpg(addr_e);"
+        else:
+            print "    byte val_16 = mem_get16(addr_e);"
+        print
+        print "    return 0;"
+        print "}"
