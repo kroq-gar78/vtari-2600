@@ -4,6 +4,7 @@
 
 #include "cpu.h"
 #include "mem.h"
+#include "tia.h"
 
 byte pia_mem[RAM_SIZE];
 byte cart_mem[CART_SIZE];
@@ -24,7 +25,8 @@ void mem_set8(ushrt addr, byte value)
     {
         // TODO: implement
         //MISSING();
-        printf("TIA: write to 0x%x val %x\n", addr, value);
+        addr &= 0b01111111;
+        tia_write(addr, value);
         return;
     }
     // PIA RAM mirrors
