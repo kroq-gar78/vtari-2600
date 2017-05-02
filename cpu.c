@@ -7,8 +7,8 @@
 #include "cpu.h"
 #include "mem.h"
 
-int pc = 0x1000;
-int next_pc = 0x1002;
+ushrt pc = 0x1000;
+ushrt next_pc = 0x1002;
 byte reg_a = 0;
 byte reg_x = 0;
 byte reg_y = 0;
@@ -170,13 +170,16 @@ int main(int argc, char* argv[])
     }
 
     mmap_p = ldr_mmap_file(argv[1]);
-    
+
+    // according to randomterrain.com, this contains the entrypoint
+    pc = mem_get16(0xfffc);
 
     // EXECUTION
     while(opcodes[mem_get8(pc)] != inst_brk)
     {
         int addr_mode = addr_modes[mem_get8(pc)];
         printf("pc %x inst %x\n", pc, mem_get8(pc));
+        printf("A %x X %x Y %x\n", reg_a, reg_x, reg_y);
         next_pc = pc + addr_mode_len[addr_mode];
 
         // fetch and execute

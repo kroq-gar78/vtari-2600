@@ -45,7 +45,7 @@ typedef short (*F2)(ushrt a0, int addr_mode); // from p6
 #define ADDRMODE_IMM 10
 #define ADDRMODE_IMPL 11
 
-extern int pc;
+extern ushrt pc;
 extern byte reg_a;
 extern byte reg_x;
 extern byte reg_y;
