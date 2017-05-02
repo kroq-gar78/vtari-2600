@@ -551,8 +551,12 @@ short inst_bcc(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
-    MISSING();
-    return 0;
+    bool take = (reg_p & FLAGS_CARRY) == 0;
+    if(take)
+    {
+        next_pc = addr_e;
+    }
+    return take;
 }
 short inst_bcs(ushrt addr, int addr_mode)
 {
@@ -571,8 +575,12 @@ short inst_bcs(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
-    MISSING();
-    return 0;
+    bool take = (reg_p & FLAGS_CARRY) != 0;
+    if(take)
+    {
+        next_pc = addr_e;
+    }
+    return take;
 }
 short inst_beq(ushrt addr, int addr_mode)
 {
@@ -591,8 +599,12 @@ short inst_beq(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
-    MISSING();
-    return 0;
+    bool take = (reg_p & FLAGS_ZERO) != 0;
+    if(take)
+    {
+        next_pc = addr_e;
+    }
+    return take;
 }
 short inst_bit(ushrt addr, int addr_mode)
 {
@@ -631,8 +643,12 @@ short inst_bmi(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
-    MISSING();
-    return 0;
+    bool take = (reg_p & FLAGS_NEGATIVE) != 0;
+    if(take)
+    {
+        next_pc = addr_e;
+    }
+    return take;
 }
 short inst_bne(ushrt addr, int addr_mode)
 {
@@ -651,8 +667,12 @@ short inst_bne(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
-    MISSING();
-    return 0;
+    bool take = (reg_p & FLAGS_ZERO) == 0;
+    if(take)
+    {
+        next_pc = addr_e;
+    }
+    return take;
 }
 short inst_bpl(ushrt addr, int addr_mode)
 {
@@ -671,8 +691,12 @@ short inst_bpl(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
-    MISSING();
-    return 0;
+    bool take = (reg_p & FLAGS_NEGATIVE) == 0;
+    if(take)
+    {
+        next_pc = addr_e;
+    }
+    return take;
 }
 short inst_brk(ushrt addr, int addr_mode)
 {
@@ -711,8 +735,12 @@ short inst_bvc(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
-    MISSING();
-    return 0;
+    bool take = (reg_p & FLAGS_OVERFLOW) == 0;
+    if(take)
+    {
+        next_pc = addr_e;
+    }
+    return take;
 }
 short inst_bvs(ushrt addr, int addr_mode)
 {
@@ -731,8 +759,12 @@ short inst_bvs(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
-    MISSING();
-    return 0;
+    bool take = (reg_p & FLAGS_OVERFLOW) != 0;
+    if(take)
+    {
+        next_pc = addr_e;
+    }
+    return take;
 }
 short inst_clc(ushrt addr, int addr_mode)
 {
