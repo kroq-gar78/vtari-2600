@@ -8,6 +8,7 @@ Sources:
 
  * mem.[ch] modeled after my pc mem.[ch]
  * file loading from loader.c in my pc
+ * SDL2 headers (from Ubuntu package libsdl2-dev)
 
 # Links
 http://problemkaputt.de/2k6specs.htm
