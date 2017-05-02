@@ -450,116 +450,7 @@ ushrt addr_impl(ushrt addr) // for compatibility
     return addr;
 }
 
-// vim regex: s/;/\r{\r    return 0;\r}/g
-int brk_impl(short addr)
-{
-    return 0;
-}
-int clc_impl(short addr)
-{
-    reg_p &= (~FLAGS_CARRY);
-    return 0;
-}
-int cld_impl(short addr)
-{
-    reg_p &= (~FLAGS_DECIMAL);
-    return 0;
-}
-int cli_impl(short addr)
-{
-    reg_p &= (~FLAGS_IRQ_DISABLE);
-    return 0;
-}
-int clv_impl(short addr)
-{
-    reg_p &= (~FLAGS_OVERFLOW);
-    return 0;
-}
-int dex_impl(short addr)
-{
-    return 0;
-}
-int dey_impl(short addr)
-{
-    return 0;
-}
-int inx_impl(short addr)
-{
-    return 0;
-}
-int iny_impl(short addr)
-{
-    return 0;
-}
-int nop_impl(short addr)
-{
-    return 0;
-}
-int pha_impl(short addr)
-{
-    return 0;
-}
-int php_impl(short addr)
-{
-    return 0;
-}
-int pla_impl(short addr)
-{
-    return 0;
-}
-int plp_impl(short addr)
-{
-    return 0;
-}
-int rti_impl(short addr)
-{
-    return 0;
-}
-int rts_impl(short addr)
-{
-    return 0;
-}
-int sec_impl(short addr)
-{
-    reg_p |= FLAGS_CARRY;
-    return 0;
-}
-int sed_impl(short addr)
-{
-    reg_p |= FLAGS_DECIMAL;
-    return 0;
-}
-int sei_impl(short addr)
-{
-    reg_p |= FLAGS_IRQ_DISABLE;
-    return 0;
-}
-int tax_impl(short addr)
-{
-    return 0;
-}
-int tay_impl(short addr)
-{
-    return 0;
-}
-int tsx_impl(short addr)
-{
-    return 0;
-}
-int txa_impl(short addr)
-{
-    return 0;
-}
-int txs_impl(short addr)
-{
-    return 0;
-}
-int tya_impl(short addr)
-{
-    return 0;
-}
-
-
+// instructions
 short inst_adc(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
@@ -809,78 +700,22 @@ short inst_bvs(ushrt addr, int addr_mode)
 }
 short inst_clc(ushrt addr, int addr_mode)
 {
-    F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
-
-    // get operands, using zero-page if necessary
-    byte val_8 = mem_get8(addr_e);
-    ushrt val_16 = 0;
-    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
-    {
-        byte val_16 = mem_get16_zpg(addr_e);
-    }
-    else
-    {
-        byte val_16 = mem_get16(addr_e);
-    }
-
+    reg_p &= (~FLAGS_CARRY);
     return 0;
 }
 short inst_cld(ushrt addr, int addr_mode)
 {
-    F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
-
-    // get operands, using zero-page if necessary
-    byte val_8 = mem_get8(addr_e);
-    ushrt val_16 = 0;
-    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
-    {
-        byte val_16 = mem_get16_zpg(addr_e);
-    }
-    else
-    {
-        byte val_16 = mem_get16(addr_e);
-    }
-
+    reg_p &= (~FLAGS_DECIMAL);
     return 0;
 }
 short inst_cli(ushrt addr, int addr_mode)
 {
-    F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
-
-    // get operands, using zero-page if necessary
-    byte val_8 = mem_get8(addr_e);
-    ushrt val_16 = 0;
-    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
-    {
-        byte val_16 = mem_get16_zpg(addr_e);
-    }
-    else
-    {
-        byte val_16 = mem_get16(addr_e);
-    }
-
+    reg_p &= (~FLAGS_IRQ_DISABLE);
     return 0;
 }
 short inst_clv(ushrt addr, int addr_mode)
 {
-    F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
-
-    // get operands, using zero-page if necessary
-    byte val_8 = mem_get8(addr_e);
-    ushrt val_16 = 0;
-    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
-    {
-        byte val_16 = mem_get16_zpg(addr_e);
-    }
-    else
-    {
-        byte val_16 = mem_get16(addr_e);
-    }
-
+    reg_p &= (~FLAGS_OVERFLOW);
     return 0;
 }
 short inst_cmp(ushrt addr, int addr_mode)
@@ -1398,59 +1233,17 @@ short inst_sbc(ushrt addr, int addr_mode)
 }
 short inst_sec(ushrt addr, int addr_mode)
 {
-    F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
-
-    // get operands, using zero-page if necessary
-    byte val_8 = mem_get8(addr_e);
-    ushrt val_16 = 0;
-    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
-    {
-        byte val_16 = mem_get16_zpg(addr_e);
-    }
-    else
-    {
-        byte val_16 = mem_get16(addr_e);
-    }
-
+    reg_p |= FLAGS_CARRY;
     return 0;
 }
 short inst_sed(ushrt addr, int addr_mode)
 {
-    F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
-
-    // get operands, using zero-page if necessary
-    byte val_8 = mem_get8(addr_e);
-    ushrt val_16 = 0;
-    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
-    {
-        byte val_16 = mem_get16_zpg(addr_e);
-    }
-    else
-    {
-        byte val_16 = mem_get16(addr_e);
-    }
-
+    reg_p |= FLAGS_DECIMAL;
     return 0;
 }
 short inst_sei(ushrt addr, int addr_mode)
 {
-    F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
-
-    // get operands, using zero-page if necessary
-    byte val_8 = mem_get8(addr_e);
-    ushrt val_16 = 0;
-    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
-    {
-        byte val_16 = mem_get16_zpg(addr_e);
-    }
-    else
-    {
-        byte val_16 = mem_get16(addr_e);
-    }
-
+    reg_p |= FLAGS_IRQ_DISABLE;
     return 0;
 }
 short inst_sta(ushrt addr, int addr_mode)
