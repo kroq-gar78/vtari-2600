@@ -454,7 +454,7 @@ ushrt addr_impl(ushrt addr) // for compatibility
 short inst_adc(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -468,12 +468,13 @@ short inst_adc(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    reg_a = _adc(reg_a, val_8);
     return 0;
 }
 short inst_and(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -487,12 +488,13 @@ short inst_and(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    reg_a = _and(reg_a, val_8);
     return 0;
 }
 short inst_asl(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -506,12 +508,13 @@ short inst_asl(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    reg_a = _asl(reg_a, 1);
     return 0;
 }
 short inst_bcc(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -525,12 +528,13 @@ short inst_bcc(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    MISSING();
     return 0;
 }
 short inst_bcs(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -544,12 +548,13 @@ short inst_bcs(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    MISSING();
     return 0;
 }
 short inst_beq(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -563,12 +568,13 @@ short inst_beq(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    MISSING();
     return 0;
 }
 short inst_bit(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -582,12 +588,13 @@ short inst_bit(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    _bit(reg_a, val_8);
     return 0;
 }
 short inst_bmi(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -601,12 +608,13 @@ short inst_bmi(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    MISSING();
     return 0;
 }
 short inst_bne(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -620,12 +628,13 @@ short inst_bne(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    MISSING();
     return 0;
 }
 short inst_bpl(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -639,12 +648,13 @@ short inst_bpl(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    MISSING();
     return 0;
 }
 short inst_brk(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -658,12 +668,13 @@ short inst_brk(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    MISSING();
     return 0;
 }
 short inst_bvc(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -677,12 +688,13 @@ short inst_bvc(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    MISSING();
     return 0;
 }
 short inst_bvs(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -696,6 +708,7 @@ short inst_bvs(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    MISSING();
     return 0;
 }
 short inst_clc(ushrt addr, int addr_mode)
@@ -721,7 +734,7 @@ short inst_clv(ushrt addr, int addr_mode)
 short inst_cmp(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -735,12 +748,13 @@ short inst_cmp(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    _cmp(reg_a, val_8);
     return 0;
 }
 short inst_cpx(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -754,12 +768,13 @@ short inst_cpx(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    _cmp(reg_x, val_8);
     return 0;
 }
 short inst_cpy(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -773,12 +788,13 @@ short inst_cpy(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    _cmp(reg_y, val_8);
     return 0;
 }
 short inst_dec(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -797,7 +813,7 @@ short inst_dec(ushrt addr, int addr_mode)
 short inst_dex(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -816,7 +832,7 @@ short inst_dex(ushrt addr, int addr_mode)
 short inst_dey(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -835,7 +851,7 @@ short inst_dey(ushrt addr, int addr_mode)
 short inst_eor(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -854,7 +870,7 @@ short inst_eor(ushrt addr, int addr_mode)
 short inst_inc(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -873,7 +889,7 @@ short inst_inc(ushrt addr, int addr_mode)
 short inst_inx(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -892,7 +908,7 @@ short inst_inx(ushrt addr, int addr_mode)
 short inst_iny(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -911,7 +927,7 @@ short inst_iny(ushrt addr, int addr_mode)
 short inst_jmp(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -930,7 +946,7 @@ short inst_jmp(ushrt addr, int addr_mode)
 short inst_jsr(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -949,7 +965,7 @@ short inst_jsr(ushrt addr, int addr_mode)
 short inst_lda(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -968,7 +984,7 @@ short inst_lda(ushrt addr, int addr_mode)
 short inst_ldx(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -987,7 +1003,7 @@ short inst_ldx(ushrt addr, int addr_mode)
 short inst_ldy(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -1006,7 +1022,7 @@ short inst_ldy(ushrt addr, int addr_mode)
 short inst_lsr(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -1025,7 +1041,7 @@ short inst_lsr(ushrt addr, int addr_mode)
 short inst_nop(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -1044,7 +1060,7 @@ short inst_nop(ushrt addr, int addr_mode)
 short inst_ora(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -1063,7 +1079,7 @@ short inst_ora(ushrt addr, int addr_mode)
 short inst_pha(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -1082,7 +1098,7 @@ short inst_pha(ushrt addr, int addr_mode)
 short inst_php(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -1101,7 +1117,7 @@ short inst_php(ushrt addr, int addr_mode)
 short inst_pla(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -1120,7 +1136,7 @@ short inst_pla(ushrt addr, int addr_mode)
 short inst_plp(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -1139,7 +1155,7 @@ short inst_plp(ushrt addr, int addr_mode)
 short inst_rol(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -1158,7 +1174,7 @@ short inst_rol(ushrt addr, int addr_mode)
 short inst_ror(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -1177,7 +1193,7 @@ short inst_ror(ushrt addr, int addr_mode)
 short inst_rti(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -1196,7 +1212,7 @@ short inst_rti(ushrt addr, int addr_mode)
 short inst_rts(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -1215,7 +1231,7 @@ short inst_rts(ushrt addr, int addr_mode)
 short inst_sbc(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -1249,7 +1265,7 @@ short inst_sei(ushrt addr, int addr_mode)
 short inst_sta(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -1268,7 +1284,7 @@ short inst_sta(ushrt addr, int addr_mode)
 short inst_stx(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -1287,7 +1303,7 @@ short inst_stx(ushrt addr, int addr_mode)
 short inst_sty(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -1306,7 +1322,7 @@ short inst_sty(ushrt addr, int addr_mode)
 short inst_tax(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -1325,7 +1341,7 @@ short inst_tax(ushrt addr, int addr_mode)
 short inst_tay(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -1344,7 +1360,7 @@ short inst_tay(ushrt addr, int addr_mode)
 short inst_tsx(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -1363,7 +1379,7 @@ short inst_tsx(ushrt addr, int addr_mode)
 short inst_txa(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -1382,7 +1398,7 @@ short inst_txa(ushrt addr, int addr_mode)
 short inst_txs(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
@@ -1401,7 +1417,7 @@ short inst_txs(ushrt addr, int addr_mode)
 short inst_tya(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);

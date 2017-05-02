@@ -75,7 +75,7 @@ for inst in sorted(d.iterkeys()):
     print "short inst_%s(ushrt addr, int addr_mode)" % inst
     print """{
     F1 addr_f = addr_mode_f[addr_mode];
-    ushrt addr_e = addr_f(addr);
+    ushrt addr_e = addr_f(addr+1);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
