@@ -53,11 +53,9 @@ for a in xrange(0x10):
     addrmodes_table.append(', '.join(l_addrmodes))
     sums += len(l_opcodes)
 
-opcodes_table_str = ', \n'.join(opcodes_table)
-addrmodes_table_str = ', \n'.join(addrmodes_table)
+opcodes_table_str = ',\n'.join(opcodes_table)
+addrmodes_table_str = ',\n'.join(addrmodes_table)
 
-print
-print
 # print(sums)
 
 for inst in sorted(d.iterkeys()):
@@ -74,8 +72,8 @@ print
 print
 
 for inst in sorted(d.iterkeys()):
-    print "int inst_%s(short addr, int addr_mode)" % inst
-    print """
+    print "short inst_%s(ushrt addr, int addr_mode)" % inst
+    print """{
     F1 addr_f = addr_mode_f[addr_mode];
     ushrt addr_e = addr_f(addr);
 
@@ -85,6 +83,7 @@ for inst in sorted(d.iterkeys()):
     if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
     {
         byte val_16 = mem_get16_zpg(addr_e);
+    }
     else
     {
         byte val_16 = mem_get16(addr_e);

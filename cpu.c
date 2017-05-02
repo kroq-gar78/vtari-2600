@@ -15,175 +15,114 @@ byte sp;
 byte reg_p = 0x20;
 byte* mmap_p; // pointer to mmap'd file
 
-int adc_abs(short addr);
-int adc_abs_x(short addr);
-int adc_abs_y(short addr);
-int adc_imm(short addr);
-int adc_ind_y(short addr);
-int adc_x_ind(short addr);
-int adc_zpg(short addr);
-int adc_zpg_x(short addr);
-int and_abs(short addr);
-int and_abs_x(short addr);
-int and_abs_y(short addr);
-int and_imm(short addr);
-int and_ind_y(short addr);
-int and_x_ind(short addr);
-int and_zpg(short addr);
-int and_zpg_x(short addr);
-int asl_a(short addr);
-int asl_abs(short addr);
-int asl_abs_x(short addr);
-int asl_zpg(short addr);
-int asl_zpg_x(short addr);
-int bcc_rel(short addr);
-int bcs_rel(short addr);
-int beq_rel(short addr);
-int bit_abs(short addr);
-int bit_zpg(short addr);
-int bmi_rel(short addr);
-int bne_rel(short addr);
-int bpl_rel(short addr);
-int brk_impl(short addr);
-int bvc_rel(short addr);
-int bvs_rel(short addr);
-int clc_impl(short addr);
-int cld_impl(short addr);
-int cli_impl(short addr);
-int clv_impl(short addr);
-int cmp_abs(short addr);
-int cmp_abs_x(short addr);
-int cmp_abs_y(short addr);
-int cmp_imm(short addr);
-int cmp_ind_y(short addr);
-int cmp_x_ind(short addr);
-int cmp_zpg(short addr);
-int cmp_zpg_x(short addr);
-int cpx_abs(short addr);
-int cpx_imm(short addr);
-int cpx_zpg(short addr);
-int cpy_abs(short addr);
-int cpy_imm(short addr);
-int cpy_zpg(short addr);
-int dec_abs(short addr);
-int dec_abs_x(short addr);
-int dec_zpg(short addr);
-int dec_zpg_x(short addr);
-int dex_impl(short addr);
-int dey_impl(short addr);
-int eor_abs(short addr);
-int eor_abs_x(short addr);
-int eor_abs_y(short addr);
-int eor_imm(short addr);
-int eor_ind_y(short addr);
-int eor_x_ind(short addr);
-int eor_zpg(short addr);
-int eor_zpg_x(short addr);
-int inc_abs(short addr);
-int inc_abs_x(short addr);
-int inc_zpg(short addr);
-int inc_zpg_x(short addr);
-int inx_impl(short addr);
-int iny_impl(short addr);
-int jmp_abs(short addr);
-int jmp_ind(short addr);
-int jsr_abs(short addr);
-int lda_abs(short addr);
-int lda_abs_x(short addr);
-int lda_abs_y(short addr);
-int lda_imm(short addr);
-int lda_ind_y(short addr);
-int lda_x_ind(short addr);
-int lda_zpg(short addr);
-int lda_zpg_x(short addr);
-int ldx_abs(short addr);
-int ldx_abs_y(short addr);
-int ldx_imm(short addr);
-int ldx_zpg(short addr);
-int ldx_zpg_y(short addr);
-int ldy_abs(short addr);
-int ldy_abs_x(short addr);
-int ldy_imm(short addr);
-int ldy_zpg(short addr);
-int ldy_zpg_x(short addr);
-int lsr_a(short addr);
-int lsr_abs(short addr);
-int lsr_abs_x(short addr);
-int lsr_zpg(short addr);
-int lsr_zpg_x(short addr);
-int nop_impl(short addr);
-int ora_abs(short addr);
-int ora_abs_x(short addr);
-int ora_abs_y(short addr);
-int ora_imm(short addr);
-int ora_ind_y(short addr);
-int ora_x_ind(short addr);
-int ora_zpg(short addr);
-int ora_zpg_x(short addr);
-int pha_impl(short addr);
-int php_impl(short addr);
-int pla_impl(short addr);
-int plp_impl(short addr);
-int rol_a(short addr);
-int rol_abs(short addr);
-int rol_abs_x(short addr);
-int rol_zpg(short addr);
-int rol_zpg_x(short addr);
-int ror_a(short addr);
-int ror_abs(short addr);
-int ror_abs_x(short addr);
-int ror_zpg(short addr);
-int ror_zpg_x(short addr);
-int rti_impl(short addr);
-int rts_impl(short addr);
-int sbc_abs(short addr);
-int sbc_abs_x(short addr);
-int sbc_abs_y(short addr);
-int sbc_imm(short addr);
-int sbc_ind_y(short addr);
-int sbc_x_ind(short addr);
-int sbc_zpg(short addr);
-int sbc_zpg_x(short addr);
-int sec_impl(short addr);
-int sed_impl(short addr);
-int sei_impl(short addr);
-int sta_abs(short addr);
-int sta_abs_x(short addr);
-int sta_abs_y(short addr);
-int sta_ind_y(short addr);
-int sta_x_ind(short addr);
-int sta_zpg(short addr);
-int sta_zpg_x(short addr);
-int stx_abs(short addr);
-int stx_zpg(short addr);
-int stx_zpg_y(short addr);
-int sty_abs(short addr);
-int sty_zpg(short addr);
-int sty_zpg_x(short addr);
-int tax_impl(short addr);
-int tay_impl(short addr);
-int tsx_impl(short addr);
-int txa_impl(short addr);
-int txs_impl(short addr);
-int tya_impl(short addr);
+ushrt addr_abs(ushrt addr);
+ushrt addr_abs_x(ushrt addr);
+ushrt addr_abs_y(ushrt addr);
+ushrt addr_ind(ushrt addr);
+ushrt addr_x_ind(ushrt addr);
+ushrt addr_ind_y(ushrt addr);
+ushrt addr_rel(ushrt addr);
+ushrt addr_zpg(ushrt addr);
+ushrt addr_zpg_x(ushrt addr);
+ushrt addr_zpg_y(ushrt addr);
+ushrt addr_imm(ushrt addr); // for compatibility
+ushrt addr_impl(ushrt addr); // for compatibility
+
+// map of address mode to function pointer
+F1 addr_mode_f[12] = {addr_abs, addr_abs_x, addr_abs_y, addr_ind, addr_x_ind, addr_ind_y, addr_rel, addr_zpg, addr_zpg_x, addr_zpg_y, addr_imm, addr_impl};
+
+short inst_adc(ushrt addr, int addr_mode);
+short inst_and(ushrt addr, int addr_mode);
+short inst_asl(ushrt addr, int addr_mode);
+short inst_bcc(ushrt addr, int addr_mode);
+short inst_bcs(ushrt addr, int addr_mode);
+short inst_beq(ushrt addr, int addr_mode);
+short inst_bit(ushrt addr, int addr_mode);
+short inst_bmi(ushrt addr, int addr_mode);
+short inst_bne(ushrt addr, int addr_mode);
+short inst_bpl(ushrt addr, int addr_mode);
+short inst_brk(ushrt addr, int addr_mode);
+short inst_bvc(ushrt addr, int addr_mode);
+short inst_bvs(ushrt addr, int addr_mode);
+short inst_clc(ushrt addr, int addr_mode);
+short inst_cld(ushrt addr, int addr_mode);
+short inst_cli(ushrt addr, int addr_mode);
+short inst_clv(ushrt addr, int addr_mode);
+short inst_cmp(ushrt addr, int addr_mode);
+short inst_cpx(ushrt addr, int addr_mode);
+short inst_cpy(ushrt addr, int addr_mode);
+short inst_dec(ushrt addr, int addr_mode);
+short inst_dex(ushrt addr, int addr_mode);
+short inst_dey(ushrt addr, int addr_mode);
+short inst_eor(ushrt addr, int addr_mode);
+short inst_inc(ushrt addr, int addr_mode);
+short inst_inx(ushrt addr, int addr_mode);
+short inst_iny(ushrt addr, int addr_mode);
+short inst_jmp(ushrt addr, int addr_mode);
+short inst_jsr(ushrt addr, int addr_mode);
+short inst_lda(ushrt addr, int addr_mode);
+short inst_ldx(ushrt addr, int addr_mode);
+short inst_ldy(ushrt addr, int addr_mode);
+short inst_lsr(ushrt addr, int addr_mode);
+short inst_nop(ushrt addr, int addr_mode);
+short inst_ora(ushrt addr, int addr_mode);
+short inst_pha(ushrt addr, int addr_mode);
+short inst_php(ushrt addr, int addr_mode);
+short inst_pla(ushrt addr, int addr_mode);
+short inst_plp(ushrt addr, int addr_mode);
+short inst_rol(ushrt addr, int addr_mode);
+short inst_ror(ushrt addr, int addr_mode);
+short inst_rti(ushrt addr, int addr_mode);
+short inst_rts(ushrt addr, int addr_mode);
+short inst_sbc(ushrt addr, int addr_mode);
+short inst_sec(ushrt addr, int addr_mode);
+short inst_sed(ushrt addr, int addr_mode);
+short inst_sei(ushrt addr, int addr_mode);
+short inst_sta(ushrt addr, int addr_mode);
+short inst_stx(ushrt addr, int addr_mode);
+short inst_sty(ushrt addr, int addr_mode);
+short inst_tax(ushrt addr, int addr_mode);
+short inst_tay(ushrt addr, int addr_mode);
+short inst_tsx(ushrt addr, int addr_mode);
+short inst_txa(ushrt addr, int addr_mode);
+short inst_txs(ushrt addr, int addr_mode);
+short inst_tya(ushrt addr, int addr_mode);
 
 
-F1 opcodes[256] = {brk_impl, ora_x_ind, (F1) OPCODE_BAD, (F1) OPCODE_BAD, (F1) OPCODE_BAD, ora_zpg, asl_zpg, (F1) OPCODE_BAD, php_impl, ora_imm, asl_a, (F1) OPCODE_BAD, (F1) OPCODE_BAD, ora_abs, asl_abs, (F1) OPCODE_BAD, 
-bpl_rel, ora_ind_y, (F1) OPCODE_BAD, (F1) OPCODE_BAD, (F1) OPCODE_BAD, ora_zpg_x, asl_zpg_x, (F1) OPCODE_BAD, clc_impl, ora_abs_y, (F1) OPCODE_BAD, (F1) OPCODE_BAD, (F1) OPCODE_BAD, ora_abs_x, asl_abs_x, (F1) OPCODE_BAD, 
-jsr_abs, and_x_ind, (F1) OPCODE_BAD, (F1) OPCODE_BAD, bit_zpg, and_zpg, rol_zpg, (F1) OPCODE_BAD, plp_impl, and_imm, rol_a, (F1) OPCODE_BAD, bit_abs, and_abs, rol_abs, (F1) OPCODE_BAD, 
-bmi_rel, and_ind_y, (F1) OPCODE_BAD, (F1) OPCODE_BAD, (F1) OPCODE_BAD, and_zpg_x, rol_zpg_x, (F1) OPCODE_BAD, sec_impl, and_abs_y, (F1) OPCODE_BAD, (F1) OPCODE_BAD, (F1) OPCODE_BAD, and_abs_x, rol_abs_x, (F1) OPCODE_BAD, 
-rti_impl, eor_x_ind, (F1) OPCODE_BAD, (F1) OPCODE_BAD, (F1) OPCODE_BAD, eor_zpg, lsr_zpg, (F1) OPCODE_BAD, pha_impl, eor_imm, lsr_a, (F1) OPCODE_BAD, jmp_abs, eor_abs, lsr_abs, (F1) OPCODE_BAD, 
-bvc_rel, eor_ind_y, (F1) OPCODE_BAD, (F1) OPCODE_BAD, (F1) OPCODE_BAD, eor_zpg_x, lsr_zpg_x, (F1) OPCODE_BAD, cli_impl, eor_abs_y, (F1) OPCODE_BAD, (F1) OPCODE_BAD, (F1) OPCODE_BAD, eor_abs_x, lsr_abs_x, (F1) OPCODE_BAD, 
-rts_impl, adc_x_ind, (F1) OPCODE_BAD, (F1) OPCODE_BAD, (F1) OPCODE_BAD, adc_zpg, ror_zpg, (F1) OPCODE_BAD, pla_impl, adc_imm, ror_a, (F1) OPCODE_BAD, jmp_ind, adc_abs, ror_abs, (F1) OPCODE_BAD, 
-bvs_rel, adc_ind_y, (F1) OPCODE_BAD, (F1) OPCODE_BAD, (F1) OPCODE_BAD, adc_zpg_x, ror_zpg_x, (F1) OPCODE_BAD, sei_impl, adc_abs_y, (F1) OPCODE_BAD, (F1) OPCODE_BAD, (F1) OPCODE_BAD, adc_abs_x, ror_abs_x, (F1) OPCODE_BAD, 
-(F1) OPCODE_BAD, sta_x_ind, (F1) OPCODE_BAD, (F1) OPCODE_BAD, sty_zpg, sta_zpg, stx_zpg, (F1) OPCODE_BAD, dey_impl, (F1) OPCODE_BAD, txa_impl, (F1) OPCODE_BAD, sty_abs, sta_abs, stx_abs, (F1) OPCODE_BAD, 
-bcc_rel, sta_ind_y, (F1) OPCODE_BAD, (F1) OPCODE_BAD, sty_zpg_x, sta_zpg_x, stx_zpg_y, (F1) OPCODE_BAD, tya_impl, sta_abs_y, txs_impl, (F1) OPCODE_BAD, (F1) OPCODE_BAD, sta_abs_x, (F1) OPCODE_BAD, (F1) OPCODE_BAD, 
-ldy_imm, lda_x_ind, ldx_imm, (F1) OPCODE_BAD, ldy_zpg, lda_zpg, ldx_zpg, (F1) OPCODE_BAD, tay_impl, lda_imm, tax_impl, (F1) OPCODE_BAD, ldy_abs, lda_abs, ldx_abs, (F1) OPCODE_BAD, 
-bcs_rel, lda_ind_y, (F1) OPCODE_BAD, (F1) OPCODE_BAD, ldy_zpg_x, lda_zpg_x, ldx_zpg_y, (F1) OPCODE_BAD, clv_impl, lda_abs_y, tsx_impl, (F1) OPCODE_BAD, ldy_abs_x, lda_abs_x, ldx_abs_y, (F1) OPCODE_BAD, 
-cpy_imm, cmp_x_ind, (F1) OPCODE_BAD, (F1) OPCODE_BAD, cpy_zpg, cmp_zpg, dec_zpg, (F1) OPCODE_BAD, iny_impl, cmp_imm, dex_impl, (F1) OPCODE_BAD, cpy_abs, cmp_abs, dec_abs, (F1) OPCODE_BAD, 
-bne_rel, cmp_ind_y, (F1) OPCODE_BAD, (F1) OPCODE_BAD, (F1) OPCODE_BAD, cmp_zpg_x, dec_zpg_x, (F1) OPCODE_BAD, cld_impl, cmp_abs_y, (F1) OPCODE_BAD, (F1) OPCODE_BAD, (F1) OPCODE_BAD, cmp_abs_x, dec_abs_x, (F1) OPCODE_BAD, 
-cpx_imm, sbc_x_ind, (F1) OPCODE_BAD, (F1) OPCODE_BAD, cpx_zpg, sbc_zpg, inc_zpg, (F1) OPCODE_BAD, inx_impl, sbc_imm, nop_impl, (F1) OPCODE_BAD, cpx_abs, sbc_abs, inc_abs, (F1) OPCODE_BAD, 
-beq_rel, sbc_ind_y, (F1) OPCODE_BAD, (F1) OPCODE_BAD, (F1) OPCODE_BAD, sbc_zpg_x, inc_zpg_x, (F1) OPCODE_BAD, sed_impl, sbc_abs_y, (F1) OPCODE_BAD, (F1) OPCODE_BAD, (F1) OPCODE_BAD, sbc_abs_x, inc_abs_x, (F1) OPCODE_BAD};
+F2 opcodes[256] = {inst_brk, inst_ora, (F2) OPCODE_BAD, (F2) OPCODE_BAD, (F2) OPCODE_BAD, inst_ora, inst_asl, (F2) OPCODE_BAD, inst_php, inst_ora, inst_asl, (F2) OPCODE_BAD, (F2) OPCODE_BAD, inst_ora, inst_asl, (F2) OPCODE_BAD,
+inst_bpl, inst_ora, (F2) OPCODE_BAD, (F2) OPCODE_BAD, (F2) OPCODE_BAD, inst_ora, inst_asl, (F2) OPCODE_BAD, inst_clc, inst_ora, (F2) OPCODE_BAD, (F2) OPCODE_BAD, (F2) OPCODE_BAD, inst_ora, inst_asl, (F2) OPCODE_BAD,
+inst_jsr, inst_and, (F2) OPCODE_BAD, (F2) OPCODE_BAD, inst_bit, inst_and, inst_rol, (F2) OPCODE_BAD, inst_plp, inst_and, inst_rol, (F2) OPCODE_BAD, inst_bit, inst_and, inst_rol, (F2) OPCODE_BAD,
+inst_bmi, inst_and, (F2) OPCODE_BAD, (F2) OPCODE_BAD, (F2) OPCODE_BAD, inst_and, inst_rol, (F2) OPCODE_BAD, inst_sec, inst_and, (F2) OPCODE_BAD, (F2) OPCODE_BAD, (F2) OPCODE_BAD, inst_and, inst_rol, (F2) OPCODE_BAD,
+inst_rti, inst_eor, (F2) OPCODE_BAD, (F2) OPCODE_BAD, (F2) OPCODE_BAD, inst_eor, inst_lsr, (F2) OPCODE_BAD, inst_pha, inst_eor, inst_lsr, (F2) OPCODE_BAD, inst_jmp, inst_eor, inst_lsr, (F2) OPCODE_BAD,
+inst_bvc, inst_eor, (F2) OPCODE_BAD, (F2) OPCODE_BAD, (F2) OPCODE_BAD, inst_eor, inst_lsr, (F2) OPCODE_BAD, inst_cli, inst_eor, (F2) OPCODE_BAD, (F2) OPCODE_BAD, (F2) OPCODE_BAD, inst_eor, inst_lsr, (F2) OPCODE_BAD,
+inst_rts, inst_adc, (F2) OPCODE_BAD, (F2) OPCODE_BAD, (F2) OPCODE_BAD, inst_adc, inst_ror, (F2) OPCODE_BAD, inst_pla, inst_adc, inst_ror, (F2) OPCODE_BAD, inst_jmp, inst_adc, inst_ror, (F2) OPCODE_BAD,
+inst_bvs, inst_adc, (F2) OPCODE_BAD, (F2) OPCODE_BAD, (F2) OPCODE_BAD, inst_adc, inst_ror, (F2) OPCODE_BAD, inst_sei, inst_adc, (F2) OPCODE_BAD, (F2) OPCODE_BAD, (F2) OPCODE_BAD, inst_adc, inst_ror, (F2) OPCODE_BAD,
+(F2) OPCODE_BAD, inst_sta, (F2) OPCODE_BAD, (F2) OPCODE_BAD, inst_sty, inst_sta, inst_stx, (F2) OPCODE_BAD, inst_dey, (F2) OPCODE_BAD, inst_txa, (F2) OPCODE_BAD, inst_sty, inst_sta, inst_stx, (F2) OPCODE_BAD,
+inst_bcc, inst_sta, (F2) OPCODE_BAD, (F2) OPCODE_BAD, inst_sty, inst_sta, inst_stx, (F2) OPCODE_BAD, inst_tya, inst_sta, inst_txs, (F2) OPCODE_BAD, (F2) OPCODE_BAD, inst_sta, (F2) OPCODE_BAD, (F2) OPCODE_BAD,
+inst_ldy, inst_lda, inst_ldx, (F2) OPCODE_BAD, inst_ldy, inst_lda, inst_ldx, (F2) OPCODE_BAD, inst_tay, inst_lda, inst_tax, (F2) OPCODE_BAD, inst_ldy, inst_lda, inst_ldx, (F2) OPCODE_BAD,
+inst_bcs, inst_lda, (F2) OPCODE_BAD, (F2) OPCODE_BAD, inst_ldy, inst_lda, inst_ldx, (F2) OPCODE_BAD, inst_clv, inst_lda, inst_tsx, (F2) OPCODE_BAD, inst_ldy, inst_lda, inst_ldx, (F2) OPCODE_BAD,
+inst_cpy, inst_cmp, (F2) OPCODE_BAD, (F2) OPCODE_BAD, inst_cpy, inst_cmp, inst_dec, (F2) OPCODE_BAD, inst_iny, inst_cmp, inst_dex, (F2) OPCODE_BAD, inst_cpy, inst_cmp, inst_dec, (F2) OPCODE_BAD,
+inst_bne, inst_cmp, (F2) OPCODE_BAD, (F2) OPCODE_BAD, (F2) OPCODE_BAD, inst_cmp, inst_dec, (F2) OPCODE_BAD, inst_cld, inst_cmp, (F2) OPCODE_BAD, (F2) OPCODE_BAD, (F2) OPCODE_BAD, inst_cmp, inst_dec, (F2) OPCODE_BAD,
+inst_cpx, inst_sbc, (F2) OPCODE_BAD, (F2) OPCODE_BAD, inst_cpx, inst_sbc, inst_inc, (F2) OPCODE_BAD, inst_inx, inst_sbc, inst_nop, (F2) OPCODE_BAD, inst_cpx, inst_sbc, inst_inc, (F2) OPCODE_BAD,
+inst_beq, inst_sbc, (F2) OPCODE_BAD, (F2) OPCODE_BAD, (F2) OPCODE_BAD, inst_sbc, inst_inc, (F2) OPCODE_BAD, inst_sed, inst_sbc, (F2) OPCODE_BAD, (F2) OPCODE_BAD, (F2) OPCODE_BAD, inst_sbc, inst_inc, (F2) OPCODE_BAD};
+
+int addr_modes[256] = {ADDRMODE_IMPL, ADDRMODE_X_IND, -1, -1, -1, ADDRMODE_ZPG, ADDRMODE_ZPG, -1, ADDRMODE_IMPL, ADDRMODE_IMM, ADDRMODE_IMPL, -1, -1, ADDRMODE_ABS, ADDRMODE_ABS, -1,
+ADDRMODE_REL, ADDRMODE_IND_Y, -1, -1, -1, ADDRMODE_ZPG_X, ADDRMODE_ZPG_X, -1, ADDRMODE_IMPL, ADDRMODE_ABS_Y, -1, -1, -1, ADDRMODE_ABS_X, ADDRMODE_ABS_X, -1,
+ADDRMODE_ABS, ADDRMODE_X_IND, -1, -1, ADDRMODE_ZPG, ADDRMODE_ZPG, ADDRMODE_ZPG, -1, ADDRMODE_IMPL, ADDRMODE_IMM, ADDRMODE_IMPL, -1, ADDRMODE_ABS, ADDRMODE_ABS, ADDRMODE_ABS, -1,
+ADDRMODE_REL, ADDRMODE_IND_Y, -1, -1, -1, ADDRMODE_ZPG_X, ADDRMODE_ZPG_X, -1, ADDRMODE_IMPL, ADDRMODE_ABS_Y, -1, -1, -1, ADDRMODE_ABS_X, ADDRMODE_ABS_X, -1,
+ADDRMODE_IMPL, ADDRMODE_X_IND, -1, -1, -1, ADDRMODE_ZPG, ADDRMODE_ZPG, -1, ADDRMODE_IMPL, ADDRMODE_IMM, ADDRMODE_IMPL, -1, ADDRMODE_ABS, ADDRMODE_ABS, ADDRMODE_ABS, -1,
+ADDRMODE_REL, ADDRMODE_IND_Y, -1, -1, -1, ADDRMODE_ZPG_X, ADDRMODE_ZPG_X, -1, ADDRMODE_IMPL, ADDRMODE_ABS_Y, -1, -1, -1, ADDRMODE_ABS_X, ADDRMODE_ABS_X, -1,
+ADDRMODE_IMPL, ADDRMODE_X_IND, -1, -1, -1, ADDRMODE_ZPG, ADDRMODE_ZPG, -1, ADDRMODE_IMPL, ADDRMODE_IMM, ADDRMODE_IMPL, -1, ADDRMODE_IND, ADDRMODE_ABS, ADDRMODE_ABS, -1,
+ADDRMODE_REL, ADDRMODE_IND_Y, -1, -1, -1, ADDRMODE_ZPG_X, ADDRMODE_ZPG_X, -1, ADDRMODE_IMPL, ADDRMODE_ABS_Y, -1, -1, -1, ADDRMODE_ABS_X, ADDRMODE_ABS_X, -1,
+-1, ADDRMODE_X_IND, -1, -1, ADDRMODE_ZPG, ADDRMODE_ZPG, ADDRMODE_ZPG, -1, ADDRMODE_IMPL, -1, ADDRMODE_IMPL, -1, ADDRMODE_ABS, ADDRMODE_ABS, ADDRMODE_ABS, -1,
+ADDRMODE_REL, ADDRMODE_IND_Y, -1, -1, ADDRMODE_ZPG_X, ADDRMODE_ZPG_X, ADDRMODE_ZPG_Y, -1, ADDRMODE_IMPL, ADDRMODE_ABS_Y, ADDRMODE_IMPL, -1, -1, ADDRMODE_ABS_X, -1, -1,
+ADDRMODE_IMM, ADDRMODE_X_IND, ADDRMODE_IMM, -1, ADDRMODE_ZPG, ADDRMODE_ZPG, ADDRMODE_ZPG, -1, ADDRMODE_IMPL, ADDRMODE_IMM, ADDRMODE_IMPL, -1, ADDRMODE_ABS, ADDRMODE_ABS, ADDRMODE_ABS, -1,
+ADDRMODE_REL, ADDRMODE_IND_Y, -1, -1, ADDRMODE_ZPG_X, ADDRMODE_ZPG_X, ADDRMODE_ZPG_Y, -1, ADDRMODE_IMPL, ADDRMODE_ABS_Y, ADDRMODE_IMPL, -1, ADDRMODE_ABS_X, ADDRMODE_ABS_X, ADDRMODE_ABS_Y, -1,
+ADDRMODE_IMM, ADDRMODE_X_IND, -1, -1, ADDRMODE_ZPG, ADDRMODE_ZPG, ADDRMODE_ZPG, -1, ADDRMODE_IMPL, ADDRMODE_IMM, ADDRMODE_IMPL, -1, ADDRMODE_ABS, ADDRMODE_ABS, ADDRMODE_ABS, -1,
+ADDRMODE_REL, ADDRMODE_IND_Y, -1, -1, -1, ADDRMODE_ZPG_X, ADDRMODE_ZPG_X, -1, ADDRMODE_IMPL, ADDRMODE_ABS_Y, -1, -1, -1, ADDRMODE_ABS_X, ADDRMODE_ABS_X, -1,
+ADDRMODE_IMM, ADDRMODE_X_IND, -1, -1, ADDRMODE_ZPG, ADDRMODE_ZPG, ADDRMODE_ZPG, -1, ADDRMODE_IMPL, ADDRMODE_IMM, ADDRMODE_IMPL, -1, ADDRMODE_ABS, ADDRMODE_ABS, ADDRMODE_ABS, -1,
+ADDRMODE_REL, ADDRMODE_IND_Y, -1, -1, -1, ADDRMODE_ZPG_X, ADDRMODE_ZPG_X, -1, ADDRMODE_IMPL, ADDRMODE_ABS_Y, -1, -1, -1, ADDRMODE_ABS_X, ADDRMODE_ABS_X, -1};
+
 
 struct stat st;
 byte* ldr_mmap_file(char *filename)
@@ -298,7 +237,7 @@ bool setflag_v_direct(bool status) // overflow
     }
 }
 
-int adc(byte a, byte b)
+int _adc(byte a, byte b)
 {
     if(reg_p & FLAGS_DECIMAL) MISSING();
     byte result = a+b;
@@ -318,7 +257,7 @@ int adc(byte a, byte b)
     return result;
 }
 
-int and(byte a, byte b)
+int _and(byte a, byte b)
 {
     byte result = a&b;
 
@@ -329,7 +268,7 @@ int and(byte a, byte b)
 }
 
 // `b` is the number of shifts
-int asl(byte a, byte b)
+int _asl(byte a, byte b)
 {
     byte result = a<<b;
 
@@ -342,7 +281,7 @@ int asl(byte a, byte b)
     return result;
 }
 
-int bit(byte a, byte b)
+int _bit(byte a, byte b)
 {
     byte result = a&b;
 
@@ -356,7 +295,7 @@ int bit(byte a, byte b)
 }
 
 // register in `a`
-int cmp(byte a, byte b)
+int _cmp(byte a, byte b)
 {
     byte result = a >= b;
 
@@ -367,7 +306,7 @@ int cmp(byte a, byte b)
     return result;
 }
 
-int dec(byte a)
+int _dec(byte a)
 {
     byte result = a-1;
 
@@ -376,7 +315,7 @@ int dec(byte a)
     return result;
 }
 
-int eor(byte a, byte b)
+int _eor(byte a, byte b)
 {
     byte result = a^b;
 
@@ -385,7 +324,7 @@ int eor(byte a, byte b)
     return result;
 }
 
-int inc(byte a)
+int _inc(byte a)
 {
     byte result = a+1;
 
@@ -394,7 +333,7 @@ int inc(byte a)
     return result;
 }
 
-int lsr(byte a)
+int _lsr(byte a)
 {
     byte result = (a>>1);
 
@@ -404,7 +343,7 @@ int lsr(byte a)
     return result;
 }
 
-int or(byte a, byte b)
+int _or(byte a, byte b)
 {
     byte result = a|b;
 
@@ -413,7 +352,7 @@ int or(byte a, byte b)
     return result;
 }
 
-int rol(byte a)
+int _rol(byte a)
 {
     byte result = a<<1;
     result &= (byte)(~1);
@@ -424,7 +363,7 @@ int rol(byte a)
     return result;
 }
 
-int ror(byte a)
+int _ror(byte a)
 {
     byte result = a>>1;
     result &= ((reg_p & FLAGS_CARRY) != 0) << 7;
@@ -434,7 +373,7 @@ int ror(byte a)
     return result;
 }
 
-int sbc(byte a, byte b)
+int _sbc(byte a, byte b)
 {
     if(reg_p & FLAGS_DECIMAL) MISSING();
 
@@ -446,7 +385,7 @@ int sbc(byte a, byte b)
     return result;
 }
 
-int transfer(byte* a, byte* b)
+int _transfer(byte* a, byte* b)
 {
     *a = *b;
 
@@ -457,56 +396,56 @@ int transfer(byte* a, byte* b)
 
 // addressing modes
 // they take in the address of the start of the operands
-ushrt addr_abs(short addr)
+ushrt addr_abs(ushrt addr)
 {
     ushrt b0 = mem_get8(addr);
     ushrt b1 = mem_get8(addr);
 
     return (b1<<8) | (b0 & 0xff);
 }
-ushrt addr_abs_x(short addr)
+ushrt addr_abs_x(ushrt addr)
 {
     return addr_abs(addr) + reg_x;
 }
-ushrt addr_abs_y(short addr)
+ushrt addr_abs_y(ushrt addr)
 {
     return addr_abs(addr) + reg_y;
 }
-ushrt addr_ind(short addr)
+ushrt addr_ind(ushrt addr)
 {
     return mem_get16(mem_get16(addr));
 }
 // TODO: carry?
-ushrt addr_x_ind(short addr)
+ushrt addr_x_ind(ushrt addr)
 {
     return mem_get16_zpg(mem_get8(addr)+reg_x);
 }
-ushrt addr_ind_y(short addr)
+ushrt addr_ind_y(ushrt addr)
 {
     return mem_get16_zpg(mem_get8(addr))+reg_y;
 }
-ushrt addr_rel(short addr)
+ushrt addr_rel(ushrt addr)
 {
     short rel = mem_get8(addr);
     return pc + rel;
 }
-ushrt addr_zpg(short addr)
+ushrt addr_zpg(ushrt addr)
 {
     return mem_get8(addr);
 }
-ushrt addr_zpg_x(short addr)
+ushrt addr_zpg_x(ushrt addr)
 {
     return (mem_get8(addr)+reg_x) & 0xff;
 }
-ushrt addr_zpg_y(short addr)
+ushrt addr_zpg_y(ushrt addr)
 {
     return (mem_get8(addr)+reg_y) & 0xff;
 }
-ushrt addr_imm(short addr) // for compatibility
+ushrt addr_imm(ushrt addr) // for compatibility
 {
     return addr;
 }
-ushrt addr_impl(short addr) // for compatibility
+ushrt addr_impl(ushrt addr) // for compatibility
 {
     return addr;
 }
@@ -617,5 +556,1071 @@ int txs_impl(short addr)
 }
 int tya_impl(short addr)
 {
+    return 0;
+}
+
+
+short inst_adc(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_and(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_asl(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_bcc(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_bcs(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_beq(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_bit(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_bmi(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_bne(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_bpl(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_brk(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_bvc(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_bvs(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_clc(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_cld(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_cli(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_clv(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_cmp(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_cpx(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_cpy(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_dec(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_dex(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_dey(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_eor(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_inc(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_inx(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_iny(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_jmp(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_jsr(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_lda(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_ldx(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_ldy(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_lsr(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_nop(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_ora(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_pha(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_php(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_pla(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_plp(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_rol(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_ror(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_rti(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_rts(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_sbc(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_sec(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_sed(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_sei(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_sta(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_stx(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_sty(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_tax(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_tay(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_tsx(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_txa(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_txs(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
+    return 0;
+}
+short inst_tya(ushrt addr, int addr_mode)
+{
+    F1 addr_f = addr_mode_f[addr_mode];
+    ushrt addr_e = addr_f(addr);
+
+    // get operands, using zero-page if necessary
+    byte val_8 = mem_get8(addr_e);
+    ushrt val_16 = 0;
+    if(addr_mode == ADDRMODE_ZPG || addr_mode == ADDRMODE_ZPG_X || addr_mode == ADDRMODE_ZPG_Y)
+    {
+        byte val_16 = mem_get16_zpg(addr_e);
+    }
+    else
+    {
+        byte val_16 = mem_get16(addr_e);
+    }
+
     return 0;
 }
