@@ -12,7 +12,7 @@ ushrt next_pc = 0x1002;
 byte reg_a = 0;
 byte reg_x = 0;
 byte reg_y = 0;
-byte sp = 0x1ff;
+byte sp = 0xff;
 byte reg_p = 0x20; // unused bit is 1
 byte* mmap_p; // pointer to mmap'd file
 
@@ -387,7 +387,7 @@ int _push(byte val)
 
 int _pull() // like pop?
 {
-    if(sp & 0xff == 0xff)
+    if((sp & 0xff) == 0xff)
     {
         fprintf(stderr, "Stack overrun (pull)\n");
     }
