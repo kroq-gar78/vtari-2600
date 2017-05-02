@@ -12,7 +12,7 @@ ushrt next_pc = 0x1002;
 byte reg_a = 0;
 byte reg_x = 0;
 byte reg_y = 0;
-byte sp = 0;
+byte sp = 0x1ff;
 byte reg_p = 0x20; // unused bit is 1
 byte* mmap_p; // pointer to mmap'd file
 
@@ -373,6 +373,25 @@ int _or(byte a, byte b)
     byte result = a|b;
 
     setflag_nz(result);
+
+    return result;
+}
+
+int _push(byte val)
+{
+    mem_set8(sp, val);
+    sp--;
+
+    return sp;
+}
+
+int _pull() // like pop?
+{
+    if(sp & 0xff == 0xff)
+    {
+        fprintf(stderr, "Stack overrun (pull)\n");
+    }
+    byte result = mem_get8(++sp);
 
     return result;
 }
@@ -1027,7 +1046,9 @@ short inst_jsr(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
-    MISSING();
+    _push(next_pc);
+    printf("jsr to %x addr_e %x\n", val_16, addr_e);
+    next_pc = addr_e;
     return 0;
 }
 short inst_lda(ushrt addr, int addr_mode)
@@ -1173,7 +1194,7 @@ short inst_pha(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
-    MISSING();
+    _push(reg_a);
     return 0;
 }
 short inst_php(ushrt addr, int addr_mode)
@@ -1193,7 +1214,7 @@ short inst_php(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
-    MISSING();
+    _push(reg_p);
     return 0;
 }
 short inst_pla(ushrt addr, int addr_mode)
@@ -1213,7 +1234,8 @@ short inst_pla(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
-    MISSING();
+    reg_a = _pull();
+    setflag_nz(reg_a);
     return 0;
 }
 short inst_plp(ushrt addr, int addr_mode)
@@ -1233,7 +1255,7 @@ short inst_plp(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
-    MISSING();
+    reg_p = _pull();
     return 0;
 }
 short inst_rol(ushrt addr, int addr_mode)
@@ -1328,7 +1350,7 @@ short inst_rts(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
-    MISSING();
+    pc = _pull();
     return 0;
 }
 short inst_sbc(ushrt addr, int addr_mode)
