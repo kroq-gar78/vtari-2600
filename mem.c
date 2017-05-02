@@ -67,8 +67,8 @@ byte mem_get8(ushrt addr)
         // TODO: implement
         //MISSING();
         addr &= 0b01111111;
-        printf("TIA: read from 0x%x\n", addr);
-        return 0;
+        //printf("TIA: read from 0x%x\n", addr);
+        return tia_read(addr);
     }
     // PIA RAM mirrors
     else if((addr & 0x1280) == 0x80)

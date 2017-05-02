@@ -35,8 +35,10 @@ byte tia_read(ushrt addr)
         case INPT4:
             break;
         default:
-            printf("TIA: unknown read addr %x\n", addr);
+            printf("TIA: unknown read addr 0x%x\n", addr);
     }
+
+    return 0;
 }
 
 void tia_write(ushrt addr, byte value)
@@ -138,6 +140,6 @@ void tia_write(ushrt addr, byte value)
         case CXCLR:
             break;
         default:
-            printf("TIA: unknown write addr %x val %x\n", addr, value);
+            printf("TIA: unknown write addr 0x%x val 0x%x\n", addr, value);
     }
 }
