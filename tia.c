@@ -4,13 +4,48 @@
 #include "mem.h"
 #include "tia.h"
 
+byte tia_read(ushrt addr)
+{
+    switch(addr)
+    {
+        case CXM0P:
+            break;
+        case CXM1P:
+            break;
+        case CXP0FB:
+            break;
+        case CXP1FB:
+            break;
+        case CXM0FB:
+            break;
+        case CXM1FB:
+            break;
+        case CXBLPF:
+            break;
+        case CXPPMM:
+            break;
+        case INPT0:
+            break;
+        case INPT1:
+            break;
+        case INPT2:
+            break;
+        case INPT3:
+            break;
+        case INPT4:
+            break;
+        default:
+            printf("TIA: unknown read addr %x\n", addr);
+    }
+}
+
 void tia_write(ushrt addr, byte value)
 {
     printf("TIA: write to 0x%x val %x\n", addr, value);
 
     // regex (based off of `#define`s in `mem.h`):
     // s/^.*\ \([0-9A-Z]\+\)\ .*$/case \1:\r\tbreak;/g
-    switch(value)
+    switch(addr)
     {
         case VSYNC:
             break;
@@ -102,5 +137,7 @@ void tia_write(ushrt addr, byte value)
             break;
         case CXCLR:
             break;
+        default:
+            printf("TIA: unknown write addr %x val %x\n", addr, value);
     }
 }

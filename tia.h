@@ -52,8 +52,24 @@
 #define HMCLR 0x2B
 #define CXCLR 0x2C
 
+// TIA read mappings
+#define CXM0P 0x30
+#define CXM1P 0x31
+#define CXP0FB 0x32
+#define CXP1FB 0x33
+#define CXM0FB 0x34
+#define CXM1FB 0x35
+#define CXBLPF 0x36
+#define CXPPMM 0x37
+#define INPT0 0x38
+#define INPT1 0x39
+#define INPT2 0x3A
+#define INPT3 0x3B
+#define INPT4 0x3C
+
 extern byte tia_mem[TIA_SIZE];
 
+extern byte tia_read(ushrt addr);
 extern void tia_write(ushrt addr, byte value);
 
 #endif
