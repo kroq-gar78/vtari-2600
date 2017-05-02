@@ -22,7 +22,10 @@ void mem_set8(ushrt addr, byte value)
     // TIA mirrors
     if((addr & 0x1080) == 0)
     {
-        MISSING();
+        // TODO: implement
+        //MISSING();
+        printf("TIA: write to 0x%x val %x\n", addr, value);
+        return;
     }
     // PIA RAM mirrors
     else if((addr & 0x1280) == 0x80)
@@ -59,7 +62,11 @@ byte mem_get8(ushrt addr)
     // TIA mirrors
     if((addr & 0x1080) == 0)
     {
-        MISSING();
+        // TODO: implement
+        //MISSING();
+        addr &= 0b01111111;
+        printf("TIA: read from 0x%x\n", addr);
+        return 0;
     }
     // PIA RAM mirrors
     else if((addr & 0x1280) == 0x80)

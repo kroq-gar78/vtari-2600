@@ -176,7 +176,12 @@ int main(int argc, char* argv[])
     {
         int addr_mode = addr_modes[mem_get8(pc)];
         printf("pc %x inst %x\n", pc, mem_get8(pc));
-        printf("len %d\n", addr_mode_len[addr_mode]);
+
+        // fetch and execute
+        F2 inst = opcodes[mem_get8(pc)];
+        (*inst)(pc, addr_mode);
+
+        //printf("len %d\n", addr_mode_len[addr_mode]);
         pc += addr_mode_len[addr_mode];
     }
 
@@ -1326,6 +1331,8 @@ short inst_sta(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
     ushrt addr_e = addr_f(addr+1);
+    printf("STA addr %x\n", addr);
+    printf("STA addr_e %x\n", addr_e);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
