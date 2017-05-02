@@ -174,8 +174,10 @@ int main(int argc, char* argv[])
     // EXECUTION
     while(opcodes[mem_get8(pc)] != inst_brk)
     {
+        int addr_mode = addr_modes[mem_get8(pc)];
         printf("pc %x inst %x\n", pc, mem_get8(pc));
-        pc += addr_mode_len[mem_get8(pc)];
+        printf("len %d\n", addr_mode_len[addr_mode]);
+        pc += addr_mode_len[addr_mode];
     }
 
 

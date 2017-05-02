@@ -36,7 +36,7 @@ void mem_set8(ushrt addr, byte value)
         MISSING();
     }
     // cartridge mirrors
-    else if((addr & 0x2000) == 0x2000)
+    else if((addr & 0x1000) == 0x1000)
     {
         MISSING();
     }
