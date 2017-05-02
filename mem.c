@@ -17,7 +17,29 @@ void mem_init()
 
 void mem_set8(ushrt addr, byte value)
 {
-    /*mem[addr] = value;*/
+    addr &= (MEM_MAX-1);
+
+    // TIA mirrors
+    if((addr & 0x1080) == 0)
+    {
+        MISSING();
+    }
+    // PIA RAM mirrors
+    else if((addr & 0x1280) == 0x80)
+    {
+        addr &= RAM_SIZE-1;
+        pia_mem[addr] = value;
+    }
+    // PIA I/O mirrors
+    else if((addr & 0x1280) == 0x280)
+    {
+        MISSING();
+    }
+    // cartridge mirrors
+    else if((addr & 0x2000) == 0x2000)
+    {
+        MISSING();
+    }
 }
 
 /*void mem_copy(byte* host, ushrt guest, ushrt size)

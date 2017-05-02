@@ -808,6 +808,7 @@ short inst_dec(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    mem_set8(addr_e, _dec(val_8));
     return 0;
 }
 short inst_dex(ushrt addr, int addr_mode)
@@ -827,6 +828,7 @@ short inst_dex(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    reg_x = _dec(reg_x);
     return 0;
 }
 short inst_dey(ushrt addr, int addr_mode)
@@ -846,6 +848,7 @@ short inst_dey(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    reg_y = _dec(reg_y);
     return 0;
 }
 short inst_eor(ushrt addr, int addr_mode)
@@ -865,6 +868,7 @@ short inst_eor(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    reg_a = _eor(reg_a, val_8);
     return 0;
 }
 short inst_inc(ushrt addr, int addr_mode)
@@ -884,6 +888,7 @@ short inst_inc(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    mem_set8(addr_e, _inc(val_8));
     return 0;
 }
 short inst_inx(ushrt addr, int addr_mode)
@@ -903,6 +908,7 @@ short inst_inx(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    reg_x = _inc(reg_x);
     return 0;
 }
 short inst_iny(ushrt addr, int addr_mode)
@@ -922,6 +928,7 @@ short inst_iny(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    reg_y = _inc(reg_y);
     return 0;
 }
 short inst_jmp(ushrt addr, int addr_mode)
@@ -941,6 +948,7 @@ short inst_jmp(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    MISSING();
     return 0;
 }
 short inst_jsr(ushrt addr, int addr_mode)
@@ -960,6 +968,7 @@ short inst_jsr(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    MISSING();
     return 0;
 }
 short inst_lda(ushrt addr, int addr_mode)
@@ -979,6 +988,7 @@ short inst_lda(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    reg_a = val_8;
     return 0;
 }
 short inst_ldx(ushrt addr, int addr_mode)
@@ -998,6 +1008,7 @@ short inst_ldx(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    reg_x = val_8;
     return 0;
 }
 short inst_ldy(ushrt addr, int addr_mode)
@@ -1017,6 +1028,7 @@ short inst_ldy(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    reg_y = val_8;
     return 0;
 }
 short inst_lsr(ushrt addr, int addr_mode)
@@ -1036,6 +1048,14 @@ short inst_lsr(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    if(addr_mode == ADDRMODE_IMPL)
+    {
+        reg_a = _lsr(reg_a);
+    }
+    else
+    {
+        mem_set8(addr_e, _lsr(val_8));
+    }
     return 0;
 }
 short inst_nop(ushrt addr, int addr_mode)
@@ -1074,6 +1094,7 @@ short inst_ora(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    reg_a = _or(reg_a, val_8);
     return 0;
 }
 short inst_pha(ushrt addr, int addr_mode)
@@ -1093,6 +1114,7 @@ short inst_pha(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    MISSING();
     return 0;
 }
 short inst_php(ushrt addr, int addr_mode)
@@ -1112,6 +1134,7 @@ short inst_php(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    MISSING();
     return 0;
 }
 short inst_pla(ushrt addr, int addr_mode)
@@ -1131,6 +1154,7 @@ short inst_pla(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    MISSING();
     return 0;
 }
 short inst_plp(ushrt addr, int addr_mode)
@@ -1150,6 +1174,7 @@ short inst_plp(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    MISSING();
     return 0;
 }
 short inst_rol(ushrt addr, int addr_mode)
@@ -1167,6 +1192,15 @@ short inst_rol(ushrt addr, int addr_mode)
     else
     {
         byte val_16 = mem_get16(addr_e);
+    }
+
+    if(addr_mode == ADDRMODE_IMPL)
+    {
+        reg_a = _rol(reg_a);
+    }
+    else
+    {
+        mem_set8(addr_e, _rol(val_8));
     }
 
     return 0;
@@ -1188,6 +1222,14 @@ short inst_ror(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    if(addr_mode == ADDRMODE_IMPL)
+    {
+        reg_a = _ror(reg_a);
+    }
+    else
+    {
+        mem_set8(addr_e, _ror(val_8));
+    }
     return 0;
 }
 short inst_rti(ushrt addr, int addr_mode)
@@ -1207,6 +1249,7 @@ short inst_rti(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    MISSING();
     return 0;
 }
 short inst_rts(ushrt addr, int addr_mode)
@@ -1226,6 +1269,7 @@ short inst_rts(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    MISSING();
     return 0;
 }
 short inst_sbc(ushrt addr, int addr_mode)
@@ -1245,6 +1289,7 @@ short inst_sbc(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    reg_a = _sbc(reg_a, val_8);
     return 0;
 }
 short inst_sec(ushrt addr, int addr_mode)
@@ -1279,6 +1324,7 @@ short inst_sta(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    mem_set8(addr_e, reg_a);
     return 0;
 }
 short inst_stx(ushrt addr, int addr_mode)
@@ -1298,6 +1344,7 @@ short inst_stx(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    mem_set8(addr_e, reg_x);
     return 0;
 }
 short inst_sty(ushrt addr, int addr_mode)
@@ -1317,6 +1364,7 @@ short inst_sty(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    mem_set8(addr_e, reg_y);
     return 0;
 }
 short inst_tax(ushrt addr, int addr_mode)
@@ -1336,6 +1384,7 @@ short inst_tax(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    _transfer(&reg_a, &reg_x);
     return 0;
 }
 short inst_tay(ushrt addr, int addr_mode)
@@ -1355,6 +1404,7 @@ short inst_tay(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    _transfer(&reg_a, &reg_y);
     return 0;
 }
 short inst_tsx(ushrt addr, int addr_mode)
@@ -1374,6 +1424,7 @@ short inst_tsx(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    _transfer(&sp, &reg_x);
     return 0;
 }
 short inst_txa(ushrt addr, int addr_mode)
@@ -1393,6 +1444,7 @@ short inst_txa(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    _transfer(&reg_x, &reg_a);
     return 0;
 }
 short inst_txs(ushrt addr, int addr_mode)
@@ -1412,6 +1464,7 @@ short inst_txs(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    _transfer(&reg_x, &sp);
     return 0;
 }
 short inst_tya(ushrt addr, int addr_mode)
@@ -1431,5 +1484,6 @@ short inst_tya(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    _transfer(&reg_y, &reg_a);
     return 0;
 }
