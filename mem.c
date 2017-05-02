@@ -113,9 +113,16 @@ short mem_get16_zpg(ushrt addr)
     return (b1<<0) | (b0 & 0xff);
 }
 
-int mem_get32(ushrt addr)
+// convert hex number to packed BCD
+byte hex_to_bcd(byte value)
 {
-    short n0 = mem_get16(addr);
-    short n1 = mem_get16(addr+2);
-    return (n1<<16) | (n0 & USHRT_MAX);
+    // we can assume that each nibble is < 10
+    return (value>>4)*10 + (value & 0xf);
+}
+
+// convert from a hex representation of a number to packed BCD
+byte bcd_to_hex(byte bcd)
+{
+    // we assume the number is < 100
+    return ((bcd/10)<<4) + (bcd%10);
 }

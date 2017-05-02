@@ -264,7 +264,11 @@ bool setflag_v_direct(bool status) // overflow
 
 int _adc(byte a, byte b)
 {
-    if(reg_p & FLAGS_DECIMAL) MISSING();
+    if(reg_p & FLAGS_DECIMAL)
+    {
+        a = hex_to_bcd(a);
+        b = hex_to_bcd(b);
+    }
     byte result = a+b;
 
     // check overflow
@@ -279,6 +283,10 @@ int _adc(byte a, byte b)
 
     setflag_z(result);
 
+    if(reg_p & FLAGS_DECIMAL)
+    {
+        result = bcd_to_hex(result);
+    }
     return result;
 }
 
@@ -419,13 +427,21 @@ int _ror(byte a)
 
 int _sbc(byte a, byte b)
 {
-    if(reg_p & FLAGS_DECIMAL) MISSING();
+    if(reg_p & FLAGS_DECIMAL)
+    {
+        a = hex_to_bcd(a);
+        b = hex_to_bcd(b);
+    }
 
-    byte result = a - b - ((reg_p & FLAGS_CARRY) != 0);
+    byte result = a - b - ((reg_p & FLAGS_CARRY) == 0); // need ~C (https://www.dwheeler.com/6502/oneelkruns/asm1step.html)
 
     // TODO: overflow, carry flags
     setflag_nz(result);
 
+    if(reg_p & FLAGS_DECIMAL)
+    {
+        result = bcd_to_hex(result);
+    }
     return result;
 }
 
