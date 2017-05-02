@@ -19,7 +19,8 @@
 
 typedef unsigned char byte;
 typedef unsigned short ushrt;
-typedef int (*F1)(short a0); // from p6
+typedef ushrt (*F1)(ushrt a0); // from p6
+typedef short (*F2)(ushrt a0, int addr_mode); // from p6
 
 #define FLAGS_CARRY (byte)(1<<0)
 #define FLAGS_ZERO (byte)(1<<1)
@@ -30,6 +31,19 @@ typedef int (*F1)(short a0); // from p6
 #define FLAGS_NEGATIVE (byte)(1<<7)
 
 #define OPCODE_BAD 0x777
+
+#define ADDRMODE_ABS 0
+#define ADDRMODE_ABS_X 1
+#define ADDRMODE_ABS_Y 2
+#define ADDRMODE_IND 3
+#define ADDRMODE_X_IND 4
+#define ADDRMODE_IND_Y 5
+#define ADDRMODE_REL 6
+#define ADDRMODE_ZPG 7
+#define ADDRMODE_ZPG_X 8
+#define ADDRMODE_ZPG_Y 9
+#define ADDRMODE_IMM 10
+#define ADDRMODE_IMPL 11
 
 extern int pc;
 extern byte reg_a;

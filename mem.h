@@ -8,6 +8,8 @@
 #define MEM_MAX (1<<13)
 #define TIA_SIZE 0xF
 
+#define ADDR_BAD 0x7777
+
 extern byte pia_mem[RAM_SIZE];
 extern byte cart_mem[CART_SIZE];
 
