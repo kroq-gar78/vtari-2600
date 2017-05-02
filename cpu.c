@@ -8,6 +8,7 @@
 #include "mem.h"
 
 int pc = 0x1000;
+int next_pc = 0x1002;
 byte reg_a = 0;
 byte reg_x = 0;
 byte reg_y = 0;
@@ -176,13 +177,14 @@ int main(int argc, char* argv[])
     {
         int addr_mode = addr_modes[mem_get8(pc)];
         printf("pc %x inst %x\n", pc, mem_get8(pc));
+        next_pc = pc + addr_mode_len[addr_mode];
 
         // fetch and execute
         F2 inst = opcodes[mem_get8(pc)];
         (*inst)(pc, addr_mode);
 
         //printf("len %d\n", addr_mode_len[addr_mode]);
-        pc += addr_mode_len[addr_mode];
+        pc = next_pc;
     }
 
 
@@ -418,10 +420,11 @@ int _transfer(byte* a, byte* b)
 // they take in the address of the start of the operands
 ushrt addr_abs(ushrt addr)
 {
-    ushrt b0 = mem_get8(addr);
+    /*ushrt b0 = mem_get8(addr);
     ushrt b1 = mem_get8(addr);
 
-    return (b1<<8) | (b0 & 0xff);
+    return (b1<<8) | (b0 & 0xff);*/
+    return mem_get16(addr);
 }
 ushrt addr_abs_x(ushrt addr)
 {
@@ -968,7 +971,8 @@ short inst_jmp(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
-    MISSING();
+    printf("jmp to %x addr_e %x\n", val_16, addr_e);
+    next_pc = addr_e;
     return 0;
 }
 short inst_jsr(ushrt addr, int addr_mode)
