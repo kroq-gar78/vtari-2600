@@ -7,12 +7,12 @@
 #include "cpu.h"
 #include "mem.h"
 
-int pc;
-byte reg_a;
-byte reg_x;
-byte reg_y;
-byte sp;
-byte reg_p = 0x20;
+int pc = 0x1000;
+byte reg_a = 0;
+byte reg_x = 0;
+byte reg_y = 0;
+byte sp = 0;
+byte reg_p = 0x20; // unused bit is 1
 byte* mmap_p; // pointer to mmap'd file
 
 ushrt addr_abs(ushrt addr);
@@ -30,6 +30,9 @@ ushrt addr_impl(ushrt addr); // for compatibility
 
 // map of address mode to function pointer
 F1 addr_mode_f[12] = {addr_abs, addr_abs_x, addr_abs_y, addr_ind, addr_x_ind, addr_ind_y, addr_rel, addr_zpg, addr_zpg_x, addr_zpg_y, addr_imm, addr_impl};
+
+// len of an instruction with a given address mode
+ushrt addr_mode_len[12] = {3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 1};
 
 short inst_adc(ushrt addr, int addr_mode);
 short inst_and(ushrt addr, int addr_mode);
@@ -166,6 +169,16 @@ int main(int argc, char* argv[])
     }
 
     mmap_p = ldr_mmap_file(argv[1]);
+    
+
+    // EXECUTION
+    while(opcodes[mem_get8(pc)] != inst_brk)
+    {
+        printf("pc %x inst %x\n", pc, mem_get8(pc));
+        pc += addr_mode_len[mem_get8(pc)];
+    }
+
+
 
     if(munmap(mmap_p, st.st_size) == -1)
     {

@@ -54,6 +54,7 @@ byte mem_get8(ushrt addr)
 {
     // all memory is mirrored every 0x2000 bytes
     addr &= (MEM_MAX-1);
+    //printf("addr %x\n", addr);
 
     // TIA mirrors
     if((addr & 0x1080) == 0)
@@ -72,9 +73,10 @@ byte mem_get8(ushrt addr)
         MISSING();
     }
     // cartridge mirrors
-    else if((addr & 0x2000) == 0x2000)
+    else if((addr & 0x1000) == 0x1000)
     {
         addr &= 0xfff;
+        //printf("ROM addr %x\n", addr);
         return cart_mem[addr];
     }
 
