@@ -244,7 +244,7 @@ int main(int argc, char* argv[])
             {
                 for(int x = h_start; x < h_end; x++)
                 {
-                    int color = ntsc_rgb[tia_display[y][x]];
+                    int color = ntsc_rgb[tia_display[y][x]>>1];
                     SDL_SetRenderDrawColor(renderer, color&0xff, (color>>8)&0xff, (color>>16)&0xff, 0);
                     // rectangle from: http://stackoverflow.com/a/21903973
                     SDL_Rect r;
