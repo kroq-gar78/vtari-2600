@@ -67,6 +67,8 @@ void tia_write(ushrt addr, byte value)
         case VBLANK:
             break;
         case WSYNC:
+            cpu_halted = true;
+            tia_state = TIA_STATE_WSYNC;
             break;
         case RSYNC:
             break;
