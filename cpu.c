@@ -4,6 +4,8 @@
 
 #include <fcntl.h> // file control
 
+#include <SDL.h>
+
 #include "cpu.h"
 #include "mem.h"
 #include "tia.h"
@@ -190,6 +192,22 @@ int main(int argc, char* argv[])
         exit(1);
     }
 
+    // http://stackoverflow.com/a/35989490
+    SDL_Event event;
+    SDL_Renderer* renderer;
+    SDL_Window* window;
+
+    SDL_Init(SDL_INIT_VIDEO);
+    SDL_CreateWindowAndRenderer(NTSC_WIDTH, NTSC_HEIGHT, 0, &window, &renderer);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+    SDL_RenderClear(renderer);
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+    for(int i = 0; i < NTSC_HEIGHT; i++)
+    {
+        SDL_RenderDrawPoint(renderer, i, i);
+    }
+    SDL_RenderPresent(renderer);
+
     mmap_p = ldr_mmap_file(argv[1]);
 
     // according to randomterrain.com, this contains the entrypoint
@@ -220,9 +238,23 @@ int main(int argc, char* argv[])
             //printf("len %d\n", addr_mode_len[addr_mode]);
             pc = next_pc;
         }
+
+        if((cycle % (NTSC_HEIGHT*NTSC_WIDTH)) == 0)
+        {
+            SDL_Delay(17); // 17 ms ~= 60Hz
+        }
+
+        // render once every full frame drawn; multiply by 3 to guarantee its divisibility by 3
+        cycle = (cycle + 1)%(NTSC_HEIGHT*NTSC_WIDTH*3);
+        if(SDL_PollEvent(&event) && event.type == SDL_QUIT)
+        {
+            break;
+        }
     }
 
-
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
 
     if(munmap(mmap_p, st.st_size) == -1)
     {
@@ -234,7 +266,6 @@ int main(int argc, char* argv[])
 }
 
 
-        cycle = (cycle + 1)%(NTSC_HEIGHT*NTSC_WIDTH*3);
 
 // flag setter helper methods
 bool setflag_z(byte num)
