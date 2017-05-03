@@ -23,7 +23,7 @@ test: ${RESFILES}
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(TARGET): $(OBJECTS) Makefile
-	$(CC) $(CFLAGS) -o $(TARGET) $(OBJECTS)
+	$(CC) $(OBJECTS) $(CFLAGS) -o $(TARGET)
 
 ${OUTFILES} : %.out : %.ok % $(TARGET)
 	./$(TARGET) $* > $*.out
