@@ -69,6 +69,7 @@
 
 #define NTSC_WIDTH 228
 #define NTSC_HEIGHT 262
+#define WINDOW_ZOOM 2
 
 #define TIA_STATE_NORMAL 0
 #define TIA_STATE_WSYNC 1

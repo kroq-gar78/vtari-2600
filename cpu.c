@@ -198,7 +198,7 @@ int main(int argc, char* argv[])
     SDL_Window* window;
 
     SDL_Init(SDL_INIT_VIDEO);
-    SDL_CreateWindowAndRenderer(NTSC_HEIGHT, NTSC_WIDTH, 0, &window, &renderer);
+    SDL_CreateWindowAndRenderer(NTSC_HEIGHT*WINDOW_ZOOM, NTSC_WIDTH*WINDOW_ZOOM, 0, &window, &renderer);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
     SDL_RenderClear(renderer);
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
@@ -241,19 +241,23 @@ int main(int argc, char* argv[])
 
         if((cycle % (NTSC_HEIGHT*NTSC_WIDTH)) == 0)
         {
+            int v_start = 40;
+            int v_end = 232;
+            int h_start = 68;
+            int h_end = 288;
             // go through the grid and set colors
-            for(int y = 0; y < NTSC_HEIGHT; y++)
+            for(int y = v_start; y < v_end; y++)
             {
-                for(int x = 0; x < NTSC_HEIGHT; x++)
+                for(int x = h_start; x < h_end; x++)
                 {
                     int color = ntsc_rgb[tia_display[y][x]];
                     SDL_SetRenderDrawColor(renderer, color>>16, (color>>8)&0xff, (color)&0xff, 0);
                     // rectangle from: http://stackoverflow.com/a/21903973
                     SDL_Rect r;
-                    r.x = x;
-                    r.y = y;
-                    r.w = 1;
-                    r.h = 1;
+                    r.x = x*WINDOW_ZOOM;
+                    r.y = y*WINDOW_ZOOM;
+                    r.w = WINDOW_ZOOM;
+                    r.h = WINDOW_ZOOM;
                     SDL_RenderFillRect(renderer, &r);
                 }
             }
@@ -268,6 +272,10 @@ int main(int argc, char* argv[])
         {
             break;
         }
+    }
+    if(opcodes[mem_get8(pc)] == inst_brk)
+    {
+        printf("BRK (exit)");
     }
 
     SDL_DestroyRenderer(renderer);
