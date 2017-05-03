@@ -578,9 +578,9 @@ ushrt addr_ind_y(ushrt addr)
 ushrt addr_rel(ushrt addr)
 {
     short rel = mem_get8(addr);
-    if(rel & 0x70)
+    if(rel & 0x70) // make sure to sign extend!
     {
-        rel |= 0xff;
+        rel |= (0xff)<<8;
     }
     return next_pc + rel;
 }
