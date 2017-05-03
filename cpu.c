@@ -129,7 +129,8 @@ ADDRMODE_REL, ADDRMODE_IND_Y, -1, -1, -1, ADDRMODE_ZPG_X, ADDRMODE_ZPG_X, -1, AD
 
 
 // from ruby2600: lib/ruby2600/cpu.rb
-int opcodes_cycles[256] = {7, 6, 0, 8, 3, 3, 5, 5, 3, 2, 2, 2, 4, 4, 6, 6,
+int opcodes_cycles[256] = 
+ {7, 6, 0, 8, 3, 3, 5, 5, 3, 2, 2, 2, 4, 4, 6, 6,
   2, 5, 0, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,
   6, 6, 0, 8, 3, 3, 5, 5, 4, 2, 2, 2, 4, 4, 6, 6,
   2, 5, 0, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,
@@ -192,20 +193,27 @@ int main(int argc, char* argv[])
     // according to randomterrain.com, this contains the entrypoint
     pc = mem_get16(0xfffc);
 
+    int cpu_cycles_left = opcodes_cycles[mem_get8(pc)];
+
     // EXECUTION
     while(opcodes[mem_get8(pc)] != inst_brk)
     {
-        int addr_mode = addr_modes[mem_get8(pc)];
-        printf("pc %x inst %x\n", pc, mem_get8(pc));
-        printf("A %x X %x Y %x\n", reg_a, reg_x, reg_y);
-        next_pc = pc + addr_mode_len[addr_mode];
+        if(--cpu_cycles_left <= 0)
+        {
+            byte inst_opcode = mem_get8(pc);
+            int addr_mode = addr_modes[inst_opcode];
+            printf("pc %x inst %x\n", pc, mem_get8(pc));
+            printf("A %x X %x Y %x\n", reg_a, reg_x, reg_y);
+            next_pc = pc + addr_mode_len[addr_mode];
+            cpu_cycles_left = opcodes_cycles[inst_opcode];
 
-        // fetch and execute
-        F2 inst = opcodes[mem_get8(pc)];
-        (*inst)(pc, addr_mode);
+            // fetch and execute
+            F2 inst = opcodes[inst_opcode];
+            (*inst)(pc, addr_mode);
 
-        //printf("len %d\n", addr_mode_len[addr_mode]);
-        pc = next_pc;
+            //printf("len %d\n", addr_mode_len[addr_mode]);
+            pc = next_pc;
+        }
     }
 
 
