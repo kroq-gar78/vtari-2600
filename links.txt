@@ -2,6 +2,7 @@
 Sources:
  * kernels (for testing image rendering): http://www.randomterrain.com/atari-2600-memories-tutorial-andrew-davie-08.html
  * `macro.h` and `vcs.h`: from DASM
+ * Jake Crouch for catching R and B being swapped in the color palette
 
 
 # Other sources
