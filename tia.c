@@ -64,6 +64,12 @@ void tia_write(ushrt addr, byte value)
     switch(addr)
     {
         case VSYNC:
+            printf("TIA: VSYNC at (%d,%d)\n", tia_x, tia_y);
+            if(value != 0x0)
+            {
+                tia_x = 0;
+                tia_y = 0;
+            }
             break;
         case VBLANK:
             if(value != 0) printf("TIA: VBLANK at (%d,%d)\n", tia_x, tia_y);

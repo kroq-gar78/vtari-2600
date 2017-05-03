@@ -215,6 +215,12 @@ int main(int argc, char* argv[])
     int cycle = 0;
     tia_init();
 
+    /*int getwindowsize_h;
+    int getwindowsize_w;
+    SDL_GetWindowSize(window, &getwindowsize_w, &getwindowsize_h);
+    printf("Screen size: %dh %dw\n", getwindowsize_h, getwindowsize_w);
+    printf("should be:   %dh %dw\n", (v_end-v_start), (h_end-h_start));*/
+
     // EXECUTION
     while(opcodes[mem_get8(pc)] != inst_brk)
     {
