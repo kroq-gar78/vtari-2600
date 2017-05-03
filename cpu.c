@@ -275,7 +275,7 @@ int main(int argc, char* argv[])
     }
     if(opcodes[mem_get8(pc)] == inst_brk)
     {
-        printf("BRK (exit)");
+        printf("BRK (exit) pc %x\n", pc);
     }
 
     SDL_DestroyRenderer(renderer);
@@ -578,6 +578,10 @@ ushrt addr_ind_y(ushrt addr)
 ushrt addr_rel(ushrt addr)
 {
     short rel = mem_get8(addr);
+    if(rel & 0x70)
+    {
+        rel |= 0xff;
+    }
     return next_pc + rel;
 }
 ushrt addr_zpg(ushrt addr)
