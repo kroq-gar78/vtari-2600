@@ -172,7 +172,7 @@ void tia_tick()
     //MISSING();
     
     // TODO: more things than just background
-
+    tia_display[tia_y][tia_x] = tia_mem[COLUBK];
 
     tia_x = (tia_x+1)%NTSC_WIDTH;
     // new scanline

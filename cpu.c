@@ -198,7 +198,7 @@ int main(int argc, char* argv[])
     SDL_Window* window;
 
     SDL_Init(SDL_INIT_VIDEO);
-    SDL_CreateWindowAndRenderer(NTSC_WIDTH, NTSC_HEIGHT, 0, &window, &renderer);
+    SDL_CreateWindowAndRenderer(NTSC_HEIGHT, NTSC_WIDTH, 0, &window, &renderer);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
     SDL_RenderClear(renderer);
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
@@ -241,7 +241,25 @@ int main(int argc, char* argv[])
 
         if((cycle % (NTSC_HEIGHT*NTSC_WIDTH)) == 0)
         {
-            SDL_Delay(17); // 17 ms ~= 60Hz
+            // go through the grid and set colors
+            for(int y = 0; y < NTSC_HEIGHT; y++)
+            {
+                for(int x = 0; x < NTSC_HEIGHT; x++)
+                {
+                    int color = ntsc_rgb[tia_display[y][x]];
+                    SDL_SetRenderDrawColor(renderer, color>>16, (color>>8)&0xff, (color)&0xff, 0);
+                    // rectangle from: http://stackoverflow.com/a/21903973
+                    SDL_Rect r;
+                    r.x = x;
+                    r.y = y;
+                    r.w = 1;
+                    r.h = 1;
+                    SDL_RenderFillRect(renderer, &r);
+                }
+            }
+
+            SDL_RenderPresent(renderer);
+            SDL_Delay(17); // 17 ms ~= 60Hz; guarantee max 60Hz framerate
         }
 
         // render once every full frame drawn; multiply by 3 to guarantee its divisibility by 3
