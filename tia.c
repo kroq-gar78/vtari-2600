@@ -64,7 +64,7 @@ void tia_write(ushrt addr, byte value)
     switch(addr)
     {
         case VSYNC:
-            printf("TIA: VSYNC at (%d,%d)\n", tia_x, tia_y);
+            //printf("TIA: VSYNC at (%d,%d)\n", tia_x, tia_y);
             if(value != 0x0)
             {
                 tia_x = 0;
@@ -72,7 +72,7 @@ void tia_write(ushrt addr, byte value)
             }
             break;
         case VBLANK:
-            if(value != 0) printf("TIA: VBLANK at (%d,%d)\n", tia_x, tia_y);
+            //if(value != 0) printf("TIA: VBLANK at (%d,%d)\n", tia_x, tia_y);
             break;
         case WSYNC:
             cpu_halted = true;
@@ -178,12 +178,7 @@ void tia_init()
 
 void tia_tick()
 {
-    // do rendering things
-    // asdfadsf
-    // asdfasdf
-    //MISSING();
-    
-    // TODO: more things than just background
+    // BACKGROUND
     byte bgcolor = tia_mem[COLUBK];
     if(tia_mem[VBLANK])
     {
@@ -191,9 +186,17 @@ void tia_tick()
     }
     tia_display[tia_y][tia_x] = bgcolor;
 
+    // PLAYFIELD
+    uint64_t pf = (tia_mem[PF0]<<16) | (tia_mem[PF1]<<8) | (tia_mem[PF2]);
+    if(1<<(40-(tia_x>>2)) & pf)
+    {
+        tia_display[tia_y][tia_x] = tia_mem[COLUPF];
+        printf("TIA: playfield (%d, %d)\n", tia_x, tia_y);
+    }
+
+    // update TIA beam position
     tia_x = (tia_x+1)%NTSC_WIDTH;
-    // new scanline
-    if(tia_x == 0)
+    if(tia_x == 0) // new scanline
     {
         tia_y++;
         if(tia_state == TIA_STATE_WSYNC)

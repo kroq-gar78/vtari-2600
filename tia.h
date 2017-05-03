@@ -1,6 +1,8 @@
 #ifndef TIA_H
 #define TIA_H
 
+#include <stdint.h>
+
 #include "cpu.h"
 #include "mem.h"
 
