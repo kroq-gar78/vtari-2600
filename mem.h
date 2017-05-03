@@ -6,7 +6,7 @@
 #define RAM_SIZE 128
 #define CART_SIZE (1<<12)
 #define MEM_MAX (1<<13)
-#define TIA_SIZE 0xF
+#define TIA_SIZE 0x3E
 
 #define ADDR_BAD 0x7777
 

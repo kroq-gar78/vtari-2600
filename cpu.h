@@ -52,4 +52,6 @@ extern byte reg_y;
 extern byte sp;
 extern byte reg_p; // status register
 
+extern bool cpu_halted;
+
 #endif

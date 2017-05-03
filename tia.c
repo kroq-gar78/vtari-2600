@@ -4,8 +4,12 @@
 #include "mem.h"
 #include "tia.h"
 
+int tia_state;
+int tia_x;
+int tia_y;
+
 byte tia_mem[TIA_SIZE];
-byte screen_colors[NTSC_HEIGHT][NTSC_WIDTH];
+byte tia_display[NTSC_HEIGHT][NTSC_WIDTH];
 
 
 // from javatari.js: src/main/atari/tia/TiaPalettes.js
@@ -44,9 +48,10 @@ byte tia_read(ushrt addr)
             break;
         default:
             printf("TIA: unknown read addr 0x%x\n", addr);
+            return 0;
     }
 
-    return 0;
+    return tia_mem[addr];
 }
 
 void tia_write(ushrt addr, byte value)
@@ -149,5 +154,36 @@ void tia_write(ushrt addr, byte value)
             break;
         default:
             printf("TIA: unknown write addr 0x%x val 0x%x\n", addr, value);
+            return;
     }
+    tia_mem[addr] = value;
+}
+
+void tia_init()
+{
+    tia_state = TIA_STATE_NORMAL;
+}
+
+void tia_tick()
+{
+    // do rendering things
+    // asdfadsf
+    // asdfasdf
+    //MISSING();
+    
+    // TODO: more things than just background
+
+
+    tia_x = (tia_x+1)%NTSC_WIDTH;
+    // new scanline
+    if(tia_x == 0)
+    {
+        tia_y++;
+        if(tia_state == TIA_STATE_WSYNC)
+        {
+            cpu_halted = false;
+            tia_state = TIA_STATE_NORMAL;
+        }
+    }
+    tia_y %= NTSC_HEIGHT;
 }

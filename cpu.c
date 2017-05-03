@@ -6,6 +6,7 @@
 
 #include "cpu.h"
 #include "mem.h"
+#include "tia.h"
 
 ushrt pc = 0x1000;
 ushrt next_pc = 0x1002;
@@ -14,6 +15,7 @@ byte reg_x = 0;
 byte reg_y = 0;
 byte sp = 0xff;
 byte reg_p = 0x20; // unused bit is 1
+bool cpu_halted = false;
 byte* mmap_p; // pointer to mmap'd file
 
 ushrt addr_abs(ushrt addr);
@@ -194,11 +196,15 @@ int main(int argc, char* argv[])
     pc = mem_get16(0xfffc);
 
     int cpu_cycles_left = opcodes_cycles[mem_get8(pc)];
+    int cycle = 0;
+    tia_init();
 
     // EXECUTION
     while(opcodes[mem_get8(pc)] != inst_brk)
     {
-        if(--cpu_cycles_left <= 0)
+        tia_tick();
+
+        if((cycle%3 == 0) && !cpu_halted && (--cpu_cycles_left <= 0))
         {
             byte inst_opcode = mem_get8(pc);
             int addr_mode = addr_modes[inst_opcode];
@@ -228,6 +234,7 @@ int main(int argc, char* argv[])
 }
 
 
+        cycle = (cycle + 1)%(NTSC_HEIGHT*NTSC_WIDTH*3);
 
 // flag setter helper methods
 bool setflag_z(byte num)

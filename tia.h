@@ -70,11 +70,21 @@
 #define NTSC_WIDTH 228
 #define NTSC_HEIGHT 262
 
+#define TIA_STATE_NORMAL 0
+#define TIA_STATE_WSYNC 1
+
+extern int tia_state;
+extern int tia_x;
+extern int tia_y;
+
 extern byte tia_mem[TIA_SIZE];
-extern byte screen_colors[NTSC_HEIGHT][NTSC_WIDTH];
+extern byte tia_display[NTSC_HEIGHT][NTSC_WIDTH];
 extern int ntsc_rgb[128];
 
 extern byte tia_read(ushrt addr);
 extern void tia_write(ushrt addr, byte value);
+
+extern void tia_init();
+extern void tia_tick();
 
 #endif
