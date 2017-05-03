@@ -6,3 +6,4 @@
 *.diff
 testdir/*
 cpu
+graphics_test
