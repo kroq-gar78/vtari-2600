@@ -5,8 +5,8 @@
 #include "tia.h"
 
 int tia_state;
-int tia_x;
-int tia_y;
+int tia_x = 0;
+int tia_y = 0;
 
 byte tia_mem[TIA_SIZE];
 byte tia_display[NTSC_HEIGHT][NTSC_WIDTH];
@@ -165,6 +165,8 @@ void tia_write(ushrt addr, byte value)
 void tia_init()
 {
     tia_state = TIA_STATE_NORMAL;
+    tia_x = 0;
+    tia_y = 0;
 }
 
 void tia_tick()

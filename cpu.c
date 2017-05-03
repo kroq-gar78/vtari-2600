@@ -192,21 +192,19 @@ int main(int argc, char* argv[])
         exit(1);
     }
 
+    // account for the blanks, overscan, etc.
+    int v_start = 40;
+    int v_end = 232;
+    int h_start = 68;
+    int h_end = 228;
+
     // http://stackoverflow.com/a/35989490
     SDL_Event event;
     SDL_Renderer* renderer;
     SDL_Window* window;
 
     SDL_Init(SDL_INIT_VIDEO);
-    SDL_CreateWindowAndRenderer(NTSC_HEIGHT*WINDOW_ZOOM, NTSC_WIDTH*WINDOW_ZOOM, 0, &window, &renderer);
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-    SDL_RenderClear(renderer);
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-    for(int i = 0; i < NTSC_HEIGHT; i++)
-    {
-        SDL_RenderDrawPoint(renderer, i, i);
-    }
-    SDL_RenderPresent(renderer);
+    SDL_CreateWindowAndRenderer((h_end-h_start)*WINDOW_ZOOM, (v_end-v_start)*WINDOW_ZOOM, 0, &window, &renderer);
 
     mmap_p = ldr_mmap_file(argv[1]);
 
@@ -241,10 +239,6 @@ int main(int argc, char* argv[])
 
         if((cycle % (NTSC_HEIGHT*NTSC_WIDTH)) == 0)
         {
-            int v_start = 40;
-            int v_end = 232;
-            int h_start = 68;
-            int h_end = 288;
             // go through the grid and set colors
             for(int y = v_start; y < v_end; y++)
             {
@@ -254,8 +248,8 @@ int main(int argc, char* argv[])
                     SDL_SetRenderDrawColor(renderer, color&0xff, (color>>8)&0xff, (color>>16)&0xff, 0);
                     // rectangle from: http://stackoverflow.com/a/21903973
                     SDL_Rect r;
-                    r.x = x*WINDOW_ZOOM;
-                    r.y = y*WINDOW_ZOOM;
+                    r.x = (x-h_start)*WINDOW_ZOOM;
+                    r.y = (y-v_start)*WINDOW_ZOOM;
                     r.w = WINDOW_ZOOM;
                     r.h = WINDOW_ZOOM;
                     SDL_RenderFillRect(renderer, &r);
