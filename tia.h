@@ -67,7 +67,12 @@
 #define INPT3 0x3B
 #define INPT4 0x3C
 
+#define NTSC_WIDTH 228
+#define NTSC_HEIGHT 262
+
 extern byte tia_mem[TIA_SIZE];
+extern byte screen_colors[NTSC_HEIGHT][NTSC_WIDTH];
+extern int ntsc_rgb[128];
 
 extern byte tia_read(ushrt addr);
 extern void tia_write(ushrt addr, byte value);
