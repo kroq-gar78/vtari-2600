@@ -66,6 +66,7 @@ void tia_write(ushrt addr, byte value)
         case VSYNC:
             break;
         case VBLANK:
+            if(value != 0) printf("TIA: VBLANK at (%d,%d)\n", tia_x, tia_y);
             break;
         case WSYNC:
             cpu_halted = true;
@@ -177,7 +178,12 @@ void tia_tick()
     //MISSING();
     
     // TODO: more things than just background
-    tia_display[tia_y][tia_x] = tia_mem[COLUBK];
+    byte bgcolor = tia_mem[COLUBK];
+    if(tia_mem[VBLANK])
+    {
+        bgcolor = tia_mem[0];
+    }
+    tia_display[tia_y][tia_x] = bgcolor;
 
     tia_x = (tia_x+1)%NTSC_WIDTH;
     // new scanline
