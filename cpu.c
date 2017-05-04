@@ -483,6 +483,12 @@ int _push(byte val)
 
     return sp;
 }
+int _push16(ushrt val) // for pushing the PC
+{
+    _push(val>>8);
+    _push(val&0xff);
+    return sp;
+}
 
 int _pull() // like pop?
 {
@@ -493,6 +499,12 @@ int _pull() // like pop?
     byte result = mem_get8(++sp);
 
     return result;
+}
+int _pull16()
+{
+    ushrt ret = _pull(); // lower byte
+    ret |= (_pull() << 8); // higher byte
+    return ret;
 }
 
 int _rol(byte a)
@@ -1158,7 +1170,7 @@ short inst_jsr(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
-    _push(next_pc);
+    _push16(next_pc);
     printf("jsr to %x addr_e %x\n", val_16, addr_e);
     next_pc = addr_e;
     return 0;
@@ -1462,7 +1474,7 @@ short inst_rts(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
-    pc = _pull();
+    next_pc = _pull16();
     return 0;
 }
 short inst_sbc(ushrt addr, int addr_mode)
