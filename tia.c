@@ -119,6 +119,7 @@ void tia_write(ushrt addr, byte value)
             tia_state |= TIA_STATE_RESP0;
             break;
         case RESP1:
+            tia_state |= TIA_STATE_RESP1;
             break;
         case RESM0:
             break;
@@ -224,7 +225,7 @@ void tia_tick()
     {
         bit = x_pf_pixel%20;
     }
-    printf("TIA: pf bits 0x%lx y_ctrd %d x_ctrd %d\n", pf&0xfffff, y_ctrd, x_ctrd);
+    //printf("TIA: pf bits 0x%lx y_ctrd %d x_ctrd %d\n", pf&0xfffff, y_ctrd, x_ctrd);
 
     if(1<<bit & pf)
     {
@@ -259,13 +260,26 @@ void tia_tick()
             if(tia_mem[GRP0] & 1<<(bit))
             {
                 tia_display[tia_y][tia_x] = tia_mem[COLUP0];
-                printf("TIA: RESP0\n");
+                //printf("TIA: RESP0\n");
             }
         }
     }
     if(tia_state & TIA_STATE_RESP1)
     {
-        // TODO: fill in
+        int cycles_since = tia_x - tia_mem[RESP1];
+        if(cycles_since >= 8) // done rendering P1 for this scanline
+        {
+            tia_state &= ~TIA_STATE_RESP1;
+        }
+        else // otherwise, render the sprite
+        {
+            bit = 8-cycles_since-1;
+            if(tia_mem[GRP1] & 1<<(bit))
+            {
+                tia_display[tia_y][tia_x] = tia_mem[COLUP1];
+                //printf("TIA: RESP1\n");
+            }
+        }
     }
 
 
@@ -280,6 +294,8 @@ void tia_tick()
             //tia_state = TIA_STATE_NORMAL;
             tia_state &= ~TIA_STATE_WSYNC;
         }
+        // if we were rendering sprite, stop rendering
+        tia_state &= (~TIA_STATE_RESP0 & ~TIA_STATE_RESP1 & ~TIA_STATE_RESM0 & ~TIA_STATE_RESM1 & TIA_STATE_RESBL);
     }
     tia_y %= NTSC_HEIGHT;
 }
