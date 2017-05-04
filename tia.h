@@ -82,8 +82,14 @@
 #define PF_WIDTH 40 // 40 playfield pixels per scanline
 
 // states for the TIA
-#define TIA_STATE_NORMAL 0
-#define TIA_STATE_WSYNC 1
+// make these powers of 2 in case it can be multiple states at once
+#define TIA_STATE_NORMAL 1
+#define TIA_STATE_WSYNC 2
+#define TIA_STATE_RESP0 2<<2
+#define TIA_STATE_RESP1 2<<3
+#define TIA_STATE_RESM0 2<<4
+#define TIA_STATE_RESM1 2<<5
+#define TIA_STATE_RESBL 2<<6
 
 extern int tia_state;
 extern int tia_x;

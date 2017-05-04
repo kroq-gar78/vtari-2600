@@ -210,6 +210,7 @@ int main(int argc, char* argv[])
 
     // according to randomterrain.com, this contains the entrypoint
     pc = mem_get16(0xfffc);
+    printf("entrypoint 0x%x\n", pc);
 
     int cpu_cycles_left = opcodes_cycles[mem_get8(pc)];
     int cycle = 0;

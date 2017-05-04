@@ -116,6 +116,7 @@ void tia_write(ushrt addr, byte value)
         case PF2:
             break;
         case RESP0:
+            tia_state |= TIA_STATE_RESP0;
             break;
         case RESP1:
             break;
@@ -177,7 +178,16 @@ void tia_write(ushrt addr, byte value)
             printf("TIA: unknown write addr 0x%x val 0x%x\n", addr, value);
             return;
     }
-    tia_mem[addr] = value;
+
+    // if a sprite reset, use the memory location to store the starting x-coordinate
+    if(addr != RESP0 && addr != RESP1 && addr != RESM0 && addr != RESM1 && addr != RESBL)
+    {
+        tia_mem[addr] = value;
+    }
+    else
+    {
+        tia_mem[addr] = tia_x;
+    }
 }
 
 void tia_init()
@@ -195,7 +205,7 @@ void tia_tick()
 
     // BACKGROUND
     byte bgcolor = tia_mem[COLUBK];
-    if(tia_mem[VBLANK])
+    if(tia_mem[VBLANK]) // TODO: for all graphics, or just BG?
     {
         bgcolor = tia_mem[0];
     }
@@ -208,7 +218,7 @@ void tia_tick()
     int x_pf_pixel = x_ctrd/PF_PIXEL;
     if(x_pf_pixel < (PF_WIDTH>>1) || (tia_mem[CTRLPF] & 1) == 0)
     {
-        bit = (PF_WIDTH>>1)-x_pf_pixel%20-1;
+        bit = (PF_WIDTH>>1)-x_pf_pixel%20-1; // off by one error!!!
     }
     else // this happens if we're in the 2nd half, and mirroring/reflecting is on
     {
@@ -229,15 +239,46 @@ void tia_tick()
         //printf("TIA: playfield (%d, %d)\n", tia_x, tia_y);
     }
 
+    if(tia_mem[CTRLPF] & (1<<2)) // playfield priority over sprites
+    {
+        MISSING();
+    }
+
+    
+    // SPRITES
+    if(tia_state & TIA_STATE_RESP0)
+    {
+        int cycles_since = tia_x - tia_mem[RESP0];
+        if(cycles_since >= 8) // done rendering P0 for this scanline
+        {
+            tia_state &= ~TIA_STATE_RESP0;
+        }
+        else // otherwise, render the sprite
+        {
+            bit = 8-cycles_since-1;
+            if(tia_mem[GRP0] & 1<<(bit))
+            {
+                tia_display[tia_y][tia_x] = tia_mem[COLUP0];
+                printf("TIA: RESP0\n");
+            }
+        }
+    }
+    if(tia_state & TIA_STATE_RESP1)
+    {
+        // TODO: fill in
+    }
+
+
     // update TIA beam position
     tia_x = (tia_x+1)%NTSC_WIDTH;
     if(tia_x == 0) // new scanline
     {
         tia_y++;
-        if(tia_state == TIA_STATE_WSYNC)
+        if(tia_state & TIA_STATE_WSYNC)
         {
             cpu_halted = false;
-            tia_state = TIA_STATE_NORMAL;
+            //tia_state = TIA_STATE_NORMAL;
+            tia_state &= ~TIA_STATE_WSYNC;
         }
     }
     tia_y %= NTSC_HEIGHT;
