@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 
 #include "mem.h"
 #include "tia.h"
@@ -187,11 +188,12 @@ void tia_tick()
     tia_display[tia_y][tia_x] = bgcolor;
 
     // PLAYFIELD
+    // TODO: normalize pixels so that they only render in the middle part of the screen
     uint64_t pf = ((tia_mem[PF0]&0xf)<<16) | (tia_mem[PF1]<<8) | (tia_mem[PF2]);
     int bit = 0;
-    if(tia_mem[CTRLPF] & 1) // mirror
+    if(tia_mem[CTRLPF] & 1) // mirror (reflect horizontally across the middle)
     {
-        bit = (tia_x/PF_PIXEL)%20;
+        bit = abs((PF_WIDTH>>1)-(tia_x/PF_PIXEL));
     }
     else // copy
     {
