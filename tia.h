@@ -72,6 +72,10 @@
 // dimensions and sizes
 #define NTSC_WIDTH 228
 #define NTSC_HEIGHT 262
+#define DISPLAY_H_START 68 // horizontal start
+#define DISPLAY_H_END 228 // horizontal end
+#define DISPLAY_V_START 40 // vertical start (going down)
+#define DISPLAY_V_END 232 // vertical end
 #define WINDOW_ZOOM 2
 #define PF_PIXEL 4 // 4 color cycles per playfield pixel
 #define PF_WIDTH 40 // 40 playfield pixels per scanline

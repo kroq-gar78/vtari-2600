@@ -19,3 +19,4 @@ http://www.emulator101.com.s3-website-us-east-1.amazonaws.com/6502-addressing-mo
 http://lazyfoo.net/tutorials/SDL/01_hello_SDL/index2.php
 https://gamedev.stackexchange.com/a/77833
 http://atariage.com/forums/topic/107527-atari-2600-vsyncvblank/
+http://stackoverflow.com/a/2603254

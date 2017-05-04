@@ -193,10 +193,10 @@ int main(int argc, char* argv[])
     }
 
     // account for the blanks, overscan, etc.
-    int v_start = 40;
-    int v_end = 232;
-    int h_start = 68;
-    int h_end = 228;
+    int v_start = DISPLAY_V_START;
+    int v_end = DISPLAY_V_END;
+    int h_start = DISPLAY_H_START;
+    int h_end = DISPLAY_H_END;
 
     // http://stackoverflow.com/a/35989490
     SDL_Event event;
