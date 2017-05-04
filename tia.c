@@ -187,12 +187,28 @@ void tia_tick()
     tia_display[tia_y][tia_x] = bgcolor;
 
     // PLAYFIELD
-    uint64_t pf = (tia_mem[PF0]<<16) | (tia_mem[PF1]<<8) | (tia_mem[PF2]);
-    int bit = PF_WIDTH/2-(tia_x/PF_PIXEL)%20;
+    uint64_t pf = ((tia_mem[PF0]&0xf)<<16) | (tia_mem[PF1]<<8) | (tia_mem[PF2]);
+    int bit = 0;
+    if(tia_mem[CTRLPF] & 1) // mirror
+    {
+        bit = (tia_x/PF_PIXEL)%20;
+    }
+    else // copy
+    {
+        bit = (PF_WIDTH>>1)-(tia_x/PF_PIXEL)%20;
+    }
+
     if(1<<bit & pf)
     {
-        tia_display[tia_y][tia_x] = tia_mem[COLUPF];
-        printf("TIA: playfield (%d, %d)\n", tia_x, tia_y);
+        if(tia_mem[CTRLPF] & (1<<1)) // left half COLUP0, right half COLUP1
+        {
+            MISSING();
+        }
+        else // all PF same color
+        {
+            tia_display[tia_y][tia_x] = tia_mem[COLUPF];
+        }
+        //printf("TIA: playfield (%d, %d)\n", tia_x, tia_y);
     }
 
     // update TIA beam position
