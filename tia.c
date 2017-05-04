@@ -188,7 +188,8 @@ void tia_tick()
 
     // PLAYFIELD
     uint64_t pf = (tia_mem[PF0]<<16) | (tia_mem[PF1]<<8) | (tia_mem[PF2]);
-    if(1<<(40-(tia_x>>2)) & pf)
+    int bit = PF_WIDTH/2-(tia_x/PF_PIXEL)%20;
+    if(1<<bit & pf)
     {
         tia_display[tia_y][tia_x] = tia_mem[COLUPF];
         printf("TIA: playfield (%d, %d)\n", tia_x, tia_y);

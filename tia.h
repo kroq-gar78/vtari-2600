@@ -69,10 +69,14 @@
 #define INPT3 0x3B
 #define INPT4 0x3C
 
+// dimensions and sizes
 #define NTSC_WIDTH 228
 #define NTSC_HEIGHT 262
 #define WINDOW_ZOOM 2
+#define PF_PIXEL 4 // 4 color cycles per playfield pixel
+#define PF_WIDTH 40 // 40 playfield pixels per scanline
 
+// states for the TIA
 #define TIA_STATE_NORMAL 0
 #define TIA_STATE_WSYNC 1
 
