@@ -76,7 +76,8 @@
 #define DISPLAY_H_END 228 // horizontal end
 #define DISPLAY_V_START 40 // vertical start (going down)
 #define DISPLAY_V_END 232 // vertical end
-#define WINDOW_ZOOM 2
+#define COLOR_CLOCK_WIDTH 2 // pixels per color cycle
+#define WINDOW_ZOOM 2 // multiplier for both horizontal and vertical dims
 #define PF_PIXEL 4 // 4 color cycles per playfield pixel
 #define PF_WIDTH 40 // 40 playfield pixels per scanline
 

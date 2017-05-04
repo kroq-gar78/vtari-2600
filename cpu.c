@@ -204,7 +204,7 @@ int main(int argc, char* argv[])
     SDL_Window* window;
 
     SDL_Init(SDL_INIT_VIDEO);
-    SDL_CreateWindowAndRenderer((h_end-h_start)*WINDOW_ZOOM, (v_end-v_start)*WINDOW_ZOOM, 0, &window, &renderer);
+    SDL_CreateWindowAndRenderer((h_end-h_start)*WINDOW_ZOOM*COLOR_CLOCK_WIDTH, (v_end-v_start)*WINDOW_ZOOM, 0, &window, &renderer);
 
     mmap_p = ldr_mmap_file(argv[1]);
 
@@ -254,9 +254,9 @@ int main(int argc, char* argv[])
                     SDL_SetRenderDrawColor(renderer, color&0xff, (color>>8)&0xff, (color>>16)&0xff, 0);
                     // rectangle from: http://stackoverflow.com/a/21903973
                     SDL_Rect r;
-                    r.x = (x-h_start)*WINDOW_ZOOM;
+                    r.x = (x-h_start)*WINDOW_ZOOM*COLOR_CLOCK_WIDTH;
                     r.y = (y-v_start)*WINDOW_ZOOM;
-                    r.w = WINDOW_ZOOM;
+                    r.w = WINDOW_ZOOM*COLOR_CLOCK_WIDTH;
                     r.h = WINDOW_ZOOM;
                     SDL_RenderFillRect(renderer, &r);
                 }
@@ -1503,8 +1503,8 @@ short inst_sta(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
     ushrt addr_e = addr_f(addr+1);
-    printf("STA addr %x\n", addr);
-    printf("STA addr_e %x\n", addr_e);
+    printf("STA addr 0x%x\n", addr);
+    printf("STA addr_e 0x%x\n", addr_e);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
