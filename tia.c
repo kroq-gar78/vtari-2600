@@ -75,7 +75,7 @@ void tia_write(ushrt addr, byte value)
     {
         case VSYNC:
             //printf("TIA: VSYNC at (%d,%d)\n", tia_x, tia_y);
-            if(value != 0x0)
+            if(value & (1<<1))
             {
                 tia_x = 0;
                 tia_y = 0;
@@ -86,7 +86,7 @@ void tia_write(ushrt addr, byte value)
             break;
         case WSYNC:
             cpu_halted = true;
-            tia_state = TIA_STATE_WSYNC;
+            tia_state |= TIA_STATE_WSYNC;
             break;
         case RSYNC:
             break;
@@ -109,17 +109,16 @@ void tia_write(ushrt addr, byte value)
         case REFP1:
             break;
         case PF0:
-            printf("TIA: write PF0 val %x\n", value);
+            //printf("TIA: write PF0 val %x\n", value);
+            printf("TIA: pc 0x%x val %x y %d\n", pc, value, tia_y);
             break;
         case PF1:
             break;
         case PF2:
             break;
         case RESP0:
-            tia_state |= TIA_STATE_RESP0;
             break;
         case RESP1:
-            tia_state |= TIA_STATE_RESP1;
             break;
         case RESM0:
             break;
@@ -209,6 +208,7 @@ void tia_tick()
     if(tia_mem[VBLANK]) // TODO: for all graphics, or just BG?
     {
         bgcolor = tia_mem[0];
+        //printf("TIA VBLANK tia_y %d\n", tia_y);
     }
     tia_display[tia_y][tia_x] = bgcolor;
 
@@ -226,6 +226,11 @@ void tia_tick()
         bit = x_pf_pixel%20;
     }
     //printf("TIA: pf bits 0x%lx y_ctrd %d x_ctrd %d\n", pf&0xfffff, y_ctrd, x_ctrd);
+    if(tia_y < DISPLAY_H_END && tia_y > 220)
+    {
+        printf("TIA: playfield (%d, %d) pf 0x%lx TIA_STATE %x\n", tia_x, tia_y, pf, tia_state);
+        //if(tia_state & TIA_STATE_RESP0) printf("(%d, %d) RESP0\n", tia_x, tia_y);
+    }
 
     if(1<<bit & pf)
     {
@@ -237,7 +242,7 @@ void tia_tick()
         {
             tia_display[tia_y][tia_x] = tia_mem[COLUPF];
         }
-        //printf("TIA: playfield (%d, %d)\n", tia_x, tia_y);
+        if(tia_y < DISPLAY_H_END && tia_y > 220) printf("TIA: playfield (%d, %d)\n", tia_x, tia_y);
     }
 
     if(tia_mem[CTRLPF] & (1<<2)) // playfield priority over sprites
@@ -247,38 +252,25 @@ void tia_tick()
 
     
     // SPRITES
-    if(tia_state & TIA_STATE_RESP0)
+    int cycles_since = tia_x - tia_mem[RESP0];
+    if(cycles_since >= 0 && cycles_since < 8) // render the sprite if we're at the horiz. position
     {
-        int cycles_since = tia_x - tia_mem[RESP0];
-        if(cycles_since >= 8) // done rendering P0 for this scanline
+        bit = 8-cycles_since-1;
+        if(tia_mem[GRP0] & 1<<(bit))
         {
-            tia_state &= ~TIA_STATE_RESP0;
-        }
-        else // otherwise, render the sprite
-        {
-            bit = 8-cycles_since-1;
-            if(tia_mem[GRP0] & 1<<(bit))
-            {
-                tia_display[tia_y][tia_x] = tia_mem[COLUP0];
-                //printf("TIA: RESP0\n");
-            }
+            tia_display[tia_y][tia_x] = tia_mem[COLUP0];
+            //printf("TIA: RESP0\n");
         }
     }
-    if(tia_state & TIA_STATE_RESP1)
+
+    cycles_since = tia_x - tia_mem[RESP1];
+    if(cycles_since >= 0 && cycles_since < 8) // render the sprite if we're at the horiz. position
     {
-        int cycles_since = tia_x - tia_mem[RESP1];
-        if(cycles_since >= 8) // done rendering P1 for this scanline
+        bit = 8-cycles_since-1;
+        if(tia_mem[GRP1] & 1<<(bit))
         {
-            tia_state &= ~TIA_STATE_RESP1;
-        }
-        else // otherwise, render the sprite
-        {
-            bit = 8-cycles_since-1;
-            if(tia_mem[GRP1] & 1<<(bit))
-            {
-                tia_display[tia_y][tia_x] = tia_mem[COLUP1];
-                //printf("TIA: RESP1\n");
-            }
+            tia_display[tia_y][tia_x] = tia_mem[COLUP1];
+            //printf("TIA: RESP1\n");
         }
     }
 
@@ -295,7 +287,7 @@ void tia_tick()
             tia_state &= ~TIA_STATE_WSYNC;
         }
         // if we were rendering sprite, stop rendering
-        tia_state &= (~TIA_STATE_RESP0 & ~TIA_STATE_RESP1 & ~TIA_STATE_RESM0 & ~TIA_STATE_RESM1 & TIA_STATE_RESBL);
+        //tia_state &= (~TIA_STATE_RESP0 & ~TIA_STATE_RESP1 & ~TIA_STATE_RESM0 & ~TIA_STATE_RESM1 & TIA_STATE_RESBL);
     }
     tia_y %= NTSC_HEIGHT;
 }

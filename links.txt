@@ -20,3 +20,4 @@ http://lazyfoo.net/tutorials/SDL/01_hello_SDL/index2.php
 https://gamedev.stackexchange.com/a/77833
 http://atariage.com/forums/topic/107527-atari-2600-vsyncvblank/
 http://stackoverflow.com/a/2603254
+http://www.alienbill.com/2600/101/docs/stella.html

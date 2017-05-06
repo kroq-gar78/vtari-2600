@@ -478,6 +478,10 @@ int _or(byte a, byte b)
 
 int _push(byte val)
 {
+    if((sp & 0xff) == 0x80)
+    {
+        fprintf(stderr, "Stack overrun (pull)\n");
+    }
     mem_set8(sp, val);
     sp--;
 
@@ -1192,6 +1196,7 @@ short inst_lda(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    //printf("LDA pc %x val %x\n", pc, );
     reg_a = val_8;
     return 0;
 }
