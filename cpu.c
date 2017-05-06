@@ -204,7 +204,12 @@ int main(int argc, char* argv[])
     SDL_Window* window;
 
     SDL_Init(SDL_INIT_VIDEO);
-    SDL_CreateWindowAndRenderer((h_end-h_start)*WINDOW_ZOOM*COLOR_CLOCK_WIDTH, (v_end-v_start)*WINDOW_ZOOM, 0, &window, &renderer);
+    //SDL_CreateWindowAndRenderer((h_end-h_start)*WINDOW_ZOOM*COLOR_CLOCK_WIDTH, (v_end-v_start)*WINDOW_ZOOM, 0, &window, &renderer);
+    window = SDL_CreateWindow("Vtari 2600", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+            (h_end-h_start)*WINDOW_ZOOM*COLOR_CLOCK_WIDTH, // width
+            (v_end-v_start)*WINDOW_ZOOM, // height
+            0); // flags
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
     mmap_p = ldr_mmap_file(argv[1]);
 
