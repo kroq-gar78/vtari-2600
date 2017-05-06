@@ -197,6 +197,30 @@ void tia_init()
     tia_y = 0;
 }
 
+// pos = reset sprite; data = sprite data; color = color; ref = reflect
+void sprite_draw(byte pos, byte data, byte color, byte ref)
+{
+    int cycles_since = tia_x - pos;
+    int bit;
+    if(cycles_since >= 0 && cycles_since < 8) // render the sprite if we're at the horiz. position
+    {
+        if(ref & (1<<3))
+        {
+            bit = cycles_since;
+        }
+        else
+        {
+            bit = 8-cycles_since-1;
+        }
+
+        if(data & 1<<(bit))
+        {
+            tia_display[tia_y][tia_x] = color;
+            //printf("TIA: RESP0\n");
+        }
+    }
+}
+
 void tia_tick()
 {
     // correct for the blanks and overscan
@@ -205,7 +229,7 @@ void tia_tick()
 
     // BACKGROUND
     byte bgcolor = tia_mem[COLUBK];
-    if(tia_mem[VBLANK]) // TODO: for all graphics, or just BG?
+    if(tia_mem[VBLANK] & 2) // TODO: for all graphics, or just BG?
     {
         bgcolor = tia_mem[0];
         //printf("TIA VBLANK tia_y %d\n", tia_y);
@@ -252,28 +276,15 @@ void tia_tick()
 
     
     // SPRITES
-    int cycles_since = tia_x - tia_mem[RESP0];
-    if(cycles_since >= 0 && cycles_since < 8) // render the sprite if we're at the horiz. position
-    {
-        bit = 8-cycles_since-1;
-        if(tia_mem[GRP0] & 1<<(bit))
-        {
-            tia_display[tia_y][tia_x] = tia_mem[COLUP0];
-            //printf("TIA: RESP0\n");
-        }
-    }
-
-    cycles_since = tia_x - tia_mem[RESP1];
-    if(cycles_since >= 0 && cycles_since < 8) // render the sprite if we're at the horiz. position
-    {
-        bit = 8-cycles_since-1;
-        if(tia_mem[GRP1] & 1<<(bit))
-        {
-            tia_display[tia_y][tia_x] = tia_mem[COLUP1];
-            //printf("TIA: RESP1\n");
-        }
-    }
-
+    // TODO: NUSIZx (number and size of players)
+    sprite_draw(tia_mem[RESP0], tia_mem[GRP0], tia_mem[COLUP0], tia_mem[REFP0]);
+    sprite_draw(tia_mem[RESP1], tia_mem[GRP1], tia_mem[COLUP1], tia_mem[REFP1]);
+    byte m0_size = (tia_mem[ENAM0] & 2) ? (tia_mem[NUSIZ0]>>4)&(0b11) : 0;
+    byte m1_size = (tia_mem[ENAM1] & 2) ? (tia_mem[NUSIZ1]>>4)&(0b11) : 0;
+    sprite_draw(tia_mem[RESM0], (1<<m0_size)-1, tia_mem[COLUP0], 0);
+    sprite_draw(tia_mem[RESM1], (1<<m1_size)-1, tia_mem[COLUP1], 0);
+    byte ball_size = (tia_mem[ENABL] & 2) ? (tia_mem[CTRLPF]>>4)&(0b11) : 0;
+    sprite_draw(tia_mem[RESBL], (1<<ball_size)-1, tia_mem[COLUPF], 0); // TODO: color of ball
 
     // update TIA beam position
     tia_x = (tia_x+1)%NTSC_WIDTH;
