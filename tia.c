@@ -227,6 +227,18 @@ void tia_tick()
     int x_ctrd = tia_x-DISPLAY_H_START;
     int y_ctrd = tia_y-DISPLAY_V_START;
 
+    // SPRITE STATUS
+    if(tia_mem[RESMP0] & 2)
+    {
+        tia_mem[ENAM0] = 0;
+        tia_mem[RESM0] = tia_mem[RESP0];
+    }
+    if(tia_mem[RESMP1] & 2)
+    {
+        tia_mem[ENAM1] = 0;
+        tia_mem[RESM1] = tia_mem[RESP0];
+    }
+
     // BACKGROUND
     byte bgcolor = tia_mem[COLUBK];
     if(tia_mem[VBLANK] & 2) // TODO: for all graphics, or just BG?
