@@ -8,7 +8,6 @@
 
 byte riot_mem[RAM_SIZE];
 byte cart_mem[CART_SIZE];
-byte tia_mem[TIA_SIZE];
 byte pia_mem[8];
 
 void mem_init()

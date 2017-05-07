@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
 
 #include "mem.h"
 #include "tia.h"
@@ -93,10 +94,8 @@ void tia_write(ushrt addr, byte value)
         case RSYNC:
             break;
         case NUSIZ0:
-            if((value & 0b111) != 0) MISSING(); // player size/count
             break;
         case NUSIZ1:
-            if((value & 0b111) != 0) MISSING(); // player size/count
             break;
         case COLUP0:
             break;
@@ -241,6 +240,62 @@ void sprite_draw(byte pos, byte data, byte color, byte ref, byte* vdel)
     }
 }
 
+// almost the same as `sprite_draw`, but it takes in an array of bytes
+void sprite_draw_nusiz(byte pos, byte data[], byte color, byte ref, byte* vdel)
+{
+    int cycles_since = tia_x - pos;
+    for(int i = 0; i < TIA_SPRITE_ARRAY_LEN; i++)
+    {
+        if(data[i] != 0)
+        {
+            //printf("TIA draw nusiz i %d data %x\n", i, data[i]);
+            sprite_draw(pos+i*TIA_SPRITE_ARRAY_SIZE, data[i], color, ref, vdel);
+        }
+    }
+}
+
+// pass this in to `sprite_draw_nusiz` as the byte[]
+// puts return values into `ret`
+byte* sprite_nusiz_array(byte sprite, byte nusiz, byte* ret)
+{
+    //byte* ret = calloc(sizeof(byte), TIA_SPRITE_ARRAY_LEN);
+    memset(ret, 0, TIA_SPRITE_ARRAY_LEN);
+    ret[0] = sprite;
+    nusiz &= 0b111;
+
+    if((nusiz&0b11) == 0b001)
+    {
+        ret[2] = sprite;
+    }
+    if((nusiz&0b11) == 0b010) // it's not "else if" on purpose
+    {
+        ret[4] = sprite;
+    }
+    else if(nusiz == 0b100)
+    {
+        ret[8] = sprite;
+    }
+    else if(nusiz == 0b110)
+    {
+        ret[4] = sprite;
+        ret[8] = sprite;
+    }
+    else if(nusiz == 0b101 || nusiz == 0b111) // player size
+    {
+        int size = (nusiz == 0b101) ? 2 : 4;
+        for(int i = 0; i < size; i++)
+        {
+            for(int j = 0; j < 8; j++)
+            {
+                ret[i>>3] |= ((sprite&(1<<(j/size))) != 0) << j;
+            }
+            printf("TIA nusiz i %d val %x\n", i, ret[i>>3]);
+        }
+    }
+
+    return ret;
+}
+
 /*void draw_nusiz(byte NUSIZ, byte pos, byte data, byte color, byte ref)
 {
     bool copies[9] = 0;
@@ -313,7 +368,7 @@ void tia_tick()
     {
         if(tia_mem[CTRLPF] & (1<<1)) // left half COLUP0, right half COLUP1
         {
-            MISSING();
+            tia_display[tia_y][tia_x] = (x_pf_pixel < (PF_WIDTH>>1)) ? tia_mem[COLUP0] : tia_mem[COLUP1];
         }
         else // all PF same color
         {
@@ -330,8 +385,14 @@ void tia_tick()
     
     // SPRITES
     // TODO: NUSIZx (number and size of players)
-    sprite_draw(tia_mem[RESP0], tia_mem[GRP0], tia_mem[COLUP0], tia_mem[REFP0], &tia_mem[VDELP0]);
-    sprite_draw(tia_mem[RESP1], tia_mem[GRP1], tia_mem[COLUP1], tia_mem[REFP1], &tia_mem[VDELP1]);
+    byte sprite_arr[TIA_SPRITE_ARRAY_LEN];
+    sprite_nusiz_array(tia_mem[GRP0], tia_mem[NUSIZ0], sprite_arr);
+    sprite_draw_nusiz(tia_mem[RESP0], sprite_arr, tia_mem[COLUP0], tia_mem[REFP0], &tia_mem[VDELP0]);
+    sprite_nusiz_array(tia_mem[GRP1], tia_mem[NUSIZ1], sprite_arr);
+    sprite_draw_nusiz(tia_mem[RESP1], sprite_arr, tia_mem[COLUP1], tia_mem[REFP1], &tia_mem[VDELP1]);
+
+    //sprite_draw(tia_mem[RESP0], tia_mem[GRP0], tia_mem[COLUP0], tia_mem[REFP0], &tia_mem[VDELP0]);
+    //sprite_draw(tia_mem[RESP1], tia_mem[GRP1], tia_mem[COLUP1], tia_mem[REFP1], &tia_mem[VDELP1]);
     byte m0_size = (tia_mem[ENAM0] & 2) ? (tia_mem[NUSIZ0]>>4)&(0b11) : 0;
     byte m1_size = (tia_mem[ENAM1] & 2) ? (tia_mem[NUSIZ1]>>4)&(0b11) : 0;
     sprite_draw(tia_mem[RESM0], (1<<m0_size)-1, tia_mem[COLUP0], 0, NULL);

@@ -86,6 +86,11 @@
 #define TIA_STATE_NORMAL 1
 #define TIA_STATE_WSYNC 2
 
+// for use with NUSIZx
+// TODO: why are these different...?
+#define TIA_SPRITE_ARRAY_LEN 9
+#define TIA_SPRITE_ARRAY_SIZE 8
+
 extern int tia_state;
 extern int tia_x;
 extern int tia_y;
