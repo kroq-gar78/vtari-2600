@@ -91,8 +91,10 @@ void tia_write(ushrt addr, byte value)
         case RSYNC:
             break;
         case NUSIZ0:
+            if((value & 0b111) != 0) MISSING(); // player size/count
             break;
         case NUSIZ1:
+            if((value & 0b111) != 0) MISSING(); // player size/count
             break;
         case COLUP0:
             break;
@@ -197,9 +199,15 @@ void tia_init()
     tia_y = 0;
 }
 
-// pos = reset sprite; data = sprite data; color = color; ref = reflect
-void sprite_draw(byte pos, byte data, byte color, byte ref)
+// pos = reset sprite; data = sprite data; color = color; ref = reflect; *vdel = vertical delay
+void sprite_draw(byte pos, byte data, byte color, byte ref, byte* vdel)
 {
+    // don't draw if vertical delay (1 line)
+    if(vdel != NULL && (*vdel & 1))
+    {
+        (*vdel)--;
+    }
+
     int cycles_since = tia_x - pos;
     int bit;
     if(cycles_since >= 0 && cycles_since < 8) // render the sprite if we're at the horiz. position
@@ -220,6 +228,27 @@ void sprite_draw(byte pos, byte data, byte color, byte ref)
         }
     }
 }
+
+/*void draw_nusiz(byte NUSIZ, byte pos, byte data, byte color, byte ref)
+{
+    bool copies[9] = 0;
+    switch(NUSIZ)
+    {
+        case 0b000:
+            break;
+        case 0b001:
+            break;
+        case 0b010:
+            break;
+        case 0b011:
+            break;
+        case 0b100:
+            break;
+        case 0b110:
+            break;
+        default: // for single sprite or stretch
+    }
+}*/
 
 void tia_tick()
 {
@@ -289,14 +318,14 @@ void tia_tick()
     
     // SPRITES
     // TODO: NUSIZx (number and size of players)
-    sprite_draw(tia_mem[RESP0], tia_mem[GRP0], tia_mem[COLUP0], tia_mem[REFP0]);
-    sprite_draw(tia_mem[RESP1], tia_mem[GRP1], tia_mem[COLUP1], tia_mem[REFP1]);
+    sprite_draw(tia_mem[RESP0], tia_mem[GRP0], tia_mem[COLUP0], tia_mem[REFP0], &tia_mem[VDELP0]);
+    sprite_draw(tia_mem[RESP1], tia_mem[GRP1], tia_mem[COLUP1], tia_mem[REFP1], &tia_mem[VDELP1]);
     byte m0_size = (tia_mem[ENAM0] & 2) ? (tia_mem[NUSIZ0]>>4)&(0b11) : 0;
     byte m1_size = (tia_mem[ENAM1] & 2) ? (tia_mem[NUSIZ1]>>4)&(0b11) : 0;
-    sprite_draw(tia_mem[RESM0], (1<<m0_size)-1, tia_mem[COLUP0], 0);
-    sprite_draw(tia_mem[RESM1], (1<<m1_size)-1, tia_mem[COLUP1], 0);
+    sprite_draw(tia_mem[RESM0], (1<<m0_size)-1, tia_mem[COLUP0], 0, NULL);
+    sprite_draw(tia_mem[RESM1], (1<<m1_size)-1, tia_mem[COLUP1], 0, NULL);
     byte ball_size = (tia_mem[ENABL] & 2) ? (tia_mem[CTRLPF]>>4)&(0b11) : 0;
-    sprite_draw(tia_mem[RESBL], (1<<ball_size)-1, tia_mem[COLUPF], 0); // TODO: color of ball
+    sprite_draw(tia_mem[RESBL], (1<<ball_size)-1, tia_mem[COLUPF], 0, &tia_mem[VDELBL]); // TODO: color of ball
 
     // update TIA beam position
     tia_x = (tia_x+1)%NTSC_WIDTH;
