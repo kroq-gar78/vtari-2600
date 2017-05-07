@@ -243,6 +243,7 @@ int main(int argc, char* argv[])
                 if(pia_mem[INTIM] == 0)
                 {
                     timer_int = 1;
+                    pia_mem[INSTAT] |= (1<<7) | (1<<6);
                 }
             }
         }
