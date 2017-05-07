@@ -55,21 +55,25 @@ void mem_set8(ushrt addr, byte value)
                 pia_mem[INTIM] = value;
                 timer_int = 1;
                 pia_mem[INSTAT] &= ~(1<<7);
+                printf("PIA timer set val %d timer_int %d pc %x\n", value, timer_int, pc);
                 break;
             case TIM8T:
                 pia_mem[INTIM] = value;
                 timer_int = 8;
                 pia_mem[INSTAT] &= ~(1<<7);
+                printf("PIA timer set val %d timer_int %d pc %x\n", value, timer_int, pc);
                 break;
             case TIM64T:
                 pia_mem[INTIM] = value;
                 timer_int = 64;
                 pia_mem[INSTAT] &= ~(1<<7);
+                printf("PIA timer set val %d timer_int %d pc %x\n", value, timer_int, pc);
                 break;
             case T1024T:
                 pia_mem[INTIM] = value;
                 timer_int = 1024;
                 pia_mem[INSTAT] &= ~(1<<7);
+                printf("PIA timer set val %d timer_int %d pc %x\n", value, timer_int, pc);
                 break;
         }
 

@@ -238,13 +238,14 @@ int main(int argc, char* argv[])
         {
             if(cycle%(3*timer_int) == 0)
             {
-                printf("timer int %d cycle %d preval %d\n", timer_int, cycle, pia_mem[INTIM]);
-                pia_mem[INTIM] -= 1;
                 if(pia_mem[INTIM] == 0)
                 {
                     timer_int = 1;
                     pia_mem[INSTAT] |= (1<<7) | (1<<6);
+                    printf("PIA timer overflow\n");
                 }
+                printf("timer int %d cycle %d preval %d\n", timer_int, cycle, pia_mem[INTIM]);
+                pia_mem[INTIM] -= 1;
             }
         }
 
@@ -1221,6 +1222,7 @@ short inst_lda(ushrt addr, int addr_mode)
     }
 
     //printf("LDA pc %x val %x\n", pc, );
+    setflag_nz(val_8);
     reg_a = val_8;
     return 0;
 }
@@ -1241,6 +1243,7 @@ short inst_ldx(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    setflag_nz(val_8);
     reg_x = val_8;
     return 0;
 }
@@ -1261,6 +1264,7 @@ short inst_ldy(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
+    setflag_nz(val_8);
     reg_y = val_8;
     return 0;
 }
