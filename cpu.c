@@ -199,6 +199,9 @@ int main(int argc, char* argv[])
     int h_start = DISPLAY_H_START;
     int h_end = DISPLAY_H_END;
 
+    char window_title[120];
+    sprintf(window_title, "Vtari 2600 - %s", argv[1]);
+
     // http://stackoverflow.com/a/35989490
     SDL_Event event;
     SDL_Renderer* renderer;
@@ -206,7 +209,7 @@ int main(int argc, char* argv[])
 
     SDL_Init(SDL_INIT_VIDEO);
     //SDL_CreateWindowAndRenderer((h_end-h_start)*WINDOW_ZOOM*COLOR_CLOCK_WIDTH, (v_end-v_start)*WINDOW_ZOOM, 0, &window, &renderer);
-    window = SDL_CreateWindow("Vtari 2600", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+    window = SDL_CreateWindow(window_title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
             (h_end-h_start)*WINDOW_ZOOM*COLOR_CLOCK_WIDTH, // width
             (v_end-v_start)*WINDOW_ZOOM, // height
             0); // flags
@@ -293,7 +296,7 @@ int main(int argc, char* argv[])
         // render once every full frame drawn; multiply by 3 to guarantee its divisibility by 3
         // multiply by 1024 for divisibility for the interval timer
         cycle = (cycle + 1)%(NTSC_HEIGHT*NTSC_WIDTH*3*1024);
-        if(SDL_PollEvent(&event) && event.type == SDL_QUIT)
+        if(SDL_PollEvent(&event) && (event.type == SDL_QUIT || (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)))
         {
             break;
         }
