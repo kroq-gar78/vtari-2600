@@ -33,12 +33,42 @@ void mem_set8(ushrt addr, byte value)
     else if((addr & 0x1280) == 0x80)
     {
         addr &= RAM_SIZE-1;
+
+        switch(addr)
+        {
+            case SWCHA:
+                break;
+            case SWACNT:
+                break;
+            case SWCHB:
+                break;
+            case SWBCNT:
+                break;
+            case TIM1T:
+                pia_mem[INTIM] = value;
+                timer_int = 1;
+                break;
+            case TIM8T:
+                pia_mem[INTIM] = value;
+                timer_int = 8;
+                break;
+            case TIM64T:
+                pia_mem[INTIM] = value;
+                timer_int = 64;
+                break;
+            case T1024T:
+                pia_mem[INTIM] = value;
+                timer_int = 1024;
+                break;
+        }
+
         pia_mem[addr] = value;
     }
     // PIA I/O mirrors
     else if((addr & 0x1280) == 0x280)
     {
-        MISSING();
+        addr &= 8-1;
+        pia_mem[addr] = value;
     }
     // cartridge mirrors
     else if((addr & 0x1000) == 0x1000)
@@ -79,7 +109,8 @@ byte mem_get8(ushrt addr)
     // PIA I/O mirrors
     else if((addr & 0x1280) == 0x280)
     {
-        MISSING();
+        addr &= 8-1;
+        return pia_mem[addr];
     }
     // cartridge mirrors
     else if((addr & 0x1000) == 0x1000)

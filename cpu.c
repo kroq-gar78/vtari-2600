@@ -17,6 +17,7 @@ byte reg_x = 0;
 byte reg_y = 0;
 byte sp = 0xff;
 byte reg_p = 0x20; // unused bit is 1
+int timer_int = 1; // timer interval
 bool cpu_halted = false;
 byte* mmap_p; // pointer to mmap'd file
 
@@ -218,7 +219,7 @@ int main(int argc, char* argv[])
     printf("entrypoint 0x%x\n", pc);
 
     int cpu_cycles_left = opcodes_cycles[mem_get8(pc)];
-    int cycle = 0;
+    unsigned int cycle = 0;
     tia_init();
 
     /*int getwindowsize_h;
@@ -232,6 +233,21 @@ int main(int argc, char* argv[])
     {
         tia_tick();
 
+        // first, process the interval timer
+        if(cycle%3 == 0)
+        {
+            if(cycle%(3*timer_int) == 0)
+            {
+                printf("timer int %d cycle %d preval %d\n", timer_int, cycle, pia_mem[INTIM]);
+                pia_mem[INTIM] -= 1;
+                if(pia_mem[INTIM] == 0)
+                {
+                    timer_int = 1;
+                }
+            }
+        }
+
+        // tick the CPU
         if((cycle%3 == 0) && !cpu_halted && (--cpu_cycles_left <= 0))
         {
             byte inst_opcode = mem_get8(pc);
@@ -273,7 +289,8 @@ int main(int argc, char* argv[])
         }
 
         // render once every full frame drawn; multiply by 3 to guarantee its divisibility by 3
-        cycle = (cycle + 1)%(NTSC_HEIGHT*NTSC_WIDTH*3);
+        // multiply by 1024 for divisibility for the interval timer
+        cycle = (cycle + 1)%(NTSC_HEIGHT*NTSC_WIDTH*3*1024);
         if(SDL_PollEvent(&event) && event.type == SDL_QUIT)
         {
             break;
@@ -370,7 +387,6 @@ int _adc(byte a, byte b)
     // check overflow
     if(result >= USHRT_MAX)
     {
-        reg_p |= FLAGS_CARRY | FLAGS_OVERFLOW;
     }
     else
     {
@@ -545,7 +561,8 @@ int _sbc(byte a, byte b)
         b = hex_to_bcd(b);
     }
 
-    byte result = a - b - ((reg_p & FLAGS_CARRY) == 0); // need ~C (https://www.dwheeler.com/6502/oneelkruns/asm1step.html)
+    byte c_inv = ((reg_p & FLAGS_CARRY) == 0);
+    byte result = a - b - c_inv; // need ~C (https://www.dwheeler.com/6502/oneelkruns/asm1step.html)
 
     // TODO: overflow, carry flags
     setflag_nz(result);
@@ -554,6 +571,10 @@ int _sbc(byte a, byte b)
     {
         result = bcd_to_hex(result);
     }
+
+    setflag_v_direct((result>>7) != (a>>7)); // set V on sign change
+    setflag_c_direct((char)a >= (char)((char)b+c_inv));
+
     return result;
 }
 
@@ -599,11 +620,7 @@ ushrt addr_ind_y(ushrt addr)
 }
 ushrt addr_rel(ushrt addr)
 {
-    short rel = mem_get8(addr);
-    if(rel & 0x70) // make sure to sign extend!
-    {
-        rel |= (0xff)<<8;
-    }
+    short rel = (char)mem_get8(addr);
     return next_pc + rel;
 }
 ushrt addr_zpg(ushrt addr)
@@ -802,6 +819,7 @@ short inst_bmi(ushrt addr, int addr_mode)
     {
         next_pc = addr_e;
     }
+    printf("BMI take %d next_pc %x\n", take, next_pc);
     return take;
 }
 short inst_bne(ushrt addr, int addr_mode)

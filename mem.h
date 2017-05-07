@@ -10,6 +10,17 @@
 
 #define ADDR_BAD 0x7777
 
+#define SWCHA 0
+#define SWACNT 1
+#define SWCHB 2
+#define SWBCNT 3
+#define INTIM 4
+#define INSTAT 5
+#define TIM1T 4
+#define TIM8T 5
+#define TIM64T 6
+#define T1024T 7
+
 extern byte pia_mem[RAM_SIZE];
 extern byte cart_mem[CART_SIZE];
 
