@@ -170,9 +170,19 @@ void tia_write(ushrt addr, byte value)
             break;
         case RESMP1:
             break;
-        case HMOVE:
+        case HMOVE: // execute horizontal moves
+            tia_mem[RESP0] += (char) tia_mem[HMP0];
+            tia_mem[RESP1] += (char) tia_mem[HMP1];
+            tia_mem[RESM0] += (char) tia_mem[HMM0];
+            tia_mem[RESM1] += (char) tia_mem[HMM1];
+            tia_mem[RESBL] += (char) tia_mem[HMBL];
             break;
         case HMCLR:
+            int idxs = {HMP0, HMP1, HMM0, HMM1, HMBL};
+            for(int i = 0; i < 5; i++)
+            {
+                tia_mem[idxs[i]] = 0;
+            }
             break;
         case CXCLR:
             break;
