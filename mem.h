@@ -21,8 +21,9 @@
 #define TIM64T 6
 #define T1024T 7
 
-extern byte pia_mem[RAM_SIZE];
+extern byte riot_mem[RAM_SIZE];
 extern byte cart_mem[CART_SIZE];
+extern byte pia_mem[8];
 
 extern void mem_init();
 //extern void mem_map(ushrt guest);

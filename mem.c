@@ -6,9 +6,10 @@
 #include "mem.h"
 #include "tia.h"
 
-byte pia_mem[RAM_SIZE];
+byte riot_mem[RAM_SIZE];
 byte cart_mem[CART_SIZE];
 byte tia_mem[TIA_SIZE];
+byte pia_mem[8];
 
 void mem_init()
 {
@@ -33,7 +34,7 @@ void mem_set8(ushrt addr, byte value)
     else if((addr & 0x1280) == 0x80)
     {
         addr &= RAM_SIZE-1;
-        pia_mem[addr] = value;
+        riot_mem[addr] = value;
     }
     // PIA I/O mirrors
     else if((addr & 0x1280) == 0x280)
@@ -111,7 +112,7 @@ byte mem_get8(ushrt addr)
     else if((addr & 0x1280) == 0x80)
     {
         addr &= RAM_SIZE-1;
-        return pia_mem[addr];
+        return riot_mem[addr];
     }
     // PIA I/O mirrors
     else if((addr & 0x1280) == 0x280)
