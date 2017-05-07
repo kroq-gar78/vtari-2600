@@ -69,6 +69,8 @@ void tia_write(ushrt addr, byte value)
 {
     printf("TIA: write to 0x%x val %x\n", addr, value);
 
+    int hm_idxs[] = {HMP0, HMP1, HMM0, HMM1, HMBL};
+
     // regex (based off of `#define`s in `mem.h`):
     // s/^.*\ \([0-9A-Z]\+\)\ .*$/case \1:\r\tbreak;/g
     switch(addr)
@@ -105,6 +107,7 @@ void tia_write(ushrt addr, byte value)
         case COLUBK:
             break;
         case CTRLPF:
+            if(value & (1<<2)) MISSING(); // PF priority
             break;
         case REFP0:
             break;
@@ -178,10 +181,9 @@ void tia_write(ushrt addr, byte value)
             tia_mem[RESBL] += (char) tia_mem[HMBL];
             break;
         case HMCLR:
-            int idxs = {HMP0, HMP1, HMM0, HMM1, HMBL};
             for(int i = 0; i < 5; i++)
             {
-                tia_mem[idxs[i]] = 0;
+                tia_mem[hm_idxs[i]] = 0;
             }
             break;
         case CXCLR:
