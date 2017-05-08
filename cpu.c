@@ -19,6 +19,7 @@ byte sp = 0xff;
 byte reg_p = 0x20; // unused bit is 1
 int timer_int = 1; // timer interval
 bool cpu_halted = false;
+unsigned int frame_num = 0;
 byte* mmap_p; // pointer to mmap'd file
 
 ushrt addr_abs(ushrt addr);
@@ -245,9 +246,9 @@ int main(int argc, char* argv[])
                 {
                     timer_int = 1;
                     pia_mem[INSTAT] |= (1<<7) | (1<<6);
-                    printf("PIA timer overflow\n");
+                    //printf("PIA timer overflow\n");
                 }
-                printf("timer int %d cycle %d preval %d\n", timer_int, cycle, pia_mem[INTIM]);
+                //printf("timer int %d cycle %d preval %d\n", timer_int, cycle, pia_mem[INTIM]);
                 pia_mem[INTIM] -= 1;
             }
         }
@@ -257,7 +258,7 @@ int main(int argc, char* argv[])
         {
             byte inst_opcode = mem_get8(pc);
             int addr_mode = addr_modes[inst_opcode];
-            printf("pc %x inst %x\n", pc, mem_get8(pc));
+            printf("pc %x inst %x tia_x %d tia_y %d\n", pc, mem_get8(pc), tia_x, tia_y);
             printf("A %x X %x Y %x\n", reg_a, reg_x, reg_y);
             next_pc = pc + addr_mode_len[addr_mode];
             cpu_cycles_left = opcodes_cycles[inst_opcode];
@@ -290,6 +291,7 @@ int main(int argc, char* argv[])
             }
 
             SDL_RenderPresent(renderer);
+            frame_num++;
             SDL_Delay(17); // 17 ms ~= 60Hz; guarantee max 60Hz framerate
         }
 
@@ -387,18 +389,22 @@ int _adc(byte a, byte b)
         a = hex_to_bcd(a);
         b = hex_to_bcd(b);
     }
-    byte result = a+b;
+    byte c = (reg_p & FLAGS_CARRY) != 0;
+    ushrt result_ushrt = a+b+c;
+    byte result = a+b+c;
 
     // check overflow
-    if(result >= USHRT_MAX)
+    if(result_ushrt >= USHRT_MAX)
     {
+        setflag_c_direct(true);
+        setflag_v_direct(true);
     }
     else
     {
         reg_p &= (~FLAGS_CARRY) & (~FLAGS_OVERFLOW);
     }
 
-    setflag_z(result);
+    setflag_nz(result);
 
     if(reg_p & FLAGS_DECIMAL)
     {
@@ -411,8 +417,7 @@ int _and(byte a, byte b)
 {
     byte result = a&b;
 
-    setflag_n(result);
-    setflag_z(result);
+    setflag_nz(result);
 
     return result;
 }

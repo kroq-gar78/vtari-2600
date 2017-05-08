@@ -121,11 +121,16 @@ byte mem_get8(ushrt addr)
     else if((addr & 0x1280) == 0x280)
     {
         addr &= 8-1;
-        if(addr == INSTAT)
+        //if(addr == INSTAT)
+        if(addr == 5 || addr == 7) // INSTAT mirroring
         {
             byte old = pia_mem[addr];
             pia_mem[INSTAT] &= ~(1<<6);
             return old;
+        }
+        if(addr == 4 || addr == 6) // INTIM mirroring
+        {
+            return pia_mem[INTIM];
         }
         return pia_mem[addr];
     }
@@ -173,4 +178,14 @@ byte bcd_to_hex(byte bcd)
 {
     // we assume the number is < 100
     return ((bcd/10)<<4) + (bcd%10);
+}
+
+void print_ram()
+{
+    for(int i = 0; i < RAM_SIZE; i++)
+    {
+        if(i%16 == 0) printf("\n");
+        printf("%02x ", riot_mem[i]);
+    }
+    printf("\n");
 }

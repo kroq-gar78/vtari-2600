@@ -56,4 +56,6 @@ extern int timer_int; // timer interval
 
 extern bool cpu_halted;
 
+extern unsigned int frame_num;
+
 #endif

@@ -114,7 +114,7 @@ void tia_write(ushrt addr, byte value)
             break;
         case PF0:
             //printf("TIA: write PF0 val %x\n", value);
-            printf("TIA: pc 0x%x val %x y %d\n", pc, value, tia_y);
+            printf("TIA: PF0 pc 0x%x val %x y %d\n", pc, value, tia_y);
             break;
         case PF1:
             break;
