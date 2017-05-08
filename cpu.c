@@ -224,6 +224,7 @@ int main(int argc, char* argv[])
 
     int cpu_cycles_left = opcodes_cycles[mem_get8(pc)];
     unsigned int cycle = 0;
+    mem_init();
     tia_init();
 
     /*int getwindowsize_h;
