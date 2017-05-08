@@ -590,7 +590,7 @@ int _sbc(byte a, byte b)
 
 int _transfer(byte* a, byte* b)
 {
-    *a = *b;
+    *b = *a;
 
     setflag_nz(*a);
 
