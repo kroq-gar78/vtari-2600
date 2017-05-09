@@ -428,8 +428,7 @@ int _asl(byte a, byte b)
 {
     byte result = a<<b;
 
-    setflag_n(result);
-    setflag_z(result);
+    setflag_nz(result);
 
     // carry flag
     setflag_c_direct( (result>>(8-b)) != 0 );
@@ -627,7 +626,7 @@ ushrt addr_x_ind(ushrt addr)
 }
 ushrt addr_ind_y(ushrt addr)
 {
-    return mem_get16_zpg(mem_get8(addr))+reg_y;
+    return mem_get16_zpg(mem_get8(addr))+reg_y; // TODO: carry?
 }
 ushrt addr_rel(ushrt addr)
 {

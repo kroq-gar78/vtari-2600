@@ -165,7 +165,7 @@ short mem_get16_zpg(ushrt addr)
     byte b0 = mem_get8(addr);
     byte b1 = mem_get8((addr+1)&0xff);
 
-    return (b1<<0) | (b0 & 0xff);
+    return (b1<<8) | (b0 & 0xff);
 }
 
 // convert hex number to packed BCD
