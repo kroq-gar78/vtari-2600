@@ -135,7 +135,7 @@ ADDRMODE_REL, ADDRMODE_IND_Y, -1, -1, -1, ADDRMODE_ZPG_X, ADDRMODE_ZPG_X, -1, AD
 
 
 // from ruby2600: lib/ruby2600/cpu.rb
-int opcodes_cycles[256] = 
+int opcodes_cycles[256] =
  {7, 6, 0, 8, 3, 3, 5, 5, 3, 2, 2, 2, 4, 4, 6, 6,
   2, 5, 0, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,
   6, 6, 0, 8, 3, 3, 5, 5, 4, 2, 2, 2, 4, 4, 6, 6,
@@ -557,7 +557,7 @@ int _ror(byte a)
 {
     byte result = a>>1;
     result &= ((reg_p & FLAGS_CARRY) != 0) << 7;
-    
+
     setflag_c_direct(result&1);
 
     return result;

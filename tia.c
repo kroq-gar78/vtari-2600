@@ -382,7 +382,7 @@ void tia_tick()
         MISSING();
     }
 
-    
+
     // SPRITES
     // TODO: NUSIZx (number and size of players)
     byte sprite_arr[TIA_SPRITE_ARRAY_LEN];
