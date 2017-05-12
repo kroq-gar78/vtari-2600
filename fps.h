@@ -11,10 +11,10 @@
 #include <SDL2/SDL_ttf.h>
 TTF_Font* font;
 SDL_Texture* fps_texture;
-#endif
 
 extern void get_text_and_rect(SDL_Renderer *renderer, int x, int y, char *text,
         TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect);
+#endif
 
 extern float framespersecond;
 extern void fpsinit();

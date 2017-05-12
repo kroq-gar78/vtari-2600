@@ -1,5 +1,6 @@
 #include "fps.h"
 
+#ifdef RENDER_FPS
 // NOTE: this function is from:
 // http://stackoverflow.com/a/38169008
 /*
@@ -23,6 +24,7 @@ void get_text_and_rect(SDL_Renderer *renderer, int x, int y, char *text,
     rect->w = text_width;
     rect->h = text_height;
 }
+#endif
 
 // NOTE: the majority of the rest of code in this file (`fps.c`) is from:
 // http://sdl.beuc.net/sdl.wiki/SDL_Average_FPS_Measurement
