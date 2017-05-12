@@ -78,7 +78,7 @@ void tia_write(ushrt addr, byte value)
     {
         case VSYNC:
             //printf("TIA: VSYNC at (%d,%d)\n", tia_x, tia_y);
-            if(value & (1<<1))
+            if(value == 0 && (tia_mem[VSYNC] & (1<<1)))
             {
                 tia_x = 0;
                 tia_y = 0;

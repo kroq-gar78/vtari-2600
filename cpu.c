@@ -375,6 +375,19 @@ bool setflag_c_direct(bool status) // carry
         return false;
     }
 }
+bool setflag_n_direct(bool status) // negative
+{
+    if(status)
+    {
+        reg_p |= FLAGS_NEGATIVE;
+        return true;
+    }
+    else
+    {
+        reg_p &= ~FLAGS_NEGATIVE;
+        return false;
+    }
+}
 bool setflag_v_direct(bool status) // overflow
 {
     if(status)
@@ -446,10 +459,8 @@ int _bit(byte a, byte b)
 {
     byte result = a&b;
 
-    reg_p &= (~FLAGS_NEGATIVE) & (~FLAGS_OVERFLOW);
-    reg_p |= (b & FLAGS_NEGATIVE);
-    reg_p |= (b & FLAGS_OVERFLOW);
-
+    setflag_n_direct(b & FLAGS_NEGATIVE);
+    setflag_v_direct(b & FLAGS_OVERFLOW);
     setflag_z(result);
 
     return result;
@@ -461,8 +472,7 @@ int _cmp(byte a, byte b)
     byte result = a >= b;
 
     setflag_c_direct(a >= b); // TODO: is this a signed comparison?
-    setflag_z(a-b);
-    setflag_n(a);
+    setflag_nz(a-b);
 
     return result;
 }
