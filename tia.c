@@ -249,7 +249,7 @@ void tia_handleKeyboard(SDL_KeyboardEvent* event)
             }
             break;
     }
-    if(event->keysym.sym != SDLK_SPACE)
+    if(event->keysym.sym != SDLK_SPACE && pia_mem[SWACNT] == 0)
     {
         pia_mem[SWCHA] &= ~(1<<bit);
         pia_mem[SWCHA] |= keyup<<bit;

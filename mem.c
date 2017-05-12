@@ -55,24 +55,28 @@ void mem_set8(ushrt addr, byte value)
             case TIM1T:
                 pia_mem[INTIM] = value;
                 timer_int = 1;
+                timer_underflow = false;
                 pia_mem[INSTAT] &= ~(1<<7);
                 printf("PIA timer set val %d timer_int %d pc %x\n", value, timer_int, pc);
                 break;
             case TIM8T:
                 pia_mem[INTIM] = value;
                 timer_int = 8;
+                timer_underflow = false;
                 pia_mem[INSTAT] &= ~(1<<7);
                 printf("PIA timer set val %d timer_int %d pc %x\n", value, timer_int, pc);
                 break;
             case TIM64T:
                 pia_mem[INTIM] = value;
                 timer_int = 64;
+                timer_underflow = false;
                 pia_mem[INSTAT] &= ~(1<<7);
                 printf("PIA timer set val %d timer_int %d pc %x\n", value, timer_int, pc);
                 break;
             case T1024T:
                 pia_mem[INTIM] = value;
                 timer_int = 1024;
+                timer_underflow = false;
                 pia_mem[INSTAT] &= ~(1<<7);
                 printf("PIA timer set val %d timer_int %d pc %x\n", value, timer_int, pc);
                 break;
@@ -132,6 +136,7 @@ byte mem_get8(ushrt addr)
         }
         if(addr == 4 || addr == 6) // INTIM mirroring
         {
+            timer_underflow = false; // apparently resume the old interval once read
             return pia_mem[INTIM];
         }
         return pia_mem[addr];

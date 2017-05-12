@@ -53,6 +53,7 @@ extern byte sp;
 extern byte reg_p; // status register
 
 extern int timer_int; // timer interval
+extern bool timer_underflow;
 
 extern bool cpu_halted;
 

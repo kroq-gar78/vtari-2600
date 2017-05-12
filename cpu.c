@@ -19,6 +19,7 @@ byte reg_y = 0;
 byte sp = 0xff;
 byte reg_p = 0x20; // unused bit is 1
 int timer_int = 1; // timer interval
+bool timer_underflow = false;
 bool cpu_halted = false;
 unsigned int frame_num = 0;
 byte* mmap_p; // pointer to mmap'd file
@@ -279,11 +280,11 @@ int main(int argc, char* argv[])
         // first, process the interval timer
         if(cycle%3 == 0)
         {
-            if(cycle%(3*timer_int) == 0)
+            if(cycle%(3*(timer_underflow ? 1 : timer_int)) == 0)
             {
-                if(pia_mem[INTIM] == 0)
+                if(pia_mem[INTIM] == 0) // underflow
                 {
-                    timer_int = 1;
+                    timer_underflow = true;
                     pia_mem[INSTAT] |= (1<<7) | (1<<6);
                     //printf("PIA timer overflow\n");
                 }
