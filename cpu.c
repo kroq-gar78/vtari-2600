@@ -48,7 +48,7 @@ ushrt addr_impl(ushrt addr); // for compatibility
 // map of address mode to function pointer
 F1 addr_mode_f[12] = {addr_abs, addr_abs_x, addr_abs_y, addr_ind, addr_x_ind, addr_ind_y, addr_rel, addr_zpg, addr_zpg_x, addr_zpg_y, addr_imm, addr_impl};
 
-// len of an instruction with a given address mode
+// length of an instruction (in bytes) with a given address mode
 ushrt addr_mode_len[12] = {3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 1};
 
 short inst_adc(ushrt addr, int addr_mode);

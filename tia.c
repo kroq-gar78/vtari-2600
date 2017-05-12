@@ -80,7 +80,7 @@ void tia_write(ushrt addr, byte value)
     {
         case VSYNC:
             //printf("TIA: VSYNC at (%d,%d)\n", tia_x, tia_y);
-            if(value == 0 && (tia_mem[VSYNC] & (1<<1)))
+            if(value != 0)
             {
                 tia_x = 0;
                 tia_y = 0;
@@ -218,23 +218,31 @@ void tia_handleKeyboard(SDL_KeyboardEvent* event)
     }*/
 
     // `0` means circuit closed, `1` means circuit open
-    // to use player1, press the arrow key with LShift
+    // to use player1, press anything with LShift
+    // SPACE = fire
+    // Z = game reset
+    // X = game start
     bool player1 = (event->keysym.mod & KMOD_LSHIFT) != 0;
     bool keyup = event->type == SDL_KEYUP;
+    bool joystick = false;
     int bit = 0;
     switch(event->keysym.sym)
     {
         case SDLK_RIGHT:
             bit = 7-player1;
+            joystick = true;
             break;
         case SDLK_LEFT:
             bit = 6-player1;
+            joystick = true;
             break;
         case SDLK_DOWN:
             bit = 5-player1;
+            joystick = true;
             break;
         case SDLK_UP:
             bit = 4-player1;
+            joystick = true;
             break;
         case SDLK_SPACE:
             if(!player1)
@@ -248,8 +256,16 @@ void tia_handleKeyboard(SDL_KeyboardEvent* event)
                 tia_mem[INPT5] |= keyup<<7;
             }
             break;
+        case SDLK_z:
+            pia_mem[SWCHB] &= ~(1<<0);
+            pia_mem[SWCHB] |= keyup<<0;
+            break;
+        case SDLK_x:
+            pia_mem[SWCHB] &= ~(1<<1);
+            pia_mem[SWCHB] |= keyup<<1;
+            break;
     }
-    if(event->keysym.sym != SDLK_SPACE && pia_mem[SWACNT] == 0)
+    if(joystick && pia_mem[SWACNT] == 0)
     {
         pia_mem[SWCHA] &= ~(1<<bit);
         pia_mem[SWCHA] |= keyup<<bit;
