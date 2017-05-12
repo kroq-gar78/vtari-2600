@@ -22,12 +22,14 @@ On a more serious note, reading hardware documentation and implementing my emula
 I finally also learned how to effectively generate code, reducing possible typos. Instead of manually implementing each of the ~150 opcodes, I parsed the table using regex's and split the table into two: one with the base instruction (e.g. ADC), and one with the addressing mode (e.g. absolute). This allowed me to cut the number of functions by at least half. I also generated the skeleton code for each of these instructions (e.g. `inst_adc`), where I determined the addressing mode and fetched 8bits *and* 16bits at the given address, even if I didn't need to. This allowed me to quickly implement each instruction, letting me focus on the instruction logic instead of writing skeleton code. I think I finally learned how to maximally reuse code.
 
 (4) What should your score be (out of 100)?
-
+I think my grade should be around 97, because of the large amount of time I have dedicated to this project (at least 30-40 hours over the past 2 weeks). Also, I suggest this grade because of the vast scope of the project that I had initially set out to do, and because I am proud of how far I have come given the circumstances (exams).
 
 (5) Give me clear and concise instruction that would help me:
 
     (a) run your code and see that it worked
-    To compile, on Ubuntu you would need the packages "libsdl2-dev" and "libsdl2-ttf-dev". Running `make all` will produce an executable "cpu". (I also included a compiled `cpu` just in case.) To run an Atari 2600 binary, simply run `./cpu <filename> >/dev/null`. (Warning: there is a lot of debug output, so make sure to include `>/dev/null`). There are example tests in `tests/` from a website (cited in `links.txt`) that do show simple things (e.g. color test, sprites, moving sprites). There are 3 games located in the `roms/` folder, and basic features in each game work (described at the top).
+    To compile, on Ubuntu you would need the packages "libsdl2-dev" and "libsdl2-ttf-dev". Running `make all` will produce an executable "cpu". Note that these aren't available on the lab machines. I've included a `cpu` that was compiled on Ubunu 16.04 with the same version of SDL as on the lab machines.
+
+    To run an Atari 2600 binary, simply run `./cpu <filename> >/dev/null`. (Warning: there is a lot of debug output, so make sure to include `>/dev/null`). There are example tests in `tests/` from a website (cited in `links.txt`) that do show simple things (e.g. color test, sprites, moving sprites). There are 3 games located in the `roms/` folder, and basic features in each game work (described at the top).
 
     To exit, press ESC. To move in a direction, use arrow keys. To fire, press Space (you can't see the effect). To reset the game press `z`. To select the game press `x`. You will need to a reset (and possibly select) to start Space Invaders. Movement is (strangely) reversed in this game.
 
