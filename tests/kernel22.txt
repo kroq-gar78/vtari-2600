@@ -1,0 +1,1331 @@
+------- FILE kernel22.asm LEVEL 1 PASS 2
+      1  10000 ????						; '2600 for Newbies
+      2  10000 ????						; Session 21 - Sprites
+      3  10000 ????						; This kernel draws a simple box around the screen border
+      4  10000 ????						; Introduces sprites
+      5  10000 ????
+      6  10000 ????
+      7  10000 ????				       processor	6502
+------- FILE vcs.h LEVEL 2 PASS 2
+      0  10000 ????				       include	"vcs.h"
+      1  10000 ????						; VCS.H
+      2  10000 ????						; Version 1.05, 13/November/2003
+      3  10000 ????
+      4  10000 ????		00 69	    VERSION_VCS =	105
+      5  10000 ????
+      6  10000 ????						; THIS IS A PRELIMINARY RELEASE OF *THE* "STANDARD" VCS.H
+      7  10000 ????						; THIS FILE IS EXPLICITLY SUPPORTED AS A DASM-PREFERRED COMPANION FILE
+      8  10000 ????						; PLEASE DO *NOT* REDISTRIBUTE THIS FILE!
+      9  10000 ????						;
+     10  10000 ????						; This file defines hardware registers and memory mapping for the
+     11  10000 ????						; Atari 2600. It is distributed as a companion machine-specific support package
+     12  10000 ????						; for the DASM compiler. Updates to this file, DASM, and associated tools are
+     13  10000 ????						; available at at http://www.atari2600.org/dasm
+     14  10000 ????						;
+     15  10000 ????						; Many thanks to the original author(s) of this file, and to everyone who has
+     16  10000 ????						; contributed to understanding the Atari 2600.  If you take issue with the
+     17  10000 ????						; contents, or naming of registers, please write to me (atari2600@taswegian.com)
+     18  10000 ????						; with your views.  Please contribute, if you think you can improve this
+     19  10000 ????						; file!
+     20  10000 ????						;
+     21  10000 ????						; Latest Revisions...
+     22  10000 ????						; 1.05  13/NOV/2003	  - Correction to 1.04 - now functions as requested by MR.
+     23  10000 ????						;			  - Added VERSION_VCS equate (which will reflect 100x version #)
+     24  10000 ????						;			    This will allow conditional code to verify VCS.H being
+     25  10000 ????						;			    used for code assembly.
+     26  10000 ????						; 1.04  12/NOV/2003	 Added TIA_BASE_WRITE_ADDRESS and TIA_BASE_READ_ADDRESS for
+     27  10000 ????						;			 convenient disassembly/reassembly compatibility for hardware
+     28  10000 ????						;			 mirrored reading/writing differences.	This is more a
+     29  10000 ????						;			 readability issue, and binary compatibility with disassembled
+     30  10000 ????						;			 and reassembled sources.  Per Manuel Rotschkar's suggestion.
+     31  10000 ????						; 1.03  12/MAY/2003	 Added SEG segment at end of file to fix old-code compatibility
+     32  10000 ????						;			 which was broken by the use of segments in this file, as
+     33  10000 ????						;			 reported by Manuel Polik on [stella] 11/MAY/2003
+     34  10000 ????						; 1.02  22/MAR/2003	 Added TIMINT($285)
+     35  10000 ????						; 1.01				Constant offset added to allow use for 3F-style bankswitching
+     36  10000 ????						;						 - define TIA_BASE_ADDRESS as $40 for Tigervision carts, otherwise
+     37  10000 ????						;						   it is safe to leave it undefined, and the base address will
+     38  10000 ????						;						   be set to 0.  Thanks to Eckhard Stolberg for the suggestion.
+     39  10000 ????						;			    Note, may use -DLABEL=EXPRESSION to define TIA_BASE_ADDRESS
+     40  10000 ????						;			  - register definitions are now generated through assignment
+     41  10000 ????						;			    in uninitialised segments.	This allows a changeable base
+     42  10000 ????						;			    address architecture.
+     43  10000 ????						; 1.0	22/MAR/2003		Initial release
+     44  10000 ????
+     45  10000 ????
+     46  10000 ????						;-------------------------------------------------------------------------------
+     47  10000 ????
+     48  10000 ????						; TIA_BASE_ADDRESS
+     49  10000 ????						; The TIA_BASE_ADDRESS defines the base address of access to TIA registers.
+     50  10000 ????						; Normally 0, the base address should (externally, before including this file)
+     51  10000 ????						; be set to $40 when creating 3F-bankswitched (and other?) cartridges.
+     52  10000 ????						; The reason is that this bankswitching scheme treats any access to locations
+     53  10000 ????						; < $40 as a bankswitch.
+     54  10000 ????
+     55  10000 ????			   -	       IFNCONST	TIA_BASE_ADDRESS
+     56  10000 ????			   -TIA_BASE_ADDRESS =	0
+     57  10000 ????				       ENDIF
+     58  10000 ????
+     59  10000 ????						; Note: The address may be defined on the command-line using the -D switch, eg:
+     60  10000 ????						; dasm.exe code.asm -DTIA_BASE_ADDRESS=$40 -f3 -v5 -ocode.bin
+     61  10000 ????						; *OR* by declaring the label before including this file, eg:
+     62  10000 ????						; TIA_BASE_ADDRESS = $40
+     63  10000 ????						;   include "vcs.h"
+     64  10000 ????
+     65  10000 ????						; Alternate read/write address capability - allows for some disassembly compatibility
+     66  10000 ????						; usage ; to allow reassembly to binary perfect copies).  This is essentially catering
+     67  10000 ????						; for the mirrored ROM hardware registers.
+     68  10000 ????
+     69  10000 ????						; Usage: As per above, define the TIA_BASE_READ_ADDRESS and/or TIA_BASE_WRITE_ADDRESS
+     70  10000 ????						; using the -D command-line switch, as required.  If the addresses are not defined,
+     71  10000 ????						; they defaut to the TIA_BASE_ADDRESS.
+     72  10000 ????
+     73  10000 ????			   -	       IFNCONST	TIA_BASE_READ_ADDRESS
+     74  10000 ????			   -TIA_BASE_READ_ADDRESS =	TIA_BASE_ADDRESS
+     75  10000 ????				       ENDIF
+     76  10000 ????
+     77  10000 ????			   -	       IFNCONST	TIA_BASE_WRITE_ADDRESS
+     78  10000 ????			   -TIA_BASE_WRITE_ADDRESS =	TIA_BASE_ADDRESS
+     79  10000 ????				       ENDIF
+     80  10000 ????
+     81  10000 ????						;-------------------------------------------------------------------------------
+     82  10000 ????
+     83 U002d ????				      SEG.U	TIA_REGISTERS_WRITE
+     84 U0000					      ORG	TIA_BASE_WRITE_ADDRESS
+     85 U0000
+     86 U0000							; DO NOT CHANGE THE RELATIVE ORDERING OF REGISTERS!
+     87 U0000
+     88 U0000		       00	   VSYNC      ds	1	; $00	 0000 00x0   Vertical Sync Set-Clear
+     89 U0001		       00	   VBLANK     ds	1	; $01	 xx00 00x0   Vertical Blank Set-Clear
+     90 U0002		       00	   WSYNC      ds	1	; $02	 ---- ----   Wait for Horizontal Blank
+     91 U0003		       00	   RSYNC      ds	1	; $03	 ---- ----   Reset Horizontal Sync Counter
+     92 U0004		       00	   NUSIZ0     ds	1	; $04	 00xx 0xxx   Number-Size player/missle 0
+     93 U0005		       00	   NUSIZ1     ds	1	; $05	 00xx 0xxx   Number-Size player/missle 1
+     94 U0006		       00	   COLUP0     ds	1	; $06	 xxxx xxx0   Color-Luminance Player 0
+     95 U0007		       00	   COLUP1     ds	1	; $07	 xxxx xxx0   Color-Luminance Player 1
+     96 U0008		       00	   COLUPF     ds	1	; $08	 xxxx xxx0   Color-Luminance Playfield
+     97 U0009		       00	   COLUBK     ds	1	; $09	 xxxx xxx0   Color-Luminance Background
+     98 U000a		       00	   CTRLPF     ds	1	; $0A	 00xx 0xxx   Control Playfield, Ball, Collisions
+     99 U000b		       00	   REFP0      ds	1	; $0B	 0000 x000   Reflection Player 0
+    100 U000c		       00	   REFP1      ds	1	; $0C	 0000 x000   Reflection Player 1
+    101 U000d		       00	   PF0	      ds	1	; $0D	 xxxx 0000   Playfield Register Byte 0
+    102 U000e		       00	   PF1	      ds	1	; $0E	 xxxx xxxx   Playfield Register Byte 1
+    103 U000f		       00	   PF2	      ds	1	; $0F	 xxxx xxxx   Playfield Register Byte 2
+    104 U0010		       00	   RESP0      ds	1	; $10	 ---- ----   Reset Player 0
+    105 U0011		       00	   RESP1      ds	1	; $11	 ---- ----   Reset Player 1
+    106 U0012		       00	   RESM0      ds	1	; $12	 ---- ----   Reset Missle 0
+    107 U0013		       00	   RESM1      ds	1	; $13	 ---- ----   Reset Missle 1
+    108 U0014		       00	   RESBL      ds	1	; $14	 ---- ----   Reset Ball
+    109 U0015		       00	   AUDC0      ds	1	; $15	 0000 xxxx   Audio Control 0
+    110 U0016		       00	   AUDC1      ds	1	; $16	 0000 xxxx   Audio Control 1
+    111 U0017		       00	   AUDF0      ds	1	; $17	 000x xxxx   Audio Frequency 0
+    112 U0018		       00	   AUDF1      ds	1	; $18	 000x xxxx   Audio Frequency 1
+    113 U0019		       00	   AUDV0      ds	1	; $19	 0000 xxxx   Audio Volume 0
+    114 U001a		       00	   AUDV1      ds	1	; $1A	 0000 xxxx   Audio Volume 1
+    115 U001b		       00	   GRP0       ds	1	; $1B	 xxxx xxxx   Graphics Register Player 0
+    116 U001c		       00	   GRP1       ds	1	; $1C	 xxxx xxxx   Graphics Register Player 1
+    117 U001d		       00	   ENAM0      ds	1	; $1D	 0000 00x0   Graphics Enable Missle 0
+    118 U001e		       00	   ENAM1      ds	1	; $1E	 0000 00x0   Graphics Enable Missle 1
+    119 U001f		       00	   ENABL      ds	1	; $1F	 0000 00x0   Graphics Enable Ball
+    120 U0020		       00	   HMP0       ds	1	; $20	 xxxx 0000   Horizontal Motion Player 0
+    121 U0021		       00	   HMP1       ds	1	; $21	 xxxx 0000   Horizontal Motion Player 1
+    122 U0022		       00	   HMM0       ds	1	; $22	 xxxx 0000   Horizontal Motion Missle 0
+    123 U0023		       00	   HMM1       ds	1	; $23	 xxxx 0000   Horizontal Motion Missle 1
+    124 U0024		       00	   HMBL       ds	1	; $24	 xxxx 0000   Horizontal Motion Ball
+    125 U0025		       00	   VDELP0     ds	1	; $25	 0000 000x   Vertical Delay Player 0
+    126 U0026		       00	   VDELP1     ds	1	; $26	 0000 000x   Vertical Delay Player 1
+    127 U0027		       00	   VDELBL     ds	1	; $27	 0000 000x   Vertical Delay Ball
+    128 U0028		       00	   RESMP0     ds	1	; $28	 0000 00x0   Reset Missle 0 to Player 0
+    129 U0029		       00	   RESMP1     ds	1	; $29	 0000 00x0   Reset Missle 1 to Player 1
+    130 U002a		       00	   HMOVE      ds	1	; $2A	 ---- ----   Apply Horizontal Motion
+    131 U002b		       00	   HMCLR      ds	1	; $2B	 ---- ----   Clear Horizontal Move Registers
+    132 U002c		       00	   CXCLR      ds	1	; $2C	 ---- ----   Clear Collision Latches
+    133 U002d
+    134 U002d							;-------------------------------------------------------------------------------
+    135 U002d
+    136 U000e ????				      SEG.U	TIA_REGISTERS_READ
+    137 U0000					      ORG	TIA_BASE_READ_ADDRESS
+    138 U0000
+    139 U0000							;											bit 7	 bit 6
+    140 U0000		       00	   CXM0P      ds	1	; $00	     xx00 0000	     Read Collision  M0-P1   M0-P0
+    141 U0001		       00	   CXM1P      ds	1	; $01	     xx00 0000			     M1-P0   M1-P1
+    142 U0002		       00	   CXP0FB     ds	1	; $02	     xx00 0000			     P0-PF   P0-BL
+    143 U0003		       00	   CXP1FB     ds	1	; $03	     xx00 0000			     P1-PF   P1-BL
+    144 U0004		       00	   CXM0FB     ds	1	; $04	     xx00 0000			     M0-PF   M0-BL
+    145 U0005		       00	   CXM1FB     ds	1	; $05	     xx00 0000			     M1-PF   M1-BL
+    146 U0006		       00	   CXBLPF     ds	1	; $06	     x000 0000			     BL-PF   -----
+    147 U0007		       00	   CXPPMM     ds	1	; $07	     xx00 0000			     P0-P1   M0-M1
+    148 U0008		       00	   INPT0      ds	1	; $08	     x000 0000	     Read Pot Port 0
+    149 U0009		       00	   INPT1      ds	1	; $09	     x000 0000	     Read Pot Port 1
+    150 U000a		       00	   INPT2      ds	1	; $0A	     x000 0000	     Read Pot Port 2
+    151 U000b		       00	   INPT3      ds	1	; $0B	     x000 0000	     Read Pot Port 3
+    152 U000c		       00	   INPT4      ds	1	; $0C		x000 0000	 Read Input (Trigger) 0
+    153 U000d		       00	   INPT5      ds	1	; $0D		x000 0000	 Read Input (Trigger) 1
+    154 U000e
+    155 U000e							;-------------------------------------------------------------------------------
+    156 U000e
+    157 U0298 ????				      SEG.U	RIOT
+    158 U0280					      ORG	$280
+    159 U0280
+    160 U0280							; RIOT MEMORY MAP
+    161 U0280
+    162 U0280		       00	   SWCHA      ds	1	; $280      Port A data register for joysticks:
+    163 U0281							;			Bits 4-7 for player 1.  Bits 0-3 for player 2.
+    164 U0281
+    165 U0281		       00	   SWACNT     ds	1	; $281      Port A data direction register (DDR)
+    166 U0282		       00	   SWCHB      ds	1	; $282		Port B data (console switches)
+    167 U0283		       00	   SWBCNT     ds	1	; $283      Port B DDR
+    168 U0284		       00	   INTIM      ds	1	; $284		Timer output
+    169 U0285
+    170 U0285		       00	   TIMINT     ds	1	; $285
+    171 U0286
+    172 U0286							; Unused/undefined registers ($285-$294)
+    173 U0286
+    174 U0286		       00		      ds	1	; $286
+    175 U0287		       00		      ds	1	; $287
+    176 U0288		       00		      ds	1	; $288
+    177 U0289		       00		      ds	1	; $289
+    178 U028a		       00		      ds	1	; $28A
+    179 U028b		       00		      ds	1	; $28B
+    180 U028c		       00		      ds	1	; $28C
+    181 U028d		       00		      ds	1	; $28D
+    182 U028e		       00		      ds	1	; $28E
+    183 U028f		       00		      ds	1	; $28F
+    184 U0290		       00		      ds	1	; $290
+    185 U0291		       00		      ds	1	; $291
+    186 U0292		       00		      ds	1	; $292
+    187 U0293		       00		      ds	1	; $293
+    188 U0294
+    189 U0294		       00	   TIM1T      ds	1	; $294		set 1 clock interval
+    190 U0295		       00	   TIM8T      ds	1	; $295      set 8 clock interval
+    191 U0296		       00	   TIM64T     ds	1	; $296      set 64 clock interval
+    192 U0297		       00	   T1024T     ds	1	; $297      set 1024 clock interval
+    193 U0298
+    194 U0298							;-------------------------------------------------------------------------------
+    195 U0298							; The following required for back-compatibility with code which does not use
+    196 U0298							; segments.
+    197 U0298
+    198  0000 ????				      SEG
+    199  0000 ????
+    200  0000 ????						; EOF
+------- FILE kernel22.asm
+------- FILE macro.h LEVEL 2 PASS 2
+      0  0000 ????				      include	"macro.h"
+      1  0000 ????						; MACRO.H
+      2  0000 ????						; Version 1.06, 3/SEPTEMBER/2004
+      3  0000 ????
+      4  0000 ????	       00 6a	   VERSION_MACRO =	106
+      5  0000 ????
+      6  0000 ????						;
+      7  0000 ????						; THIS FILE IS EXPLICITLY SUPPORTED AS A DASM-PREFERRED COMPANION FILE
+      8  0000 ????						; PLEASE DO *NOT* REDISTRIBUTE MODIFIED VERSIONS OF THIS FILE!
+      9  0000 ????						;
+     10  0000 ????						; This file defines DASM macros useful for development for the Atari 2600.
+     11  0000 ????						; It is distributed as a companion machine-specific support package
+     12  0000 ????						; for the DASM compiler. Updates to this file, DASM, and associated tools are
+     13  0000 ????						; available at at http://www.atari2600.org/dasm
+     14  0000 ????						;
+     15  0000 ????						; Many thanks to the people who have contributed.  If you take issue with the
+     16  0000 ????						; contents, or would like to add something, please write to me
+     17  0000 ????						; (atari2600@taswegian.com) with your contribution.
+     18  0000 ????						;
+     19  0000 ????						; Latest Revisions...
+     20  0000 ????						;
+     21  0000 ????						; 1.06  03/SEP/2004	 - nice revision of VERTICAL_BLANK (Edwin Blink)
+     22  0000 ????						; 1.05  14/NOV/2003	 - Added VERSION_MACRO equate (which will reflect 100x version #)
+     23  0000 ????						;			   This will allow conditional code to verify MACRO.H being
+     24  0000 ????						;			   used for code assembly.
+     25  0000 ????						; 1.04  13/NOV/2003	 - SET_POINTER macro added (16-bit address load)
+     26  0000 ????						;
+     27  0000 ????						; 1.03  23/JUN/2003	 - CLEAN_START macro added - clears TIA, RAM, registers
+     28  0000 ????						;
+     29  0000 ????						; 1.02  14/JUN/2003	 - VERTICAL_SYNC macro added
+     30  0000 ????						;			   (standardised macro for vertical synch code)
+     31  0000 ????						; 1.01  22/MAR/2003	 - SLEEP macro added.
+     32  0000 ????						;			 - NO_ILLEGAL_OPCODES switch implemented
+     33  0000 ????						; 1.0	22/MAR/2003		Initial release
+     34  0000 ????
+     35  0000 ????						; Note: These macros use illegal opcodes.  To disable illegal opcode usage,
+     36  0000 ????						;   define the symbol NO_ILLEGAL_OPCODES (-DNO_ILLEGAL_OPCODES=1 on command-line).
+     37  0000 ????						;   If you do not allow illegal opcode usage, you must include this file
+     38  0000 ????						;   *after* including VCS.H (as the non-illegal opcodes access hardware
+     39  0000 ????						;   registers and require them to be defined first).
+     40  0000 ????
+     41  0000 ????						; Available macros...
+     42  0000 ????						;   SLEEP n		 - sleep for n cycles
+     43  0000 ????						;   VERTICAL_SYNC	 - correct 3 scanline vertical synch code
+     44  0000 ????						;   CLEAN_START	 - set machine to known state on startup
+     45  0000 ????						;   SET_POINTER	 - load a 16-bit absolute to a 16-bit variable
+     46  0000 ????
+     47  0000 ????						;-------------------------------------------------------------------------------
+     48  0000 ????						; SLEEP duration
+     49  0000 ????						; Original author: Thomas Jentzsch
+     50  0000 ????						; Inserts code which takes the specified number of cycles to execute.	This is
+     51  0000 ????						; useful for code where precise timing is required.
+     52  0000 ????						; ILLEGAL-OPCODE VERSION DOES NOT AFFECT FLAGS OR REGISTERS.
+     53  0000 ????						; LEGAL OPCODE VERSION MAY AFFECT FLAGS
+     54  0000 ????						; Uses illegal opcode (DASM 2.20.01 onwards).
+     55  0000 ????
+     56  0000 ????				      MAC	sleep
+     57  0000 ????			   .CYCLES    SET	{1}
+     58  0000 ????
+     59  0000 ????				      IF	.CYCLES < 2
+     60  0000 ????				      ECHO	"MACRO ERROR: 'SLEEP': Duration must be > 1"
+     61  0000 ????				      ERR
+     62  0000 ????				      ENDIF
+     63  0000 ????
+     64  0000 ????				      IF	.CYCLES & 1
+     65  0000 ????				      IFNCONST	NO_ILLEGAL_OPCODES
+     66  0000 ????				      nop	0
+     67  0000 ????				      ELSE
+     68  0000 ????				      bit	VSYNC
+     69  0000 ????				      ENDIF
+     70  0000 ????			   .CYCLES    SET	.CYCLES - 3
+     71  0000 ????				      ENDIF
+     72  0000 ????
+     73  0000 ????				      REPEAT	.CYCLES / 2
+     74  0000 ????				      nop
+     75  0000 ????				      REPEND
+     76  0000 ????				      ENDM		;usage: SLEEP n (n>1)
+     77  0000 ????
+     78  0000 ????						;-------------------------------------------------------------------------------
+     79  0000 ????						; VERTICAL_SYNC
+     80  0000 ????						; revised version by Edwin Blink -- saves bytes!
+     81  0000 ????						; Inserts the code required for a proper 3 scanline vertical sync sequence
+     82  0000 ????						; Note: Alters the accumulator
+     83  0000 ????
+     84  0000 ????						; OUT: A = 0
+     85  0000 ????
+     86  0000 ????				      MAC	vertical_sync
+     87  0000 ????				      lda	#%1110	; each '1' bits generate a VSYNC ON line (bits 1..3)
+     88  0000 ????			   .VSLP1     sta	WSYNC	; 1st '0' bit resets Vsync, 2nd '0' bit exit loop
+     89  0000 ????				      sta	VSYNC
+     90  0000 ????				      lsr
+     91  0000 ????				      bne	.VSLP1	; branch until VYSNC has been reset
+     92  0000 ????				      ENDM
+     93  0000 ????
+     94  0000 ????						;-------------------------------------------------------------------------------
+     95  0000 ????						; CLEAN_START
+     96  0000 ????						; Original author: Andrew Davie
+     97  0000 ????						; Standardised start-up code, clears stack, all TIA registers and RAM to 0
+     98  0000 ????						; Sets stack pointer to $FF, and all registers to 0
+     99  0000 ????						; Sets decimal mode off, sets interrupt flag (kind of un-necessary)
+    100  0000 ????						; Use as very first section of code on boot (ie: at reset)
+    101  0000 ????						; Code written to minimise total ROM usage - uses weird 6502 knowledge :)
+    102  0000 ????
+    103  0000 ????				      MAC	clean_start
+    104  0000 ????				      sei
+    105  0000 ????				      cld
+    106  0000 ????
+    107  0000 ????				      ldx	#0
+    108  0000 ????				      txa
+    109  0000 ????				      tay
+    110  0000 ????			   .CLEAR_STACK dex
+    111  0000 ????				      txs
+    112  0000 ????				      pha
+    113  0000 ????				      bne	.CLEAR_STACK	; SP=$FF, X = A = Y = 0
+    114  0000 ????
+    115  0000 ????				      ENDM
+    116  0000 ????
+    117  0000 ????						;-------------------------------------------------------
+    118  0000 ????						; SET_POINTER
+    119  0000 ????						; Original author: Manuel Rotschkar
+    120  0000 ????						;
+    121  0000 ????						; Sets a 2 byte RAM pointer to an absolute address.
+    122  0000 ????						;
+    123  0000 ????						; Usage: SET_POINTER pointer, address
+    124  0000 ????						; Example: SET_POINTER SpritePTR, SpriteData
+    125  0000 ????						;
+    126  0000 ????						; Note: Alters the accumulator, NZ flags
+    127  0000 ????						; IN 1: 2 byte RAM location reserved for pointer
+    128  0000 ????						; IN 2: absolute address
+    129  0000 ????
+    130  0000 ????				      MAC	set_pointer
+    131  0000 ????			   .POINTER   SET	{1}
+    132  0000 ????			   .ADDRESS   SET	{2}
+    133  0000 ????
+    134  0000 ????				      LDA	#<.ADDRESS	; Get Lowbyte of Address
+    135  0000 ????				      STA	.POINTER	; Store in pointer
+    136  0000 ????				      LDA	#>.ADDRESS	; Get Hibyte of Address
+    137  0000 ????				      STA	.POINTER+1	; Store in pointer+1
+    138  0000 ????
+    139  0000 ????				      ENDM
+    140  0000 ????
+    141  0000 ????						;-------------------------------------------------------
+    142  0000 ????						; BOUNDARY byte#
+    143  0000 ????						; Original author: Denis Debro (borrowed from Bob Smith / Thomas)
+    144  0000 ????						;
+    145  0000 ????						; Push data to a certain position inside a page and keep count of how
+    146  0000 ????						; many free bytes the programmer will have.
+    147  0000 ????						;
+    148  0000 ????						; eg: BOUNDARY 5    ; position at byte #5 in page
+    149  0000 ????
+    150  0000 ????			   .FREE_BYTES SET	0
+    151  0000 ????				      MAC	boundary
+    152  0000 ????				      REPEAT	256
+    153  0000 ????				      IF	<. % {1} = 0
+    154  0000 ????				      MEXIT
+    155  0000 ????				      ELSE
+    156  0000 ????			   .FREE_BYTES SET	.FREE_BYTES + 1
+    157  0000 ????				      .byte	$00
+    158  0000 ????				      ENDIF
+    159  0000 ????				      REPEND
+    160  0000 ????				      ENDM
+    161  0000 ????
+    162  0000 ????
+    163  0000 ????						; EOF
+------- FILE kernel22.asm
+     10  0000 ????
+     11  0000 ????
+     12 U0081 ????				      SEG.U	vars
+     13 U0080					      ORG	$80
+     14 U0080
+     15 U0080		       00	   SpriteXPosition ds	1
+     16 U0081
+     17 U0081
+     18 U0081
+     19 U0081							;------------------------------------------------------------------------------
+     20 U0081
+     21  10000 ????				       SEG	code
+     22  f000					      ORG	$F000
+     23  f000
+     24  f000				   Reset
+     25  f000
+     26  f000							; Clear RAM and all TIA registers
+     27  f000
+     28  f000		       a2 00		      ldx	#0
+     29  f002		       a9 00		      lda	#0
+     30  f004		       95 00	   Clear      sta	0,x
+     31  f006		       e8		      inx
+     32  f007		       d0 fb		      bne	Clear
+     33  f009
+     34  f009		       a2 ff		      ldx	#$FF
+     35  f00b		       9a		      txs
+     36  f00c
+     37  f00c							;------------------------------------------------
+     38  f00c							; Once-only initialisation...
+     39  f00c
+     40  f00c		       a9 45		      lda	#$45
+     41  f00e		       85 08		      sta	COLUPF	; set the playfield colour
+     42  f010
+     43  f010		       a9 56		      lda	#$56
+     44  f012		       85 06		      sta	COLUP0
+     45  f014		       a9 67		      lda	#$67
+     46  f016		       85 07		      sta	COLUP1
+     47  f018
+     48  f018		       a9 01		      lda	#%00000001
+     49  f01a		       85 0a		      sta	CTRLPF	; reflect playfield
+     50  f01c
+     51  f01c							;------------------------------------------------
+     52  f01c
+     53  f01c				   StartOfFrame
+     54  f01c
+     55  f01c							; Start of new frame
+     56  f01c							; Start of vertical blank processing
+     57  f01c
+     58  f01c		       a9 00		      lda	#0
+     59  f01e		       85 01		      sta	VBLANK
+     60  f020
+     61  f020		       a9 02		      lda	#2
+     62  f022		       85 00		      sta	VSYNC
+     63  f024
+     64  f024		       85 02		      sta	WSYNC
+     65  f026		       85 02		      sta	WSYNC
+     66  f028		       85 02		      sta	WSYNC	; 3 scanlines of VSYNC signal
+     67  f02a
+     68  f02a		       a9 00		      lda	#0
+     69  f02c		       85 00		      sta	VSYNC
+     70  f02e
+     71  f02e							;------------------------------------------------
+     72  f02e							; 37 scanlines of vertical blank...
+     73  f02e
+     74  f02e		       a2 00		      ldx	#0
+     75  f030		       85 02	   VerticalBlank sta	WSYNC
+     76  f032		       e8		      inx
+     77  f033		       e0 25		      cpx	#37
+     78  f035		       d0 f9		      bne	VerticalBlank
+     79  f037
+     80  f037
+     81  f037
+     82  f037							;------------------------------------------------
+     83  f037							; Do 192 scanlines of colour-changing (our picture)
+     84  f037
+     85  f037		       a2 00		      ldx	#0	; this counts our scanline number
+     86  f039
+     87  f039		       a9 ff		      lda	#%11111111
+     88  f03b		       85 0d		      sta	PF0
+     89  f03d		       85 0e		      sta	PF1
+     90  f03f		       85 0f		      sta	PF2
+     91  f041
+     92  f041							; We won't bother rewriting PF0-PF2 every scanline of the top 8 lines - they never change!
+     93  f041
+     94  f041		       85 02	   Top8Lines  sta	WSYNC
+     95  f043		       e8		      inx
+     96  f044		       e0 08		      cpx	#8	; are we at line 8?
+     97  f046		       d0 f9		      bne	Top8Lines	; No, so do another
+     98  f048
+     99  f048							; Now we want 178 lines of "wall"
+    100  f048
+    101  f048		       a9 10		      lda	#%00010000	; PF0 is mirrored <--- direction, low 4 bits ignored
+    102  f04a		       85 0d		      sta	PF0
+    103  f04c		       a9 00		      lda	#0
+    104  f04e		       85 0e		      sta	PF1
+    105  f050		       85 0f		      sta	PF2
+    106  f052
+    107  f052							; again, we don't bother writing PF0-PF2 every scanline - they never change!
+    108  f052
+    109  f052		       85 02		      sta	WSYNC
+    110  f054
+    111  f054
+    112  f054
+    113  f054							; Now adjust the sprite position
+    114  f054
+    115  f054		       e6 80		      inc	SpriteXPosition
+    116  f056		       a6 80		      ldx	SpriteXPosition
+    117  f058		       e0 a0		      cpx	#160
+    118  f05a		       90 04		      bcc	LT160
+    119  f05c		       a2 00		      ldx	#0
+    120  f05e		       86 80		      stx	SpriteXPosition
+    121  f060				   LT160
+    122  f060		       20 8d f1 	      jsr	PositionSprite
+    123  f063
+    124  f063				   MiddleLines
+    125  f063		       86 1b		      stx	GRP0	; modify sprite 0 shape
+    126  f065		       86 1c		      stx	GRP1
+    127  f067
+    128  f067		       85 02		      sta	WSYNC
+    129  f069		       e8		      inx
+    130  f06a
+    131  f06a		       e0 b8		      cpx	#184
+    132  f06c		       d0 f5		      bne	MiddleLines
+    133  f06e
+    134  f06e							; Finally, our bottom 8 scanlines - the same as the top 8
+    135  f06e							; AGAIN, we aren't going to bother writing PF0-PF2 mid scanline!
+    136  f06e
+    137  f06e		       a9 ff		      lda	#%11111111
+    138  f070		       85 0d		      sta	PF0
+    139  f072		       85 0e		      sta	PF1
+    140  f074		       85 0f		      sta	PF2
+    141  f076
+    142  f076		       85 02	   Bottom8Lines sta	WSYNC
+    143  f078		       e8		      inx
+    144  f079		       e0 c0		      cpx	#192
+    145  f07b		       d0 f9		      bne	Bottom8Lines
+    146  f07d
+    147  f07d							;------------------------------------------------
+    148  f07d
+    149  f07d
+    150  f07d		       a9 42		      lda	#%01000010
+    151  f07f		       85 01		      sta	VBLANK	; end of screen - enter blanking
+    152  f081
+    153  f081							; 30 scanlines of overscan...
+    154  f081
+    155  f081		       a2 00		      ldx	#0
+    156  f083		       85 02	   Overscan   sta	WSYNC
+    157  f085		       e8		      inx
+    158  f086		       e0 1e		      cpx	#30
+    159  f088		       d0 f9		      bne	Overscan
+    160  f08a
+    161  f08a		       4c 1c f0 	      jmp	StartOfFrame
+    162  f08d
+    163  f08d
+    164  f08d
+    165  f08d				   Divide15
+    166  f08d				   .POS       SET	0
+    167  f08d					      REPEAT	256
+    168  f08d		       01		      .byte.b	(.POS / 15) + 1
+    169  f08d				   .POS       SET	.POS + 1
+    167  f08d					      REPEND
+    168  f08e		       01		      .byte.b	(.POS / 15) + 1
+    169  f08e				   .POS       SET	.POS + 1
+    167  f08e					      REPEND
+    168  f08f		       01		      .byte.b	(.POS / 15) + 1
+    169  f08f				   .POS       SET	.POS + 1
+    167  f08f					      REPEND
+    168  f090		       01		      .byte.b	(.POS / 15) + 1
+    169  f090				   .POS       SET	.POS + 1
+    167  f090					      REPEND
+    168  f091		       01		      .byte.b	(.POS / 15) + 1
+    169  f091				   .POS       SET	.POS + 1
+    167  f091					      REPEND
+    168  f092		       01		      .byte.b	(.POS / 15) + 1
+    169  f092				   .POS       SET	.POS + 1
+    167  f092					      REPEND
+    168  f093		       01		      .byte.b	(.POS / 15) + 1
+    169  f093				   .POS       SET	.POS + 1
+    167  f093					      REPEND
+    168  f094		       01		      .byte.b	(.POS / 15) + 1
+    169  f094				   .POS       SET	.POS + 1
+    167  f094					      REPEND
+    168  f095		       01		      .byte.b	(.POS / 15) + 1
+    169  f095				   .POS       SET	.POS + 1
+    167  f095					      REPEND
+    168  f096		       01		      .byte.b	(.POS / 15) + 1
+    169  f096				   .POS       SET	.POS + 1
+    167  f096					      REPEND
+    168  f097		       01		      .byte.b	(.POS / 15) + 1
+    169  f097				   .POS       SET	.POS + 1
+    167  f097					      REPEND
+    168  f098		       01		      .byte.b	(.POS / 15) + 1
+    169  f098				   .POS       SET	.POS + 1
+    167  f098					      REPEND
+    168  f099		       01		      .byte.b	(.POS / 15) + 1
+    169  f099				   .POS       SET	.POS + 1
+    167  f099					      REPEND
+    168  f09a		       01		      .byte.b	(.POS / 15) + 1
+    169  f09a				   .POS       SET	.POS + 1
+    167  f09a					      REPEND
+    168  f09b		       01		      .byte.b	(.POS / 15) + 1
+    169  f09b				   .POS       SET	.POS + 1
+    167  f09b					      REPEND
+    168  f09c		       02		      .byte.b	(.POS / 15) + 1
+    169  f09c				   .POS       SET	.POS + 1
+    167  f09c					      REPEND
+    168  f09d		       02		      .byte.b	(.POS / 15) + 1
+    169  f09d				   .POS       SET	.POS + 1
+    167  f09d					      REPEND
+    168  f09e		       02		      .byte.b	(.POS / 15) + 1
+    169  f09e				   .POS       SET	.POS + 1
+    167  f09e					      REPEND
+    168  f09f		       02		      .byte.b	(.POS / 15) + 1
+    169  f09f				   .POS       SET	.POS + 1
+    167  f09f					      REPEND
+    168  f0a0		       02		      .byte.b	(.POS / 15) + 1
+    169  f0a0				   .POS       SET	.POS + 1
+    167  f0a0					      REPEND
+    168  f0a1		       02		      .byte.b	(.POS / 15) + 1
+    169  f0a1				   .POS       SET	.POS + 1
+    167  f0a1					      REPEND
+    168  f0a2		       02		      .byte.b	(.POS / 15) + 1
+    169  f0a2				   .POS       SET	.POS + 1
+    167  f0a2					      REPEND
+    168  f0a3		       02		      .byte.b	(.POS / 15) + 1
+    169  f0a3				   .POS       SET	.POS + 1
+    167  f0a3					      REPEND
+    168  f0a4		       02		      .byte.b	(.POS / 15) + 1
+    169  f0a4				   .POS       SET	.POS + 1
+    167  f0a4					      REPEND
+    168  f0a5		       02		      .byte.b	(.POS / 15) + 1
+    169  f0a5				   .POS       SET	.POS + 1
+    167  f0a5					      REPEND
+    168  f0a6		       02		      .byte.b	(.POS / 15) + 1
+    169  f0a6				   .POS       SET	.POS + 1
+    167  f0a6					      REPEND
+    168  f0a7		       02		      .byte.b	(.POS / 15) + 1
+    169  f0a7				   .POS       SET	.POS + 1
+    167  f0a7					      REPEND
+    168  f0a8		       02		      .byte.b	(.POS / 15) + 1
+    169  f0a8				   .POS       SET	.POS + 1
+    167  f0a8					      REPEND
+    168  f0a9		       02		      .byte.b	(.POS / 15) + 1
+    169  f0a9				   .POS       SET	.POS + 1
+    167  f0a9					      REPEND
+    168  f0aa		       02		      .byte.b	(.POS / 15) + 1
+    169  f0aa				   .POS       SET	.POS + 1
+    167  f0aa					      REPEND
+    168  f0ab		       03		      .byte.b	(.POS / 15) + 1
+    169  f0ab				   .POS       SET	.POS + 1
+    167  f0ab					      REPEND
+    168  f0ac		       03		      .byte.b	(.POS / 15) + 1
+    169  f0ac				   .POS       SET	.POS + 1
+    167  f0ac					      REPEND
+    168  f0ad		       03		      .byte.b	(.POS / 15) + 1
+    169  f0ad				   .POS       SET	.POS + 1
+    167  f0ad					      REPEND
+    168  f0ae		       03		      .byte.b	(.POS / 15) + 1
+    169  f0ae				   .POS       SET	.POS + 1
+    167  f0ae					      REPEND
+    168  f0af		       03		      .byte.b	(.POS / 15) + 1
+    169  f0af				   .POS       SET	.POS + 1
+    167  f0af					      REPEND
+    168  f0b0		       03		      .byte.b	(.POS / 15) + 1
+    169  f0b0				   .POS       SET	.POS + 1
+    167  f0b0					      REPEND
+    168  f0b1		       03		      .byte.b	(.POS / 15) + 1
+    169  f0b1				   .POS       SET	.POS + 1
+    167  f0b1					      REPEND
+    168  f0b2		       03		      .byte.b	(.POS / 15) + 1
+    169  f0b2				   .POS       SET	.POS + 1
+    167  f0b2					      REPEND
+    168  f0b3		       03		      .byte.b	(.POS / 15) + 1
+    169  f0b3				   .POS       SET	.POS + 1
+    167  f0b3					      REPEND
+    168  f0b4		       03		      .byte.b	(.POS / 15) + 1
+    169  f0b4				   .POS       SET	.POS + 1
+    167  f0b4					      REPEND
+    168  f0b5		       03		      .byte.b	(.POS / 15) + 1
+    169  f0b5				   .POS       SET	.POS + 1
+    167  f0b5					      REPEND
+    168  f0b6		       03		      .byte.b	(.POS / 15) + 1
+    169  f0b6				   .POS       SET	.POS + 1
+    167  f0b6					      REPEND
+    168  f0b7		       03		      .byte.b	(.POS / 15) + 1
+    169  f0b7				   .POS       SET	.POS + 1
+    167  f0b7					      REPEND
+    168  f0b8		       03		      .byte.b	(.POS / 15) + 1
+    169  f0b8				   .POS       SET	.POS + 1
+    167  f0b8					      REPEND
+    168  f0b9		       03		      .byte.b	(.POS / 15) + 1
+    169  f0b9				   .POS       SET	.POS + 1
+    167  f0b9					      REPEND
+    168  f0ba		       04		      .byte.b	(.POS / 15) + 1
+    169  f0ba				   .POS       SET	.POS + 1
+    167  f0ba					      REPEND
+    168  f0bb		       04		      .byte.b	(.POS / 15) + 1
+    169  f0bb				   .POS       SET	.POS + 1
+    167  f0bb					      REPEND
+    168  f0bc		       04		      .byte.b	(.POS / 15) + 1
+    169  f0bc				   .POS       SET	.POS + 1
+    167  f0bc					      REPEND
+    168  f0bd		       04		      .byte.b	(.POS / 15) + 1
+    169  f0bd				   .POS       SET	.POS + 1
+    167  f0bd					      REPEND
+    168  f0be		       04		      .byte.b	(.POS / 15) + 1
+    169  f0be				   .POS       SET	.POS + 1
+    167  f0be					      REPEND
+    168  f0bf		       04		      .byte.b	(.POS / 15) + 1
+    169  f0bf				   .POS       SET	.POS + 1
+    167  f0bf					      REPEND
+    168  f0c0		       04		      .byte.b	(.POS / 15) + 1
+    169  f0c0				   .POS       SET	.POS + 1
+    167  f0c0					      REPEND
+    168  f0c1		       04		      .byte.b	(.POS / 15) + 1
+    169  f0c1				   .POS       SET	.POS + 1
+    167  f0c1					      REPEND
+    168  f0c2		       04		      .byte.b	(.POS / 15) + 1
+    169  f0c2				   .POS       SET	.POS + 1
+    167  f0c2					      REPEND
+    168  f0c3		       04		      .byte.b	(.POS / 15) + 1
+    169  f0c3				   .POS       SET	.POS + 1
+    167  f0c3					      REPEND
+    168  f0c4		       04		      .byte.b	(.POS / 15) + 1
+    169  f0c4				   .POS       SET	.POS + 1
+    167  f0c4					      REPEND
+    168  f0c5		       04		      .byte.b	(.POS / 15) + 1
+    169  f0c5				   .POS       SET	.POS + 1
+    167  f0c5					      REPEND
+    168  f0c6		       04		      .byte.b	(.POS / 15) + 1
+    169  f0c6				   .POS       SET	.POS + 1
+    167  f0c6					      REPEND
+    168  f0c7		       04		      .byte.b	(.POS / 15) + 1
+    169  f0c7				   .POS       SET	.POS + 1
+    167  f0c7					      REPEND
+    168  f0c8		       04		      .byte.b	(.POS / 15) + 1
+    169  f0c8				   .POS       SET	.POS + 1
+    167  f0c8					      REPEND
+    168  f0c9		       05		      .byte.b	(.POS / 15) + 1
+    169  f0c9				   .POS       SET	.POS + 1
+    167  f0c9					      REPEND
+    168  f0ca		       05		      .byte.b	(.POS / 15) + 1
+    169  f0ca				   .POS       SET	.POS + 1
+    167  f0ca					      REPEND
+    168  f0cb		       05		      .byte.b	(.POS / 15) + 1
+    169  f0cb				   .POS       SET	.POS + 1
+    167  f0cb					      REPEND
+    168  f0cc		       05		      .byte.b	(.POS / 15) + 1
+    169  f0cc				   .POS       SET	.POS + 1
+    167  f0cc					      REPEND
+    168  f0cd		       05		      .byte.b	(.POS / 15) + 1
+    169  f0cd				   .POS       SET	.POS + 1
+    167  f0cd					      REPEND
+    168  f0ce		       05		      .byte.b	(.POS / 15) + 1
+    169  f0ce				   .POS       SET	.POS + 1
+    167  f0ce					      REPEND
+    168  f0cf		       05		      .byte.b	(.POS / 15) + 1
+    169  f0cf				   .POS       SET	.POS + 1
+    167  f0cf					      REPEND
+    168  f0d0		       05		      .byte.b	(.POS / 15) + 1
+    169  f0d0				   .POS       SET	.POS + 1
+    167  f0d0					      REPEND
+    168  f0d1		       05		      .byte.b	(.POS / 15) + 1
+    169  f0d1				   .POS       SET	.POS + 1
+    167  f0d1					      REPEND
+    168  f0d2		       05		      .byte.b	(.POS / 15) + 1
+    169  f0d2				   .POS       SET	.POS + 1
+    167  f0d2					      REPEND
+    168  f0d3		       05		      .byte.b	(.POS / 15) + 1
+    169  f0d3				   .POS       SET	.POS + 1
+    167  f0d3					      REPEND
+    168  f0d4		       05		      .byte.b	(.POS / 15) + 1
+    169  f0d4				   .POS       SET	.POS + 1
+    167  f0d4					      REPEND
+    168  f0d5		       05		      .byte.b	(.POS / 15) + 1
+    169  f0d5				   .POS       SET	.POS + 1
+    167  f0d5					      REPEND
+    168  f0d6		       05		      .byte.b	(.POS / 15) + 1
+    169  f0d6				   .POS       SET	.POS + 1
+    167  f0d6					      REPEND
+    168  f0d7		       05		      .byte.b	(.POS / 15) + 1
+    169  f0d7				   .POS       SET	.POS + 1
+    167  f0d7					      REPEND
+    168  f0d8		       06		      .byte.b	(.POS / 15) + 1
+    169  f0d8				   .POS       SET	.POS + 1
+    167  f0d8					      REPEND
+    168  f0d9		       06		      .byte.b	(.POS / 15) + 1
+    169  f0d9				   .POS       SET	.POS + 1
+    167  f0d9					      REPEND
+    168  f0da		       06		      .byte.b	(.POS / 15) + 1
+    169  f0da				   .POS       SET	.POS + 1
+    167  f0da					      REPEND
+    168  f0db		       06		      .byte.b	(.POS / 15) + 1
+    169  f0db				   .POS       SET	.POS + 1
+    167  f0db					      REPEND
+    168  f0dc		       06		      .byte.b	(.POS / 15) + 1
+    169  f0dc				   .POS       SET	.POS + 1
+    167  f0dc					      REPEND
+    168  f0dd		       06		      .byte.b	(.POS / 15) + 1
+    169  f0dd				   .POS       SET	.POS + 1
+    167  f0dd					      REPEND
+    168  f0de		       06		      .byte.b	(.POS / 15) + 1
+    169  f0de				   .POS       SET	.POS + 1
+    167  f0de					      REPEND
+    168  f0df		       06		      .byte.b	(.POS / 15) + 1
+    169  f0df				   .POS       SET	.POS + 1
+    167  f0df					      REPEND
+    168  f0e0		       06		      .byte.b	(.POS / 15) + 1
+    169  f0e0				   .POS       SET	.POS + 1
+    167  f0e0					      REPEND
+    168  f0e1		       06		      .byte.b	(.POS / 15) + 1
+    169  f0e1				   .POS       SET	.POS + 1
+    167  f0e1					      REPEND
+    168  f0e2		       06		      .byte.b	(.POS / 15) + 1
+    169  f0e2				   .POS       SET	.POS + 1
+    167  f0e2					      REPEND
+    168  f0e3		       06		      .byte.b	(.POS / 15) + 1
+    169  f0e3				   .POS       SET	.POS + 1
+    167  f0e3					      REPEND
+    168  f0e4		       06		      .byte.b	(.POS / 15) + 1
+    169  f0e4				   .POS       SET	.POS + 1
+    167  f0e4					      REPEND
+    168  f0e5		       06		      .byte.b	(.POS / 15) + 1
+    169  f0e5				   .POS       SET	.POS + 1
+    167  f0e5					      REPEND
+    168  f0e6		       06		      .byte.b	(.POS / 15) + 1
+    169  f0e6				   .POS       SET	.POS + 1
+    167  f0e6					      REPEND
+    168  f0e7		       07		      .byte.b	(.POS / 15) + 1
+    169  f0e7				   .POS       SET	.POS + 1
+    167  f0e7					      REPEND
+    168  f0e8		       07		      .byte.b	(.POS / 15) + 1
+    169  f0e8				   .POS       SET	.POS + 1
+    167  f0e8					      REPEND
+    168  f0e9		       07		      .byte.b	(.POS / 15) + 1
+    169  f0e9				   .POS       SET	.POS + 1
+    167  f0e9					      REPEND
+    168  f0ea		       07		      .byte.b	(.POS / 15) + 1
+    169  f0ea				   .POS       SET	.POS + 1
+    167  f0ea					      REPEND
+    168  f0eb		       07		      .byte.b	(.POS / 15) + 1
+    169  f0eb				   .POS       SET	.POS + 1
+    167  f0eb					      REPEND
+    168  f0ec		       07		      .byte.b	(.POS / 15) + 1
+    169  f0ec				   .POS       SET	.POS + 1
+    167  f0ec					      REPEND
+    168  f0ed		       07		      .byte.b	(.POS / 15) + 1
+    169  f0ed				   .POS       SET	.POS + 1
+    167  f0ed					      REPEND
+    168  f0ee		       07		      .byte.b	(.POS / 15) + 1
+    169  f0ee				   .POS       SET	.POS + 1
+    167  f0ee					      REPEND
+    168  f0ef		       07		      .byte.b	(.POS / 15) + 1
+    169  f0ef				   .POS       SET	.POS + 1
+    167  f0ef					      REPEND
+    168  f0f0		       07		      .byte.b	(.POS / 15) + 1
+    169  f0f0				   .POS       SET	.POS + 1
+    167  f0f0					      REPEND
+    168  f0f1		       07		      .byte.b	(.POS / 15) + 1
+    169  f0f1				   .POS       SET	.POS + 1
+    167  f0f1					      REPEND
+    168  f0f2		       07		      .byte.b	(.POS / 15) + 1
+    169  f0f2				   .POS       SET	.POS + 1
+    167  f0f2					      REPEND
+    168  f0f3		       07		      .byte.b	(.POS / 15) + 1
+    169  f0f3				   .POS       SET	.POS + 1
+    167  f0f3					      REPEND
+    168  f0f4		       07		      .byte.b	(.POS / 15) + 1
+    169  f0f4				   .POS       SET	.POS + 1
+    167  f0f4					      REPEND
+    168  f0f5		       07		      .byte.b	(.POS / 15) + 1
+    169  f0f5				   .POS       SET	.POS + 1
+    167  f0f5					      REPEND
+    168  f0f6		       08		      .byte.b	(.POS / 15) + 1
+    169  f0f6				   .POS       SET	.POS + 1
+    167  f0f6					      REPEND
+    168  f0f7		       08		      .byte.b	(.POS / 15) + 1
+    169  f0f7				   .POS       SET	.POS + 1
+    167  f0f7					      REPEND
+    168  f0f8		       08		      .byte.b	(.POS / 15) + 1
+    169  f0f8				   .POS       SET	.POS + 1
+    167  f0f8					      REPEND
+    168  f0f9		       08		      .byte.b	(.POS / 15) + 1
+    169  f0f9				   .POS       SET	.POS + 1
+    167  f0f9					      REPEND
+    168  f0fa		       08		      .byte.b	(.POS / 15) + 1
+    169  f0fa				   .POS       SET	.POS + 1
+    167  f0fa					      REPEND
+    168  f0fb		       08		      .byte.b	(.POS / 15) + 1
+    169  f0fb				   .POS       SET	.POS + 1
+    167  f0fb					      REPEND
+    168  f0fc		       08		      .byte.b	(.POS / 15) + 1
+    169  f0fc				   .POS       SET	.POS + 1
+    167  f0fc					      REPEND
+    168  f0fd		       08		      .byte.b	(.POS / 15) + 1
+    169  f0fd				   .POS       SET	.POS + 1
+    167  f0fd					      REPEND
+    168  f0fe		       08		      .byte.b	(.POS / 15) + 1
+    169  f0fe				   .POS       SET	.POS + 1
+    167  f0fe					      REPEND
+    168  f0ff		       08		      .byte.b	(.POS / 15) + 1
+    169  f0ff				   .POS       SET	.POS + 1
+    167  f0ff					      REPEND
+    168  f100		       08		      .byte.b	(.POS / 15) + 1
+    169  f100				   .POS       SET	.POS + 1
+    167  f100					      REPEND
+    168  f101		       08		      .byte.b	(.POS / 15) + 1
+    169  f101				   .POS       SET	.POS + 1
+    167  f101					      REPEND
+    168  f102		       08		      .byte.b	(.POS / 15) + 1
+    169  f102				   .POS       SET	.POS + 1
+    167  f102					      REPEND
+    168  f103		       08		      .byte.b	(.POS / 15) + 1
+    169  f103				   .POS       SET	.POS + 1
+    167  f103					      REPEND
+    168  f104		       08		      .byte.b	(.POS / 15) + 1
+    169  f104				   .POS       SET	.POS + 1
+    167  f104					      REPEND
+    168  f105		       09		      .byte.b	(.POS / 15) + 1
+    169  f105				   .POS       SET	.POS + 1
+    167  f105					      REPEND
+    168  f106		       09		      .byte.b	(.POS / 15) + 1
+    169  f106				   .POS       SET	.POS + 1
+    167  f106					      REPEND
+    168  f107		       09		      .byte.b	(.POS / 15) + 1
+    169  f107				   .POS       SET	.POS + 1
+    167  f107					      REPEND
+    168  f108		       09		      .byte.b	(.POS / 15) + 1
+    169  f108				   .POS       SET	.POS + 1
+    167  f108					      REPEND
+    168  f109		       09		      .byte.b	(.POS / 15) + 1
+    169  f109				   .POS       SET	.POS + 1
+    167  f109					      REPEND
+    168  f10a		       09		      .byte.b	(.POS / 15) + 1
+    169  f10a				   .POS       SET	.POS + 1
+    167  f10a					      REPEND
+    168  f10b		       09		      .byte.b	(.POS / 15) + 1
+    169  f10b				   .POS       SET	.POS + 1
+    167  f10b					      REPEND
+    168  f10c		       09		      .byte.b	(.POS / 15) + 1
+    169  f10c				   .POS       SET	.POS + 1
+    167  f10c					      REPEND
+    168  f10d		       09		      .byte.b	(.POS / 15) + 1
+    169  f10d				   .POS       SET	.POS + 1
+    167  f10d					      REPEND
+    168  f10e		       09		      .byte.b	(.POS / 15) + 1
+    169  f10e				   .POS       SET	.POS + 1
+    167  f10e					      REPEND
+    168  f10f		       09		      .byte.b	(.POS / 15) + 1
+    169  f10f				   .POS       SET	.POS + 1
+    167  f10f					      REPEND
+    168  f110		       09		      .byte.b	(.POS / 15) + 1
+    169  f110				   .POS       SET	.POS + 1
+    167  f110					      REPEND
+    168  f111		       09		      .byte.b	(.POS / 15) + 1
+    169  f111				   .POS       SET	.POS + 1
+    167  f111					      REPEND
+    168  f112		       09		      .byte.b	(.POS / 15) + 1
+    169  f112				   .POS       SET	.POS + 1
+    167  f112					      REPEND
+    168  f113		       09		      .byte.b	(.POS / 15) + 1
+    169  f113				   .POS       SET	.POS + 1
+    167  f113					      REPEND
+    168  f114		       0a		      .byte.b	(.POS / 15) + 1
+    169  f114				   .POS       SET	.POS + 1
+    167  f114					      REPEND
+    168  f115		       0a		      .byte.b	(.POS / 15) + 1
+    169  f115				   .POS       SET	.POS + 1
+    167  f115					      REPEND
+    168  f116		       0a		      .byte.b	(.POS / 15) + 1
+    169  f116				   .POS       SET	.POS + 1
+    167  f116					      REPEND
+    168  f117		       0a		      .byte.b	(.POS / 15) + 1
+    169  f117				   .POS       SET	.POS + 1
+    167  f117					      REPEND
+    168  f118		       0a		      .byte.b	(.POS / 15) + 1
+    169  f118				   .POS       SET	.POS + 1
+    167  f118					      REPEND
+    168  f119		       0a		      .byte.b	(.POS / 15) + 1
+    169  f119				   .POS       SET	.POS + 1
+    167  f119					      REPEND
+    168  f11a		       0a		      .byte.b	(.POS / 15) + 1
+    169  f11a				   .POS       SET	.POS + 1
+    167  f11a					      REPEND
+    168  f11b		       0a		      .byte.b	(.POS / 15) + 1
+    169  f11b				   .POS       SET	.POS + 1
+    167  f11b					      REPEND
+    168  f11c		       0a		      .byte.b	(.POS / 15) + 1
+    169  f11c				   .POS       SET	.POS + 1
+    167  f11c					      REPEND
+    168  f11d		       0a		      .byte.b	(.POS / 15) + 1
+    169  f11d				   .POS       SET	.POS + 1
+    167  f11d					      REPEND
+    168  f11e		       0a		      .byte.b	(.POS / 15) + 1
+    169  f11e				   .POS       SET	.POS + 1
+    167  f11e					      REPEND
+    168  f11f		       0a		      .byte.b	(.POS / 15) + 1
+    169  f11f				   .POS       SET	.POS + 1
+    167  f11f					      REPEND
+    168  f120		       0a		      .byte.b	(.POS / 15) + 1
+    169  f120				   .POS       SET	.POS + 1
+    167  f120					      REPEND
+    168  f121		       0a		      .byte.b	(.POS / 15) + 1
+    169  f121				   .POS       SET	.POS + 1
+    167  f121					      REPEND
+    168  f122		       0a		      .byte.b	(.POS / 15) + 1
+    169  f122				   .POS       SET	.POS + 1
+    167  f122					      REPEND
+    168  f123		       0b		      .byte.b	(.POS / 15) + 1
+    169  f123				   .POS       SET	.POS + 1
+    167  f123					      REPEND
+    168  f124		       0b		      .byte.b	(.POS / 15) + 1
+    169  f124				   .POS       SET	.POS + 1
+    167  f124					      REPEND
+    168  f125		       0b		      .byte.b	(.POS / 15) + 1
+    169  f125				   .POS       SET	.POS + 1
+    167  f125					      REPEND
+    168  f126		       0b		      .byte.b	(.POS / 15) + 1
+    169  f126				   .POS       SET	.POS + 1
+    167  f126					      REPEND
+    168  f127		       0b		      .byte.b	(.POS / 15) + 1
+    169  f127				   .POS       SET	.POS + 1
+    167  f127					      REPEND
+    168  f128		       0b		      .byte.b	(.POS / 15) + 1
+    169  f128				   .POS       SET	.POS + 1
+    167  f128					      REPEND
+    168  f129		       0b		      .byte.b	(.POS / 15) + 1
+    169  f129				   .POS       SET	.POS + 1
+    167  f129					      REPEND
+    168  f12a		       0b		      .byte.b	(.POS / 15) + 1
+    169  f12a				   .POS       SET	.POS + 1
+    167  f12a					      REPEND
+    168  f12b		       0b		      .byte.b	(.POS / 15) + 1
+    169  f12b				   .POS       SET	.POS + 1
+    167  f12b					      REPEND
+    168  f12c		       0b		      .byte.b	(.POS / 15) + 1
+    169  f12c				   .POS       SET	.POS + 1
+    167  f12c					      REPEND
+    168  f12d		       0b		      .byte.b	(.POS / 15) + 1
+    169  f12d				   .POS       SET	.POS + 1
+    167  f12d					      REPEND
+    168  f12e		       0b		      .byte.b	(.POS / 15) + 1
+    169  f12e				   .POS       SET	.POS + 1
+    167  f12e					      REPEND
+    168  f12f		       0b		      .byte.b	(.POS / 15) + 1
+    169  f12f				   .POS       SET	.POS + 1
+    167  f12f					      REPEND
+    168  f130		       0b		      .byte.b	(.POS / 15) + 1
+    169  f130				   .POS       SET	.POS + 1
+    167  f130					      REPEND
+    168  f131		       0b		      .byte.b	(.POS / 15) + 1
+    169  f131				   .POS       SET	.POS + 1
+    167  f131					      REPEND
+    168  f132		       0c		      .byte.b	(.POS / 15) + 1
+    169  f132				   .POS       SET	.POS + 1
+    167  f132					      REPEND
+    168  f133		       0c		      .byte.b	(.POS / 15) + 1
+    169  f133				   .POS       SET	.POS + 1
+    167  f133					      REPEND
+    168  f134		       0c		      .byte.b	(.POS / 15) + 1
+    169  f134				   .POS       SET	.POS + 1
+    167  f134					      REPEND
+    168  f135		       0c		      .byte.b	(.POS / 15) + 1
+    169  f135				   .POS       SET	.POS + 1
+    167  f135					      REPEND
+    168  f136		       0c		      .byte.b	(.POS / 15) + 1
+    169  f136				   .POS       SET	.POS + 1
+    167  f136					      REPEND
+    168  f137		       0c		      .byte.b	(.POS / 15) + 1
+    169  f137				   .POS       SET	.POS + 1
+    167  f137					      REPEND
+    168  f138		       0c		      .byte.b	(.POS / 15) + 1
+    169  f138				   .POS       SET	.POS + 1
+    167  f138					      REPEND
+    168  f139		       0c		      .byte.b	(.POS / 15) + 1
+    169  f139				   .POS       SET	.POS + 1
+    167  f139					      REPEND
+    168  f13a		       0c		      .byte.b	(.POS / 15) + 1
+    169  f13a				   .POS       SET	.POS + 1
+    167  f13a					      REPEND
+    168  f13b		       0c		      .byte.b	(.POS / 15) + 1
+    169  f13b				   .POS       SET	.POS + 1
+    167  f13b					      REPEND
+    168  f13c		       0c		      .byte.b	(.POS / 15) + 1
+    169  f13c				   .POS       SET	.POS + 1
+    167  f13c					      REPEND
+    168  f13d		       0c		      .byte.b	(.POS / 15) + 1
+    169  f13d				   .POS       SET	.POS + 1
+    167  f13d					      REPEND
+    168  f13e		       0c		      .byte.b	(.POS / 15) + 1
+    169  f13e				   .POS       SET	.POS + 1
+    167  f13e					      REPEND
+    168  f13f		       0c		      .byte.b	(.POS / 15) + 1
+    169  f13f				   .POS       SET	.POS + 1
+    167  f13f					      REPEND
+    168  f140		       0c		      .byte.b	(.POS / 15) + 1
+    169  f140				   .POS       SET	.POS + 1
+    167  f140					      REPEND
+    168  f141		       0d		      .byte.b	(.POS / 15) + 1
+    169  f141				   .POS       SET	.POS + 1
+    167  f141					      REPEND
+    168  f142		       0d		      .byte.b	(.POS / 15) + 1
+    169  f142				   .POS       SET	.POS + 1
+    167  f142					      REPEND
+    168  f143		       0d		      .byte.b	(.POS / 15) + 1
+    169  f143				   .POS       SET	.POS + 1
+    167  f143					      REPEND
+    168  f144		       0d		      .byte.b	(.POS / 15) + 1
+    169  f144				   .POS       SET	.POS + 1
+    167  f144					      REPEND
+    168  f145		       0d		      .byte.b	(.POS / 15) + 1
+    169  f145				   .POS       SET	.POS + 1
+    167  f145					      REPEND
+    168  f146		       0d		      .byte.b	(.POS / 15) + 1
+    169  f146				   .POS       SET	.POS + 1
+    167  f146					      REPEND
+    168  f147		       0d		      .byte.b	(.POS / 15) + 1
+    169  f147				   .POS       SET	.POS + 1
+    167  f147					      REPEND
+    168  f148		       0d		      .byte.b	(.POS / 15) + 1
+    169  f148				   .POS       SET	.POS + 1
+    167  f148					      REPEND
+    168  f149		       0d		      .byte.b	(.POS / 15) + 1
+    169  f149				   .POS       SET	.POS + 1
+    167  f149					      REPEND
+    168  f14a		       0d		      .byte.b	(.POS / 15) + 1
+    169  f14a				   .POS       SET	.POS + 1
+    167  f14a					      REPEND
+    168  f14b		       0d		      .byte.b	(.POS / 15) + 1
+    169  f14b				   .POS       SET	.POS + 1
+    167  f14b					      REPEND
+    168  f14c		       0d		      .byte.b	(.POS / 15) + 1
+    169  f14c				   .POS       SET	.POS + 1
+    167  f14c					      REPEND
+    168  f14d		       0d		      .byte.b	(.POS / 15) + 1
+    169  f14d				   .POS       SET	.POS + 1
+    167  f14d					      REPEND
+    168  f14e		       0d		      .byte.b	(.POS / 15) + 1
+    169  f14e				   .POS       SET	.POS + 1
+    167  f14e					      REPEND
+    168  f14f		       0d		      .byte.b	(.POS / 15) + 1
+    169  f14f				   .POS       SET	.POS + 1
+    167  f14f					      REPEND
+    168  f150		       0e		      .byte.b	(.POS / 15) + 1
+    169  f150				   .POS       SET	.POS + 1
+    167  f150					      REPEND
+    168  f151		       0e		      .byte.b	(.POS / 15) + 1
+    169  f151				   .POS       SET	.POS + 1
+    167  f151					      REPEND
+    168  f152		       0e		      .byte.b	(.POS / 15) + 1
+    169  f152				   .POS       SET	.POS + 1
+    167  f152					      REPEND
+    168  f153		       0e		      .byte.b	(.POS / 15) + 1
+    169  f153				   .POS       SET	.POS + 1
+    167  f153					      REPEND
+    168  f154		       0e		      .byte.b	(.POS / 15) + 1
+    169  f154				   .POS       SET	.POS + 1
+    167  f154					      REPEND
+    168  f155		       0e		      .byte.b	(.POS / 15) + 1
+    169  f155				   .POS       SET	.POS + 1
+    167  f155					      REPEND
+    168  f156		       0e		      .byte.b	(.POS / 15) + 1
+    169  f156				   .POS       SET	.POS + 1
+    167  f156					      REPEND
+    168  f157		       0e		      .byte.b	(.POS / 15) + 1
+    169  f157				   .POS       SET	.POS + 1
+    167  f157					      REPEND
+    168  f158		       0e		      .byte.b	(.POS / 15) + 1
+    169  f158				   .POS       SET	.POS + 1
+    167  f158					      REPEND
+    168  f159		       0e		      .byte.b	(.POS / 15) + 1
+    169  f159				   .POS       SET	.POS + 1
+    167  f159					      REPEND
+    168  f15a		       0e		      .byte.b	(.POS / 15) + 1
+    169  f15a				   .POS       SET	.POS + 1
+    167  f15a					      REPEND
+    168  f15b		       0e		      .byte.b	(.POS / 15) + 1
+    169  f15b				   .POS       SET	.POS + 1
+    167  f15b					      REPEND
+    168  f15c		       0e		      .byte.b	(.POS / 15) + 1
+    169  f15c				   .POS       SET	.POS + 1
+    167  f15c					      REPEND
+    168  f15d		       0e		      .byte.b	(.POS / 15) + 1
+    169  f15d				   .POS       SET	.POS + 1
+    167  f15d					      REPEND
+    168  f15e		       0e		      .byte.b	(.POS / 15) + 1
+    169  f15e				   .POS       SET	.POS + 1
+    167  f15e					      REPEND
+    168  f15f		       0f		      .byte.b	(.POS / 15) + 1
+    169  f15f				   .POS       SET	.POS + 1
+    167  f15f					      REPEND
+    168  f160		       0f		      .byte.b	(.POS / 15) + 1
+    169  f160				   .POS       SET	.POS + 1
+    167  f160					      REPEND
+    168  f161		       0f		      .byte.b	(.POS / 15) + 1
+    169  f161				   .POS       SET	.POS + 1
+    167  f161					      REPEND
+    168  f162		       0f		      .byte.b	(.POS / 15) + 1
+    169  f162				   .POS       SET	.POS + 1
+    167  f162					      REPEND
+    168  f163		       0f		      .byte.b	(.POS / 15) + 1
+    169  f163				   .POS       SET	.POS + 1
+    167  f163					      REPEND
+    168  f164		       0f		      .byte.b	(.POS / 15) + 1
+    169  f164				   .POS       SET	.POS + 1
+    167  f164					      REPEND
+    168  f165		       0f		      .byte.b	(.POS / 15) + 1
+    169  f165				   .POS       SET	.POS + 1
+    167  f165					      REPEND
+    168  f166		       0f		      .byte.b	(.POS / 15) + 1
+    169  f166				   .POS       SET	.POS + 1
+    167  f166					      REPEND
+    168  f167		       0f		      .byte.b	(.POS / 15) + 1
+    169  f167				   .POS       SET	.POS + 1
+    167  f167					      REPEND
+    168  f168		       0f		      .byte.b	(.POS / 15) + 1
+    169  f168				   .POS       SET	.POS + 1
+    167  f168					      REPEND
+    168  f169		       0f		      .byte.b	(.POS / 15) + 1
+    169  f169				   .POS       SET	.POS + 1
+    167  f169					      REPEND
+    168  f16a		       0f		      .byte.b	(.POS / 15) + 1
+    169  f16a				   .POS       SET	.POS + 1
+    167  f16a					      REPEND
+    168  f16b		       0f		      .byte.b	(.POS / 15) + 1
+    169  f16b				   .POS       SET	.POS + 1
+    167  f16b					      REPEND
+    168  f16c		       0f		      .byte.b	(.POS / 15) + 1
+    169  f16c				   .POS       SET	.POS + 1
+    167  f16c					      REPEND
+    168  f16d		       0f		      .byte.b	(.POS / 15) + 1
+    169  f16d				   .POS       SET	.POS + 1
+    167  f16d					      REPEND
+    168  f16e		       10		      .byte.b	(.POS / 15) + 1
+    169  f16e				   .POS       SET	.POS + 1
+    167  f16e					      REPEND
+    168  f16f		       10		      .byte.b	(.POS / 15) + 1
+    169  f16f				   .POS       SET	.POS + 1
+    167  f16f					      REPEND
+    168  f170		       10		      .byte.b	(.POS / 15) + 1
+    169  f170				   .POS       SET	.POS + 1
+    167  f170					      REPEND
+    168  f171		       10		      .byte.b	(.POS / 15) + 1
+    169  f171				   .POS       SET	.POS + 1
+    167  f171					      REPEND
+    168  f172		       10		      .byte.b	(.POS / 15) + 1
+    169  f172				   .POS       SET	.POS + 1
+    167  f172					      REPEND
+    168  f173		       10		      .byte.b	(.POS / 15) + 1
+    169  f173				   .POS       SET	.POS + 1
+    167  f173					      REPEND
+    168  f174		       10		      .byte.b	(.POS / 15) + 1
+    169  f174				   .POS       SET	.POS + 1
+    167  f174					      REPEND
+    168  f175		       10		      .byte.b	(.POS / 15) + 1
+    169  f175				   .POS       SET	.POS + 1
+    167  f175					      REPEND
+    168  f176		       10		      .byte.b	(.POS / 15) + 1
+    169  f176				   .POS       SET	.POS + 1
+    167  f176					      REPEND
+    168  f177		       10		      .byte.b	(.POS / 15) + 1
+    169  f177				   .POS       SET	.POS + 1
+    167  f177					      REPEND
+    168  f178		       10		      .byte.b	(.POS / 15) + 1
+    169  f178				   .POS       SET	.POS + 1
+    167  f178					      REPEND
+    168  f179		       10		      .byte.b	(.POS / 15) + 1
+    169  f179				   .POS       SET	.POS + 1
+    167  f179					      REPEND
+    168  f17a		       10		      .byte.b	(.POS / 15) + 1
+    169  f17a				   .POS       SET	.POS + 1
+    167  f17a					      REPEND
+    168  f17b		       10		      .byte.b	(.POS / 15) + 1
+    169  f17b				   .POS       SET	.POS + 1
+    167  f17b					      REPEND
+    168  f17c		       10		      .byte.b	(.POS / 15) + 1
+    169  f17c				   .POS       SET	.POS + 1
+    167  f17c					      REPEND
+    168  f17d		       11		      .byte.b	(.POS / 15) + 1
+    169  f17d				   .POS       SET	.POS + 1
+    167  f17d					      REPEND
+    168  f17e		       11		      .byte.b	(.POS / 15) + 1
+    169  f17e				   .POS       SET	.POS + 1
+    167  f17e					      REPEND
+    168  f17f		       11		      .byte.b	(.POS / 15) + 1
+    169  f17f				   .POS       SET	.POS + 1
+    167  f17f					      REPEND
+    168  f180		       11		      .byte.b	(.POS / 15) + 1
+    169  f180				   .POS       SET	.POS + 1
+    167  f180					      REPEND
+    168  f181		       11		      .byte.b	(.POS / 15) + 1
+    169  f181				   .POS       SET	.POS + 1
+    167  f181					      REPEND
+    168  f182		       11		      .byte.b	(.POS / 15) + 1
+    169  f182				   .POS       SET	.POS + 1
+    167  f182					      REPEND
+    168  f183		       11		      .byte.b	(.POS / 15) + 1
+    169  f183				   .POS       SET	.POS + 1
+    167  f183					      REPEND
+    168  f184		       11		      .byte.b	(.POS / 15) + 1
+    169  f184				   .POS       SET	.POS + 1
+    167  f184					      REPEND
+    168  f185		       11		      .byte.b	(.POS / 15) + 1
+    169  f185				   .POS       SET	.POS + 1
+    167  f185					      REPEND
+    168  f186		       11		      .byte.b	(.POS / 15) + 1
+    169  f186				   .POS       SET	.POS + 1
+    167  f186					      REPEND
+    168  f187		       11		      .byte.b	(.POS / 15) + 1
+    169  f187				   .POS       SET	.POS + 1
+    167  f187					      REPEND
+    168  f188		       11		      .byte.b	(.POS / 15) + 1
+    169  f188				   .POS       SET	.POS + 1
+    167  f188					      REPEND
+    168  f189		       11		      .byte.b	(.POS / 15) + 1
+    169  f189				   .POS       SET	.POS + 1
+    167  f189					      REPEND
+    168  f18a		       11		      .byte.b	(.POS / 15) + 1
+    169  f18a				   .POS       SET	.POS + 1
+    167  f18a					      REPEND
+    168  f18b		       11		      .byte.b	(.POS / 15) + 1
+    169  f18b				   .POS       SET	.POS + 1
+    167  f18b					      REPEND
+    168  f18c		       12		      .byte.b	(.POS / 15) + 1
+    169  f18c				   .POS       SET	.POS + 1
+    170  f18d					      REPEND
+    171  f18d
+    172  f18d				   PositionSprite
+    173  f18d
+    174  f18d		       85 02		      sta	WSYNC
+    175  f18f
+    176  f18f							; Pass X register holding desired X position of sprite!
+    177  f18f
+    178  f18f		       bd 8d f0 	      lda	Divide15,x	; xPosition / 15
+    179  f192		       aa		      tax
+    180  f193		       ca	   SimpleLoop dex
+    181  f194		       d0 fd		      bne	SimpleLoop
+    182  f196
+    183  f196		       85 10		      sta	RESP0	; start drawing the sprite
+    184  f198		       60		      rts
+    185  f199
+    186  f199
+    187  f199
+    188  f199							;------------------------------------------------------------------------------
+    189  f199
+    190  fffa					      ORG	$FFFA
+    191  fffa
+    192  fffa				   InterruptVectors
+    193  fffa
+    194  fffa		       00 f0		      .word.w	Reset	; NMI
+    195  fffc		       00 f0		      .word.w	Reset	; RESET
+    196  fffe		       00 f0		      .word.w	Reset	; IRQ
+    197  10000
+    198  10000					       END
