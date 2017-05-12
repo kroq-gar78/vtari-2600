@@ -2,6 +2,7 @@
 #define TIA_H
 
 #include <stdint.h>
+#include <SDL.h>
 
 #include "cpu.h"
 #include "mem.h"
@@ -68,6 +69,7 @@
 #define INPT2 0x3A
 #define INPT3 0x3B
 #define INPT4 0x3C
+#define INPT5 0x3D
 
 // dimensions and sizes
 #define NTSC_WIDTH 228
@@ -101,6 +103,8 @@ extern int ntsc_rgb[128];
 
 extern byte tia_read(ushrt addr);
 extern void tia_write(ushrt addr, byte value);
+
+extern void tia_handleKeyboard(SDL_KeyboardEvent* event);
 
 extern void tia_init();
 extern void tia_tick();

@@ -301,6 +301,7 @@ int main(int argc, char* argv[])
             printf("A %x X %x Y %x\n", reg_a, reg_x, reg_y);
             next_pc = pc + addr_mode_len[addr_mode];
             cpu_cycles_left = opcodes_cycles[inst_opcode];
+            printf("SWCHA 0x%02x INPT4 0x%02x IPT5 0x%02x\n", pia_mem[SWCHA], tia_mem[INPT4], tia_mem[INPT5]);
 
             // fetch and execute
             F2 inst = opcodes[inst_opcode];
@@ -324,6 +325,10 @@ int main(int argc, char* argv[])
         if(SDL_PollEvent(&event) && (event.type == SDL_QUIT || (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)))
         {
             break;
+        }
+        else if(event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
+        {
+            tia_handleKeyboard(&event.key);
         }
     }
     if(opcodes[mem_get8(pc)] == inst_brk)

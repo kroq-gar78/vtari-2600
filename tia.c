@@ -58,6 +58,8 @@ byte tia_read(ushrt addr)
             break;
         case INPT4:
             break;
+        case INPT5:
+            break;
         default:
             printf("TIA: unknown read addr 0x%x\n", addr);
             return 0;
@@ -203,11 +205,69 @@ void tia_write(ushrt addr, byte value)
     }
 }
 
+// TODO: this is actually handled by the PIA, not TIA
+void tia_handleKeyboard(SDL_KeyboardEvent* event)
+{
+    /*if(event->type == SDL_KEYDOWN)
+    {
+        printf("KEYBOARD Down\n");
+    }
+    else
+    {
+        printf("KEYBOARD Release\n");
+    }*/
+
+    // `0` means circuit closed, `1` means circuit open
+    // to use player1, press the arrow key with LShift
+    bool player1 = (event->keysym.mod & KMOD_LSHIFT) != 0;
+    bool keyup = event->type == SDL_KEYUP;
+    int bit = 0;
+    switch(event->keysym.sym)
+    {
+        case SDLK_RIGHT:
+            bit = 7-player1;
+            break;
+        case SDLK_LEFT:
+            bit = 6-player1;
+            break;
+        case SDLK_DOWN:
+            bit = 5-player1;
+            break;
+        case SDLK_UP:
+            bit = 4-player1;
+            break;
+        case SDLK_SPACE:
+            if(!player1)
+            {
+                tia_mem[INPT4] &= ~(1<<7);
+                tia_mem[INPT4] |= keyup<<7;
+            }
+            else
+            {
+                tia_mem[INPT5] &= ~(1<<7);
+                tia_mem[INPT5] |= keyup<<7;
+            }
+            break;
+    }
+    if(event->keysym.sym != SDLK_SPACE)
+    {
+        pia_mem[SWCHA] &= ~(1<<bit);
+        pia_mem[SWCHA] |= keyup<<bit;
+    }
+
+    /*tia_mem[INPT4] &= ~(1<<7);
+    tia_mem[INPT4] |= (keyup && !player1)<<7;
+    tia_mem[INPT5] &= ~(1<<7);
+    tia_mem[INPT5] |= (keyup &&  player1)<<7;*/
+}
+
 void tia_init()
 {
     tia_state = TIA_STATE_NORMAL;
     tia_x = 0;
     tia_y = 0;
+    tia_mem[INPT4] = 0x80;
+    tia_mem[INPT5] = 0x80;
 }
 
 // pos = reset sprite; data = sprite data; color = color; ref = reflect; *vdel = vertical delay
