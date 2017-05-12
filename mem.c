@@ -13,7 +13,7 @@ byte pia_mem[8];
 void mem_init()
 {
     pia_mem[SWCHA] = 0xFF;
-    pia_mem[SWCHB] = 0b0011111;
+    pia_mem[SWCHB] = 0b00111111;
 }
 
 //void mem_map(ushrt guest, ushrt count);
