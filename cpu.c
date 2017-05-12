@@ -21,6 +21,14 @@ int timer_int = 1; // timer interval
 bool cpu_halted = false;
 unsigned int frame_num = 0;
 byte* mmap_p; // pointer to mmap'd file
+SDL_Renderer* renderer;
+SDL_Window* window;
+
+// account for the blanks, overscan, etc.
+int v_start = DISPLAY_V_START;
+int v_end = DISPLAY_V_END;
+int h_start = DISPLAY_H_START;
+int h_end = DISPLAY_H_END;
 
 ushrt addr_abs(ushrt addr);
 ushrt addr_abs_x(ushrt addr);
@@ -186,6 +194,28 @@ byte* ldr_mmap_file(char *filename)
     return p;
 }
 
+void draw_frame()
+{
+    // go through the grid and set colors
+    for(int y = v_start; y < v_end; y++)
+    {
+        for(int x = h_start; x < h_end; x++)
+        {
+            int color = ntsc_rgb[tia_display[y][x]>>1];
+            SDL_SetRenderDrawColor(renderer, color&0xff, (color>>8)&0xff, (color>>16)&0xff, 0);
+            // rectangle from: http://stackoverflow.com/a/21903973
+            SDL_Rect r;
+            r.x = (x-h_start)*WINDOW_ZOOM*COLOR_CLOCK_WIDTH;
+            r.y = (y-v_start)*WINDOW_ZOOM;
+            r.w = WINDOW_ZOOM*COLOR_CLOCK_WIDTH;
+            r.h = WINDOW_ZOOM;
+            SDL_RenderFillRect(renderer, &r);
+        }
+    }
+
+    SDL_RenderPresent(renderer);
+}
+
 int main(int argc, char* argv[])
 {
     if(argc < 2)
@@ -194,19 +224,12 @@ int main(int argc, char* argv[])
         exit(1);
     }
 
-    // account for the blanks, overscan, etc.
-    int v_start = DISPLAY_V_START;
-    int v_end = DISPLAY_V_END;
-    int h_start = DISPLAY_H_START;
-    int h_end = DISPLAY_H_END;
 
     char window_title[120];
     sprintf(window_title, "Vtari 2600 - %s", argv[1]);
 
     // http://stackoverflow.com/a/35989490
     SDL_Event event;
-    SDL_Renderer* renderer;
-    SDL_Window* window;
 
     SDL_Init(SDL_INIT_VIDEO);
     //SDL_CreateWindowAndRenderer((h_end-h_start)*WINDOW_ZOOM*COLOR_CLOCK_WIDTH, (v_end-v_start)*WINDOW_ZOOM, 0, &window, &renderer);
@@ -274,24 +297,7 @@ int main(int argc, char* argv[])
 
         if((cycle % (NTSC_HEIGHT*NTSC_WIDTH)) == 0)
         {
-            // go through the grid and set colors
-            for(int y = v_start; y < v_end; y++)
-            {
-                for(int x = h_start; x < h_end; x++)
-                {
-                    int color = ntsc_rgb[tia_display[y][x]>>1];
-                    SDL_SetRenderDrawColor(renderer, color&0xff, (color>>8)&0xff, (color>>16)&0xff, 0);
-                    // rectangle from: http://stackoverflow.com/a/21903973
-                    SDL_Rect r;
-                    r.x = (x-h_start)*WINDOW_ZOOM*COLOR_CLOCK_WIDTH;
-                    r.y = (y-v_start)*WINDOW_ZOOM;
-                    r.w = WINDOW_ZOOM*COLOR_CLOCK_WIDTH;
-                    r.h = WINDOW_ZOOM;
-                    SDL_RenderFillRect(renderer, &r);
-                }
-            }
-
-            SDL_RenderPresent(renderer);
+            draw_frame();
             frame_num++;
             SDL_Delay(17); // 17 ms ~= 60Hz; guarantee max 60Hz framerate
         }
@@ -369,6 +375,19 @@ bool setflag_c_direct(bool status) // carry
         return false;
     }
 }
+bool setflag_n_direct(bool status) // negative
+{
+    if(status)
+    {
+        reg_p |= FLAGS_NEGATIVE;
+        return true;
+    }
+    else
+    {
+        reg_p &= ~FLAGS_NEGATIVE;
+        return false;
+    }
+}
 bool setflag_v_direct(bool status) // overflow
 {
     if(status)
@@ -440,10 +459,8 @@ int _bit(byte a, byte b)
 {
     byte result = a&b;
 
-    reg_p &= (~FLAGS_NEGATIVE) & (~FLAGS_OVERFLOW);
-    reg_p |= (b & FLAGS_NEGATIVE);
-    reg_p |= (b & FLAGS_OVERFLOW);
-
+    setflag_n_direct(b & FLAGS_NEGATIVE);
+    setflag_v_direct(b & FLAGS_OVERFLOW);
     setflag_z(result);
 
     return result;
@@ -455,8 +472,7 @@ int _cmp(byte a, byte b)
     byte result = a >= b;
 
     setflag_c_direct(a >= b); // TODO: is this a signed comparison?
-    setflag_z(a-b);
-    setflag_n(a);
+    setflag_nz(a-b);
 
     return result;
 }
