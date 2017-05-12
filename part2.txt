@@ -3,12 +3,23 @@ Due: 5/5/2017 @ 11:59pm
 
 (1) What did you end up doing?
 
+I built a semi-functional Atari 2600 emulator. It is not entirely accurate (e.g. cycle counts are a little off), and there are no games that I know of are completely playable. However, there are a collection of simple tests that do work (tests/kernel*.bin). My emulator does render graphics to the screen.
+
+Also, certain parts of the three games I provided (in roms/) do work. The Rubik's Cube simulator renders parts of the cube, and does the initial scramble. In Space Invaders, the player and some of the aliens render and move. In Pac-Man, the playfield and all the sprites render, albeit with the sprites in the wrong places.
 
 (2) What was hard?
 
+While implementing the MOS 6502 CPU was difficult (especially while trying to maximize code reuse), debugging was significantly harder. Since I had no extensive (accessible) tests for the CPU, so I relied on graphical output to debug all of my instructions. Eventually I used the Stella emulator's built-in debugger, and that allowed me to see which of my instructions were wrong. What truly made this annoying was the time it took to narrow down a bug. It took me a total of 6 hours to realize I had swapped the arguments of all transfer (e.g. TXA) instructions, and that I replaced an 8 with a 0 when reading 2bytes from memory. Together, these 2 simple bugs took me from a black screen to what I have now in almost all my games.
+
+Understanding how timing in the CPU and the TIA worked was also difficult (especially with regard to sprite placement), and was what made debugging difficult too. Eventually, I stopped trying to debug specific problems in games (e.g. sprites being placed wrong) because I realized my inaccuracies in timing had likely accumulated too much, resulting in very difficult-to-fix bugs.
 
 (3) What did you learn?
 
+First and foremost, I learned that implementing things correctly the first time is always a good idea.
+
+On a more serious note, reading hardware documentation and implementing my emulator to perform similarly was difficult, but I learned new terminology and tropes in hardware documentation. Further, I learned how earlier computers interacted with other computers and technology (e.g. controllers, TV/video). I also learned to appreciate more complex emulators, given that I had to much trouble with such a primitive system.
+
+I finally also learned how to effectively generate code, reducing possible typos. Instead of manually implementing each of the ~150 opcodes, I parsed the table using regex's and split the table into two: one with the base instruction (e.g. ADC), and one with the addressing mode (e.g. absolute). This allowed me to cut the number of functions by at least half. I also generated the skeleton code for each of these instructions (e.g. `inst_adc`), where I determined the addressing mode and fetched 8bits *and* 16bits at the given address, even if I didn't need to. This allowed me to quickly implement each instruction, letting me focus on the instruction logic instead of writing skeleton code. I think I finally learned how to maximally reuse code.
 
 (4) What should your score be (out of 100)?
 
@@ -16,7 +27,13 @@ Due: 5/5/2017 @ 11:59pm
 (5) Give me clear and concise instruction that would help me:
 
     (a) run your code and see that it worked
-    To compile, on Ubuntu you would need the packages "libsdl2-dev" and "libsdl2-ttf-dev".
+    To compile, on Ubuntu you would need the packages "libsdl2-dev" and "libsdl2-ttf-dev". Running `make all` will produce an executable "cpu". (I also included a compiled `cpu` just in case.) To run an Atari 2600 binary, simply run `./cpu <filename> >/dev/null`. (Warning: there is a lot of debug output, so make sure to include `>/dev/null`). There are example tests in `tests/` from a website (cited in `links.txt`) that do show simple things (e.g. color test, sprites, moving sprites). There are 3 games located in the `roms/` folder, and basic features in each game work (described at the top).
+
+    To exit, press ESC. To move in a direction, use arrow keys. To fire, press Space (you can't see the effect). To reset the game press `z`. To select the game press `x`. You will need to a reset (and possibly select) to start Space Invaders. Movement is (strangely) reversed in this game.
 
     (b) browse your code
+    The entrypoint of the program is `cpu.c`, which also contains the CPU emulator (it has all the instructions, which is why it's so long). The handler for memory (the PIA and RIOT (RAM)) is in `mem.c`, and `mem_set` and `mem_get8` handle almost all accesses to memory.
+    TIA emulation is found in `tia.c`, but is accessed through `mem.c`. In the original console, this chip handled rendering graphics to the screen. I essentially simulated the scanning electron beam of the TV in this module. Keyboard input is also handled here.
+
+    All foreign sources of code are either documented in `links.txt`, or in the relevant section of code.
 

@@ -205,7 +205,7 @@ void tia_write(ushrt addr, byte value)
     }
 }
 
-// TODO: this is actually handled by the PIA, not TIA
+// TODO: keyboard input is actually handled by the PIA, not TIA
 void tia_handleKeyboard(SDL_KeyboardEvent* event)
 {
     /*if(event->type == SDL_KEYDOWN)
