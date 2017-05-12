@@ -13,7 +13,7 @@ TESTFILES = ${patsubst %.S,%,${SFILES}}
 
 TESTDIR=testdir/
 
-CFLAGS = -std=c99 -g -O0 -Wall -Werror -Wno-unused-variable -DATARI_2600 -lm $(shell sdl2-config --cflags) $(shell sdl2-config --libs)
+CFLAGS = -std=c99 -g -O0 -Wall -Werror -Wno-unused-variable -DATARI_2600 -DRENDER_FPS -lm $(shell sdl2-config --cflags) $(shell sdl2-config --libs) -lSDL2_ttf
 
 all : $(TARGET)
 

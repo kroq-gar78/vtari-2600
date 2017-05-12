@@ -7,6 +7,7 @@
 #include <SDL.h>
 
 #include "cpu.h"
+#include "fps.h"
 #include "mem.h"
 #include "tia.h"
 
@@ -196,6 +197,9 @@ byte* ldr_mmap_file(char *filename)
 
 void draw_frame()
 {
+    // clear the screen before drawing anything
+    SDL_RenderClear(renderer);
+
     // go through the grid and set colors
     for(int y = v_start; y < v_end; y++)
     {
@@ -212,6 +216,16 @@ void draw_frame()
             SDL_RenderFillRect(renderer, &r);
         }
     }
+
+#ifdef RENDER_FPS
+    // draw the FPS to top-left corner if it's enabled
+    SDL_Rect text_rect;
+    char fps_str[10];
+    sprintf(fps_str, "FPS: %.2f", framespersecond);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+    get_text_and_rect(renderer, 0, 0, fps_str, font, &fps_texture, &text_rect);
+    SDL_RenderCopy(renderer, fps_texture, NULL, &text_rect);
+#endif
 
     SDL_RenderPresent(renderer);
 }
@@ -249,6 +263,7 @@ int main(int argc, char* argv[])
     unsigned int cycle = 0;
     mem_init();
     tia_init();
+    fpsinit();
 
     /*int getwindowsize_h;
     int getwindowsize_w;
@@ -297,6 +312,7 @@ int main(int argc, char* argv[])
 
         if((cycle % (NTSC_HEIGHT*NTSC_WIDTH)) == 0)
         {
+            fpsthink();
             draw_frame();
             frame_num++;
             SDL_Delay(17); // 17 ms ~= 60Hz; guarantee max 60Hz framerate

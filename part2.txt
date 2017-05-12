@@ -15,6 +15,8 @@ Due: 5/5/2017 @ 11:59pm
 
 (5) Give me clear and concise instruction that would help me:
 
-     (a) run your code and see that it worked
-     (b) browse your code
+    (a) run your code and see that it worked
+    To compile, on Ubuntu you would need the packages "libsdl2-dev" and "libsdl2-ttf-dev".
+
+    (b) browse your code
 
