@@ -151,7 +151,7 @@ unsigned int cycle;
 // http://www.pagetable.com/?p=410
 ushrt vec_nmi;
 ushrt vec_reset;
-ushrt vec_irq; // also for BRK
+ushrt vec_irq; // also for BRK (vec_brk)
 
 void cpu_init()
 {
@@ -230,10 +230,6 @@ void cpu_exec()
         {
             tia_handleKeyboard(&event.key);
         }
-    }
-    if(opcodes[mem_get8(pc)] == inst_brk)
-    {
-        printf("BRK (exit) pc %x\n", pc);
     }
 }
 
@@ -523,6 +519,31 @@ ushrt _pull16()
     ushrt ret = _pull(); // lower byte
     ret |= (_pull() << 8); // higher byte
     return ret;
+}
+
+
+// interrupts
+// for more on interrupts, see: http://www.pagetable.com/?p=410
+ushrt _brk()
+{
+    _push16(pc);
+    _push(reg_p | FLAGS_BREAK);
+    next_pc = vec_irq;
+    return next_pc;
+}
+ushrt _irq()
+{
+    _push16(pc);
+    _push(reg_p & ~FLAGS_BREAK);
+    next_pc = vec_irq;
+    return next_pc;
+}
+ushrt _nmi()
+{
+    _push16(pc);
+    _push(reg_p & ~FLAGS_BREAK);
+    next_pc = vec_nmi;
+    return next_pc;
 }
 
 // addressing modes
@@ -826,7 +847,7 @@ short inst_brk(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
-    MISSING();
+    _brk();
     return 0;
 }
 short inst_bvc(ushrt addr, int addr_mode)
