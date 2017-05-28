@@ -147,10 +147,19 @@ int opcodes_cycles[256] =
 unsigned int cpu_cycles_left;
 unsigned int cycle;
 
+// for more about these operations, see:
+// http://www.pagetable.com/?p=410
+ushrt vec_nmi;
+ushrt vec_reset;
+ushrt vec_irq; // also for BRK
+
 void cpu_init()
 {
-    // according to randomterrain.com, this contains the entrypoint
-    pc = mem_get16(0xfffc);
+    vec_nmi = mem_get16(0xfffa);
+    vec_reset = mem_get16(0xfffc);
+    vec_irq = mem_get16(0xfffe);
+
+    pc = vec_reset;
     printf("entrypoint 0x%x\n", pc);
 
     cpu_cycles_left = opcodes_cycles[mem_get8(pc)];
