@@ -311,6 +311,7 @@ bool setflag_v_direct(bool status) // overflow
     }
 }
 
+// the "core" functionality of various instructions
 int _adc(byte a, byte b)
 {
     if(reg_p & FLAGS_DECIMAL)
@@ -432,41 +433,6 @@ int _or(byte a, byte b)
     return result;
 }
 
-int _push(byte val)
-{
-    if((sp & 0xff) == 0x80)
-    {
-        fprintf(stderr, "Stack overrun (pull)\n");
-    }
-    mem_set8(sp, val);
-    sp--;
-
-    return sp;
-}
-int _push16(ushrt val) // for pushing the PC
-{
-    _push(val>>8);
-    _push(val&0xff);
-    return sp;
-}
-
-int _pull() // like pop?
-{
-    if((sp & 0xff) == 0xff)
-    {
-        fprintf(stderr, "Stack overrun (pull)\n");
-    }
-    byte result = mem_get8(++sp);
-
-    return result;
-}
-int _pull16()
-{
-    ushrt ret = _pull(); // lower byte
-    ret |= (_pull() << 8); // higher byte
-    return ret;
-}
-
 int _rol(byte a)
 {
     byte result = a<<1;
@@ -520,6 +486,43 @@ int _transfer(byte* a, byte* b)
     setflag_nz(*a);
 
     return *a;
+}
+
+
+// stack operations
+ushrt _push(byte val)
+{
+    if((sp & 0xff) == 0x80)
+    {
+        fprintf(stderr, "Stack overrun (pull)\n");
+    }
+    mem_set8(sp, val);
+    sp--;
+
+    return sp;
+}
+ushrt _push16(ushrt val) // for pushing the PC
+{
+    _push(val>>8);
+    _push(val&0xff);
+    return sp;
+}
+
+byte _pull() // like pop?
+{
+    if((sp & 0xff) == 0xff)
+    {
+        fprintf(stderr, "Stack overrun (pull)\n");
+    }
+    byte result = mem_get8(++sp);
+
+    return result;
+}
+ushrt _pull16()
+{
+    ushrt ret = _pull(); // lower byte
+    ret |= (_pull() << 8); // higher byte
+    return ret;
 }
 
 // addressing modes
