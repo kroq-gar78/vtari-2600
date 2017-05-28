@@ -45,6 +45,7 @@ typedef short (*F2)(ushrt a0, int addr_mode); // from p6
 #define ADDRMODE_IMM 10
 #define ADDRMODE_IMPL 11
 
+// CPU registers
 extern ushrt pc;
 extern byte reg_a;
 extern byte reg_x;
@@ -52,11 +53,20 @@ extern byte reg_y;
 extern byte sp;
 extern byte reg_p; // status register
 
+extern unsigned int cycle; // current cycle number
+extern unsigned int cpu_cycles_left; // cycles left in current instruction
+
 extern int timer_int; // timer interval
 extern bool timer_underflow;
 
 extern bool cpu_halted;
 
+extern void cpu_init();
+extern void cpu_exec();
+
+// graphics-related things
+// these really should really be in a separate header
 extern unsigned int frame_num;
+extern void draw_frame();
 
 #endif
