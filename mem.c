@@ -6,14 +6,19 @@
 #include "mem.h"
 #include "tia.h"
 
+ushrt cart_size = CART_SIZE_ATARI;
+ushrt cart_start;
+
 byte riot_mem[RAM_SIZE];
-byte cart_mem[CART_SIZE];
+byte* cart_mem;
 byte pia_mem[8];
 
 void mem_init()
 {
     pia_mem[SWCHA] = 0xFF;
     pia_mem[SWCHB] = 0b00111111;
+
+    cart_start = MEM_MAX - cart_size;
 }
 
 //void mem_map(ushrt guest, ushrt count);
@@ -25,8 +30,6 @@ void mem_set8(ushrt addr, byte value)
     // TIA mirrors
     if((addr & 0x1080) == 0)
     {
-        // TODO: implement
-        //MISSING();
         addr &= 0b01111111;
         tia_write(addr, value);
         return;
@@ -88,7 +91,7 @@ void mem_set8(ushrt addr, byte value)
         }
     }
     // cartridge mirrors
-    else if((addr & 0x1000) == 0x1000)
+    else if(addr >= cart_start)
     {
         MISSING();
     }
@@ -142,9 +145,9 @@ byte mem_get8(ushrt addr)
         return pia_mem[addr];
     }
     // cartridge mirrors
-    else if((addr & 0x1000) == 0x1000)
+    else if(addr >= cart_start)
     {
-        addr &= 0xfff;
+        addr &= (cart_size-1);
         //printf("ROM addr %x\n", addr);
         return cart_mem[addr];
     }

@@ -13,8 +13,9 @@ TESTFILES = ${patsubst %.S,%,${SFILES}}
 
 TESTDIR=testdir/
 
-CFLAGS := -MD -std=c99 -g -O0 -Wall -Werror -Wno-unused-variable -DRENDER_FPS $(shell sdl2-config --cflags)
-test: CFLAGS += -DMOS_6502
+CFLAGS := -MD -std=c99 -g -O0 -Wall -Werror -Wno-unused-variable -DATARI_2600 -DRENDER_FPS $(shell sdl2-config --cflags)
+test: CFLAGS += -DMOS_6502 -DMOS_6502_TEST
+test: CFLAGS := $(filter-out -DATARI_2600, $(CFLAGS))
 
 LDLIBS := -lm $(shell sdl2-config --libs) -lSDL2_ttf
 

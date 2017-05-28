@@ -3,8 +3,8 @@
 
 #include "cpu.h"
 
+#define CART_SIZE_ATARI (1<<12)
 #define RAM_SIZE 128
-#define CART_SIZE (1<<12)
 #define TIA_SIZE 0x3E
 
 #if MOS_6502
@@ -26,8 +26,12 @@
 #define TIM64T 6
 #define T1024T 7
 
+// these default to Atari 2600 settings
+extern ushrt cart_size;
+extern ushrt cart_start; // starting point of the cartridge in memory
+
 extern byte riot_mem[RAM_SIZE];
-extern byte cart_mem[CART_SIZE];
+extern byte* cart_mem; // needs to be dynamically allocated during loading
 extern byte pia_mem[8];
 
 extern void mem_init();

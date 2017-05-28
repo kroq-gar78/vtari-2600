@@ -35,21 +35,28 @@ byte* ldr_mmap_file(char *filename)
     byte* p = mmap(0, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
 
     // pick the minimum of the max cartrige size, and the filesize
-    int length = st.st_size < CART_SIZE ? st.st_size : CART_SIZE;
-    for(int i = 0; i < length; i++)
+    int length = st.st_size < CART_SIZE_ATARI ? st.st_size : CART_SIZE_ATARI;
+#ifdef MOS_6502
+    cart_size = st.st_size;
+    length = st.st_size;
+#endif
+    cart_mem = (byte*)malloc(cart_size*sizeof(byte));
+    for(int i = 0; i < cart_size; i++)
     {
         cart_mem[i] = p[i];
     }
 
+#ifdef ATARI_2600
     // mirror onto second half if it's <=2K
     // TODO: make an option for this
-    if(length <= CART_SIZE/2)
+    if(length <= CART_SIZE_ATARI/2)
     {
         for(int i = 0; i < length; i++)
         {
             cart_mem[i+2048] = p[i];
         }
     }
+#endif
 
     if(p == MAP_FAILED)
     {
@@ -137,6 +144,7 @@ int main(int argc, char* argv[])
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+    free(cart_mem);
 
     if(munmap(mmap_p, st.st_size) == -1)
     {
