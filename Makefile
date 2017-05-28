@@ -14,15 +14,18 @@ TESTFILES = ${patsubst %.S,%,${SFILES}}
 TESTDIR=testdir/
 
 CFLAGS = -std=c99 -g -O0 -Wall -Werror -Wno-unused-variable -DATARI_2600 -DRENDER_FPS -lm $(shell sdl2-config --cflags) $(shell sdl2-config --libs) -lSDL2_ttf
+test: CFLAGS += -DMOS_6502
+
+.PHONY: all test force
 
 all : $(TARGET)
 
-test: ${RESFILES}
+test: $(TARGET) Makefile
 
-%.o : %.c $(HEADERS) Makefile
-	$(CC) $(CFLAGS) -c $< -o $@
+%.o : %.c $(HEADERS) Makefile compiler_flags
+	$(CC) $(CFLAGS) -MD -c $< -o $@
 
-$(TARGET): $(OBJECTS) Makefile
+$(TARGET): $(OBJECTS) Makefile compiler_flags
 	$(CC) $(OBJECTS) $(CFLAGS) -o $(TARGET)
 
 ${OUTFILES} : %.out : %.ok % $(TARGET)
@@ -35,8 +38,13 @@ ${RESFILES} : %.result : %.out %.ok %.diff
 	@echo -n "$*  ... "
 	@( [ -s $*.diff ] && echo "fail") || echo "pass"
 
-testemail:
-	$(MAKE) -C $(TESTDIR) summary
-
 clean: Makefile
 	rm -f $(TARGET) *.o *.d *.out *.diff *.result $(TESTFILES)
+
+# solution to changing compiler flags
+# from: https://stackoverflow.com/a/3237349
+compiler_flags: force
+	@echo "Checking flags ..."
+	@echo '$(CFLAGS)' | cmp -s - $@ || echo '$(CFLAGS)' > $@
+
+-include *.d

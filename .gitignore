@@ -7,3 +7,4 @@
 testdir/*
 cpu
 graphics_test
+compiler_flags
