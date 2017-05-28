@@ -13,8 +13,10 @@ TESTFILES = ${patsubst %.S,%,${SFILES}}
 
 TESTDIR=testdir/
 
-CFLAGS = -std=c99 -g -O0 -Wall -Werror -Wno-unused-variable -DRENDER_FPS -lm $(shell sdl2-config --cflags) $(shell sdl2-config --libs) -lSDL2_ttf
+CFLAGS := -MD -std=c99 -g -O0 -Wall -Werror -Wno-unused-variable -DRENDER_FPS $(shell sdl2-config --cflags)
 test: CFLAGS += -DMOS_6502
+
+LDLIBS := -lm $(shell sdl2-config --libs) -lSDL2_ttf
 
 .PHONY: all test force
 
@@ -25,8 +27,7 @@ test: $(TARGET) Makefile
 %.o : %.c $(HEADERS) Makefile compiler_flags
 	$(CC) $(CFLAGS) -MD -c $< -o $@
 
-$(TARGET): $(OBJECTS) Makefile compiler_flags
-	$(CC) $(OBJECTS) $(CFLAGS) -o $(TARGET)
+$(TARGET): $(OBJECTS)
 
 ${OUTFILES} : %.out : %.ok % $(TARGET)
 	./$(TARGET) $* > $*.out
