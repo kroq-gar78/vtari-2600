@@ -1,4 +1,4 @@
-SOURCES=$(wildcard *.c)
+SOURCES=$(filter-out graphics_test.c,$(wildcard *.c))
 HEADERS=$(wildcard *.h)
 OBJECTS=$(patsubst %.c,%.o,$(SOURCES))
 TARGET=cpu
@@ -13,7 +13,7 @@ TESTFILES = ${patsubst %.S,%,${SFILES}}
 
 TESTDIR=testdir/
 
-CFLAGS = -std=c99 -g -O0 -Wall -Werror -Wno-unused-variable -DATARI_2600 -DRENDER_FPS -lm $(shell sdl2-config --cflags) $(shell sdl2-config --libs) -lSDL2_ttf
+CFLAGS = -std=c99 -g -O0 -Wall -Werror -Wno-unused-variable -DRENDER_FPS -lm $(shell sdl2-config --cflags) $(shell sdl2-config --libs) -lSDL2_ttf
 test: CFLAGS += -DMOS_6502
 
 .PHONY: all test force
