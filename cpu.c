@@ -436,7 +436,7 @@ int _rol(byte a)
     result &= (byte)(~1);
     result |= ((reg_p & FLAGS_CARRY) != 0);
 
-    setflag_c_direct(result>>7);
+    setflag_c_direct(a>>7);
 
     return result;
 }
@@ -446,7 +446,7 @@ int _ror(byte a)
     byte result = a>>1;
     result &= ((reg_p & FLAGS_CARRY) != 0) << 7;
 
-    setflag_c_direct(result&1);
+    setflag_c_direct(a&1);
 
     return result;
 }
