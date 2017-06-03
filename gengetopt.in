@@ -6,7 +6,8 @@ purpose "Emulates an Atari 2600 (MOS 6507), or a MOS 6502 processor based on pre
 args "--include-getopt --unamed-opts"
 
 # Options
-option "entry" e "entrypoint of the emulator" optional int typestr="address"
-option "start" s "starting address of ROM" optional int typestr="address"
+option "entry"   e "entrypoint of the emulator" optional int typestr="address"
+option "start"   s "starting address of ROM" optional int typestr="address"
+option "verbose" v "verbose output" flag off
 
 text "Author: Aditya Vaidya <kroq.gar78@gmail.com>"

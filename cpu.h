@@ -15,6 +15,13 @@
     exit(1); \
 } while (0)
 
+// verbose printing, based on the 'verbose_on' variable
+// from: https://stackoverflow.com/a/10017285
+#define printfv(format, ...) do { \
+    if (verbose_on) \
+        printf(format, ##__VA_ARGS__); \
+} while (0)
+
 // debug from: http://stackoverflow.com/a/1644898
 #define debug_print(fmt, ...) \
     do { if (DEBUG_TEST) fprintf(stderr, fmt, ##__VA_ARGS__); } while (0)
@@ -71,5 +78,6 @@ extern void cpu_exec();
 extern unsigned int frame_num;
 extern void draw_frame();
 extern struct gengetopt_args_info args;
+extern bool verbose_on;
 
 #endif

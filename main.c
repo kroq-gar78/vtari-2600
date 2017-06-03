@@ -15,6 +15,8 @@
 
 struct gengetopt_args_info args;
 
+bool verbose_on;
+
 byte* mmap_p; // pointer to mmap'd file
 
 // SDL/graphics-related vars
@@ -130,6 +132,8 @@ int main(int argc, char* argv[])
         fprintf(stderr, "One ROM file necessary\n");
         exit(1);
     }
+
+    verbose_on = args.verbose_flag;
 
     char* rom_path = args.inputs[0];
 
