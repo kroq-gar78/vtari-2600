@@ -202,7 +202,7 @@ void cpu_exec()
             printfv("A %x X %x Y %x\n", reg_a, reg_x, reg_y);
             next_pc = pc + addr_mode_len[addr_mode];
             cpu_cycles_left = opcodes_cycles[inst_opcode];
-            printfv("SWCHA 0x%02x INPT4 0x%02x IPT5 0x%02x\n", pia_mem[SWCHA], tia_mem[INPT4], tia_mem[INPT5]);
+            //printfv("SWCHA 0x%02x INPT4 0x%02x IPT5 0x%02x\n", pia_mem[SWCHA], tia_mem[INPT4], tia_mem[INPT5]);
 
             // fetch and execute
             F2 inst = opcodes[inst_opcode];

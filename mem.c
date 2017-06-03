@@ -111,9 +111,7 @@ void mem_set8(ushrt addr, byte value)
 #ifdef MOS_6502_TEST
         // make ROM writeable for tests
         // TODO: needs commandline option
-
-        // needs mod because ROM size might not be power of 2
-        addr %= cart_size;
+        addr -= cart_start;
         cart_mem[addr] = value;
 #else
         MISSING();
@@ -176,8 +174,11 @@ byte mem_get8(ushrt addr)
     // cartridge mirrors
     else if(addr >= cart_start)
     {
-        // needs mod because ROM size might not be power of 2
-        addr %= cart_size;
+#ifdef ATARI_2600
+        addr &= (cart_size-1);
+#else
+        addr -= cart_start; // no memory mirroring, doesn't assume power of 2
+#endif
         //printfv("ROM addr %x\n", addr);
         return cart_mem[addr];
     }

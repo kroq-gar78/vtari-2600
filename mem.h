@@ -13,7 +13,7 @@
 #endif
 
 #ifdef MOS_6502
-#define MEM_MAX 0xffff
+#define MEM_MAX (1<<16)
 #else
 #define MEM_MAX (1<<13)
 #endif
