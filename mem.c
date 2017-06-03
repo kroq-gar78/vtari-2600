@@ -75,28 +75,28 @@ void mem_set8(ushrt addr, byte value)
                 timer_int = 1;
                 timer_underflow = false;
                 pia_mem[INSTAT] &= ~(1<<7);
-                printf("PIA timer set val %d timer_int %d pc %x\n", value, timer_int, pc);
+                printfv("PIA timer set val %d timer_int %d pc %x\n", value, timer_int, pc);
                 break;
             case TIM8T:
                 pia_mem[INTIM] = value;
                 timer_int = 8;
                 timer_underflow = false;
                 pia_mem[INSTAT] &= ~(1<<7);
-                printf("PIA timer set val %d timer_int %d pc %x\n", value, timer_int, pc);
+                printfv("PIA timer set val %d timer_int %d pc %x\n", value, timer_int, pc);
                 break;
             case TIM64T:
                 pia_mem[INTIM] = value;
                 timer_int = 64;
                 timer_underflow = false;
                 pia_mem[INSTAT] &= ~(1<<7);
-                printf("PIA timer set val %d timer_int %d pc %x\n", value, timer_int, pc);
+                printfv("PIA timer set val %d timer_int %d pc %x\n", value, timer_int, pc);
                 break;
             case T1024T:
                 pia_mem[INTIM] = value;
                 timer_int = 1024;
                 timer_underflow = false;
                 pia_mem[INSTAT] &= ~(1<<7);
-                printf("PIA timer set val %d timer_int %d pc %x\n", value, timer_int, pc);
+                printfv("PIA timer set val %d timer_int %d pc %x\n", value, timer_int, pc);
                 break;
         }
 
@@ -133,14 +133,14 @@ byte mem_get8(ushrt addr)
 {
     // all memory is mirrored every 0x2000 bytes
     addr &= (MEM_MAX-1);
-    //printf("addr %x\n", addr);
+    //printfv("addr %x\n", addr);
 
 #ifdef ATARI_2600
     // TIA mirrors
     if((addr & 0x1080) == 0)
     {
         addr &= 0b01111111;
-        //printf("TIA: read from 0x%x\n", addr);
+        //printfv("TIA: read from 0x%x\n", addr);
         return tia_read(addr);
     }
     // PIA RAM mirrors
@@ -178,7 +178,7 @@ byte mem_get8(ushrt addr)
     {
         // needs mod because ROM size might not be power of 2
         addr %= cart_size;
-        //printf("ROM addr %x\n", addr);
+        //printfv("ROM addr %x\n", addr);
         return cart_mem[addr];
     }
 
@@ -224,8 +224,8 @@ void print_ram()
 {
     for(int i = 0; i < RAM_SIZE; i++)
     {
-        if(i%16 == 0) printf("\n");
-        printf("%02x ", riot_mem[i]);
+        if(i%16 == 0) printfv("\n");
+        printfv("%02x ", riot_mem[i]);
     }
-    printf("\n");
+    printfv("\n");
 }

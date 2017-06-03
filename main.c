@@ -163,8 +163,8 @@ int main(int argc, char* argv[])
     /*int getwindowsize_h;
     int getwindowsize_w;
     SDL_GetWindowSize(window, &getwindowsize_w, &getwindowsize_h);
-    printf("Screen size: %dh %dw\n", getwindowsize_h, getwindowsize_w);
-    printf("should be:   %dh %dw\n", (v_end-v_start), (h_end-h_start));*/
+    printfv("Screen size: %dh %dw\n", getwindowsize_h, getwindowsize_w);
+    printfv("should be:   %dh %dw\n", (v_end-v_start), (h_end-h_start));*/
 
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);

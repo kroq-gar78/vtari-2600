@@ -161,7 +161,7 @@ void cpu_init()
 
     if(args.entry_given) pc = args.entry_arg;
     else pc = vec_reset;
-    printf("entrypoint 0x%x\n", pc);
+    printfv("entrypoint 0x%x\n", pc);
 
     cpu_cycles_left = opcodes_cycles[mem_get8(pc)];
     cycle = 0;
@@ -186,9 +186,9 @@ void cpu_exec()
                 {
                     timer_underflow = true;
                     pia_mem[INSTAT] |= (1<<7) | (1<<6);
-                    //printf("PIA timer overflow\n");
+                    //printfv("PIA timer overflow\n");
                 }
-                //printf("timer int %d cycle %d preval %d\n", timer_int, cycle, pia_mem[INTIM]);
+                //printfv("timer int %d cycle %d preval %d\n", timer_int, cycle, pia_mem[INTIM]);
                 pia_mem[INTIM] -= 1;
             }
         }
@@ -198,17 +198,17 @@ void cpu_exec()
         {
             byte inst_opcode = mem_get8(pc);
             int addr_mode = addr_modes[inst_opcode];
-            printf("pc %x inst %x tia_x %d tia_y %d\n", pc, mem_get8(pc), tia_x, tia_y);
-            printf("A %x X %x Y %x\n", reg_a, reg_x, reg_y);
+            printfv("pc %x inst %x tia_x %d tia_y %d\n", pc, mem_get8(pc), tia_x, tia_y);
+            printfv("A %x X %x Y %x\n", reg_a, reg_x, reg_y);
             next_pc = pc + addr_mode_len[addr_mode];
             cpu_cycles_left = opcodes_cycles[inst_opcode];
-            printf("SWCHA 0x%02x INPT4 0x%02x IPT5 0x%02x\n", pia_mem[SWCHA], tia_mem[INPT4], tia_mem[INPT5]);
+            printfv("SWCHA 0x%02x INPT4 0x%02x IPT5 0x%02x\n", pia_mem[SWCHA], tia_mem[INPT4], tia_mem[INPT5]);
 
             // fetch and execute
             F2 inst = opcodes[inst_opcode];
             (*inst)(pc, addr_mode);
 
-            //printf("len %d\n", addr_mode_len[addr_mode]);
+            //printfv("len %d\n", addr_mode_len[addr_mode]);
             pc = next_pc;
         }
 
@@ -779,7 +779,7 @@ short inst_bmi(ushrt addr, int addr_mode)
     {
         next_pc = addr_e;
     }
-    printf("BMI take %d next_pc %x\n", take, next_pc);
+    printfv("BMI take %d next_pc %x\n", take, next_pc);
     return take;
 }
 short inst_bne(ushrt addr, int addr_mode)
@@ -828,7 +828,7 @@ short inst_bpl(ushrt addr, int addr_mode)
     {
         next_pc = addr_e;
     }
-    printf("bpl take %d target %x\n", take, addr_e);
+    printfv("bpl take %d target %x\n", take, addr_e);
     return take;
 }
 short inst_brk(ushrt addr, int addr_mode)
@@ -1136,7 +1136,7 @@ short inst_jmp(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
-    printf("jmp to %x addr_e %x\n", val_16, addr_e);
+    printfv("jmp to %x addr_e %x\n", val_16, addr_e);
     next_pc = addr_e;
     return 0;
 }
@@ -1158,7 +1158,7 @@ short inst_jsr(ushrt addr, int addr_mode)
     }
 
     _push16(next_pc);
-    printf("jsr to %x addr_e %x\n", val_16, addr_e);
+    printfv("jsr to %x addr_e %x\n", val_16, addr_e);
     next_pc = addr_e;
     return 0;
 }
@@ -1179,7 +1179,7 @@ short inst_lda(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
-    //printf("LDA pc %x val %x\n", pc, );
+    //printfv("LDA pc %x val %x\n", pc, );
     setflag_nz(val_8);
     reg_a = val_8;
     return 0;
@@ -1507,8 +1507,8 @@ short inst_sta(ushrt addr, int addr_mode)
 {
     F1 addr_f = addr_mode_f[addr_mode];
     ushrt addr_e = addr_f(addr+1);
-    printf("STA addr 0x%x\n", addr);
-    printf("STA addr_e 0x%x\n", addr_e);
+    printfv("STA addr 0x%x\n", addr);
+    printfv("STA addr_e 0x%x\n", addr_e);
 
     // get operands, using zero-page if necessary
     byte val_8 = mem_get8(addr_e);
