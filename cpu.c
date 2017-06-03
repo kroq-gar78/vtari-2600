@@ -173,7 +173,7 @@ void cpu_exec()
 {
     SDL_Event event;
 
-    while(opcodes[mem_get8(pc)] != inst_brk)
+    while(true)
     {
         tia_tick();
 
