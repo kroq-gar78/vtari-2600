@@ -1,5 +1,5 @@
-SOURCES=$(filter-out graphics_test.c,$(wildcard *.c))
-HEADERS=$(wildcard *.h)
+SOURCES=$(filter-out graphics_test.c cmdline.c,$(wildcard *.c)) cmdline.c
+HEADERS=$(filter-out cmdline.h,$(wildcard *.h)) cmdline.h
 OBJECTS=$(patsubst %.c,%.o,$(SOURCES))
 TARGET=cpu
 
@@ -41,7 +41,12 @@ ${RESFILES} : %.result : %.out %.ok %.diff
 	@( [ -s $*.diff ] && echo "fail") || echo "pass"
 
 clean: Makefile
-	rm -f $(TARGET) *.o *.d *.out *.diff *.result $(TESTFILES)
+	rm -f $(TARGET) *.o *.d *.out *.diff *.result $(TESTFILES) cmdline.c cmdline.h
+
+cmdline.h: gengetopt.in
+	gengetopt -i gengetopt.in --include-getopt
+
+cmdline.c: cmdline.h
 
 # solution to changing compiler flags
 # from: https://stackoverflow.com/a/3237349
