@@ -55,6 +55,7 @@ void mem_set8(ushrt addr, byte value)
 #endif
         riot_mem[addr] = value;
     }
+#ifdef ATARI_2600
     // PIA I/O mirrors
     else if((addr & 0x1280) == 0x280)
     {
@@ -105,6 +106,7 @@ void mem_set8(ushrt addr, byte value)
             pia_mem[addr] = value;
         }
     }
+#endif
     // cartridge mirrors
     else if(addr >= cart_start)
     {
@@ -153,6 +155,7 @@ byte mem_get8(ushrt addr)
 #endif
         return riot_mem[addr];
     }
+#ifdef ATARI_2600
     // PIA I/O mirrors
     else if((addr & 0x1280) == 0x280)
     {
@@ -171,6 +174,7 @@ byte mem_get8(ushrt addr)
         }
         return pia_mem[addr];
     }
+#endif
     // cartridge mirrors
     else if(addr >= cart_start)
     {
