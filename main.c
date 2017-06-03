@@ -15,6 +15,7 @@
 
 struct gengetopt_args_info args;
 
+bool graphics_on;
 bool verbose_on;
 
 byte* mmap_p; // pointer to mmap'd file
@@ -133,6 +134,7 @@ int main(int argc, char* argv[])
         exit(1);
     }
 
+    graphics_on = !(args.no_graphics_flag);
     verbose_on = args.verbose_flag;
 
     char* rom_path = args.inputs[0];
@@ -141,13 +143,16 @@ int main(int argc, char* argv[])
     sprintf(window_title, "Vtari 2600 - %s", rom_path);
 
     // http://stackoverflow.com/a/35989490
-    SDL_Init(SDL_INIT_VIDEO);
-    //SDL_CreateWindowAndRenderer((h_end-h_start)*WINDOW_ZOOM*COLOR_CLOCK_WIDTH, (v_end-v_start)*WINDOW_ZOOM, 0, &window, &renderer);
-    window = SDL_CreateWindow(window_title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-            (h_end-h_start)*WINDOW_ZOOM*COLOR_CLOCK_WIDTH, // width
-            (v_end-v_start)*WINDOW_ZOOM, // height
-            0); // flags
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    if(graphics_on)
+    {
+        SDL_Init(SDL_INIT_VIDEO);
+        //SDL_CreateWindowAndRenderer((h_end-h_start)*WINDOW_ZOOM*COLOR_CLOCK_WIDTH, (v_end-v_start)*WINDOW_ZOOM, 0, &window, &renderer);
+        window = SDL_CreateWindow(window_title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+                (h_end-h_start)*WINDOW_ZOOM*COLOR_CLOCK_WIDTH, // width
+                (v_end-v_start)*WINDOW_ZOOM, // height
+                0); // flags
+        renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    }
 
     mmap_p = ldr_mmap_file(rom_path);
 
@@ -166,9 +171,12 @@ int main(int argc, char* argv[])
     printfv("Screen size: %dh %dw\n", getwindowsize_h, getwindowsize_w);
     printfv("should be:   %dh %dw\n", (v_end-v_start), (h_end-h_start));*/
 
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
+    if(graphics_on)
+    {
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+    }
 
     free(cart_mem);
     cmdline_parser_free(&args);

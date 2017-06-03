@@ -212,7 +212,7 @@ void cpu_exec()
             pc = next_pc;
         }
 
-        if((cycle % (NTSC_HEIGHT*NTSC_WIDTH)) == 0)
+        if(graphics_on && (cycle % (NTSC_HEIGHT*NTSC_WIDTH)) == 0)
         {
             fpsthink();
             draw_frame();
@@ -223,13 +223,16 @@ void cpu_exec()
         // render once every full frame drawn; multiply by 3 to guarantee its divisibility by 3
         // multiply by 1024 for divisibility for the interval timer
         cycle = (cycle + 1)%(NTSC_HEIGHT*NTSC_WIDTH*3*1024);
-        if(SDL_PollEvent(&event) && (event.type == SDL_QUIT || (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)))
+        if(graphics_on)
         {
-            break;
-        }
-        else if(event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
-        {
-            tia_handleKeyboard(&event.key);
+            if(SDL_PollEvent(&event) && (event.type == SDL_QUIT || (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)))
+            {
+                break;
+            }
+            else if(event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
+            {
+                tia_handleKeyboard(&event.key);
+            }
         }
     }
 }

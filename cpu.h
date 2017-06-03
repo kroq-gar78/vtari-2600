@@ -78,6 +78,7 @@ extern void cpu_exec();
 extern unsigned int frame_num;
 extern void draw_frame();
 extern struct gengetopt_args_info args;
+extern bool graphics_on;
 extern bool verbose_on;
 
 #endif
