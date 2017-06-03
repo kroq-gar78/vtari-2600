@@ -7,6 +7,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+#include "cmdline.h"
+
 // from: pa (kernel/vmm.c)
 #define MISSING() do { \
     printf("%s:%d is missing\n", __FILE__, __LINE__); \
@@ -68,5 +70,6 @@ extern void cpu_exec();
 // these really should really be in a separate header
 extern unsigned int frame_num;
 extern void draw_frame();
+extern struct gengetopt_args_info args;
 
 #endif

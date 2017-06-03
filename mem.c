@@ -18,7 +18,14 @@ void mem_init()
     pia_mem[SWCHA] = 0xFF;
     pia_mem[SWCHB] = 0b00111111;
 
-    cart_start = MEM_MAX - cart_size;
+    if(args.start_given)
+    {
+        cart_start = args.start_arg;
+    }
+    else
+    {
+        cart_start = MEM_MAX - cart_size;
+    }
 }
 
 //void mem_map(ushrt guest, ushrt count);

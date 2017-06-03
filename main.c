@@ -6,10 +6,13 @@
 
 #include <SDL.h>
 
+#include "cmdline.h"
 #include "cpu.h"
 #include "fps.h"
 #include "mem.h"
 #include "tia.h"
+
+struct gengetopt_args_info args;
 
 byte* mmap_p; // pointer to mmap'd file
 
@@ -105,15 +108,20 @@ void draw_frame()
 
 int main(int argc, char* argv[])
 {
-    if(argc < 2)
+    if(cmdline_parser(argc, argv, &args) != 0)
     {
-        fprintf(stderr, "Not enough arguments\n");
+        exit(1);
+    }
+    if(args.inputs_num != 1)
+    {
+        fprintf(stderr, "One ROM file necessary\n");
         exit(1);
     }
 
+    char* rom_path = args.inputs[0];
 
     char window_title[120];
-    sprintf(window_title, "Vtari 2600 - %s", argv[1]);
+    sprintf(window_title, "Vtari 2600 - %s", rom_path);
 
     // http://stackoverflow.com/a/35989490
     SDL_Init(SDL_INIT_VIDEO);
@@ -124,7 +132,7 @@ int main(int argc, char* argv[])
             0); // flags
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
-    mmap_p = ldr_mmap_file(argv[1]);
+    mmap_p = ldr_mmap_file(rom_path);
 
     // initialize each module
     // there might be dependencies that force the initialization order
@@ -144,7 +152,9 @@ int main(int argc, char* argv[])
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+
     free(cart_mem);
+    cmdline_parser_free(&args);
 
     if(munmap(mmap_p, st.st_size) == -1)
     {

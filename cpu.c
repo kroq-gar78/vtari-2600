@@ -159,7 +159,8 @@ void cpu_init()
     vec_reset = mem_get16(0xfffc);
     vec_irq = mem_get16(0xfffe);
 
-    pc = vec_reset;
+    if(args.entry_given) pc = args.entry_arg;
+    else pc = vec_reset;
     printf("entrypoint 0x%x\n", pc);
 
     cpu_cycles_left = opcodes_cycles[mem_get8(pc)];
