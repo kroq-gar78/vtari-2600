@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <sys/mman.h> // mmap
 #include <sys/stat.h> // filesize
+#include <unistd.h> // check file perms
 
 #include <fcntl.h> // file control
 
@@ -31,6 +32,18 @@ int h_end = DISPLAY_H_END;
 struct stat st;
 byte* ldr_mmap_file(char *filename)
 {
+    if(access(filename, F_OK) == -1)
+    {
+        fprintf(stderr, "ROM '%s' does not exist\n", filename);
+        exit(1);
+    }
+    if(access(filename, R_OK) == -1)
+    {
+        fprintf(stderr, "ROM '%s' has no read permissions\n", filename);
+        exit(1);
+    }
+
+    // get stats for the file
     stat(filename, &st);
 
     int fd = open(filename, O_RDONLY);
