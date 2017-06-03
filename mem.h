@@ -4,10 +4,15 @@
 #include "cpu.h"
 
 #define CART_SIZE_ATARI (1<<12)
-#define RAM_SIZE 128
 #define TIA_SIZE 0x3E
 
-#if MOS_6502
+#ifdef ATARI_2600
+#define RAM_SIZE 128
+#else
+#define RAM_SIZE (1<<16)
+#endif
+
+#ifdef MOS_6502
 #define MEM_MAX 0xffff
 #else
 #define MEM_MAX (1<<13)

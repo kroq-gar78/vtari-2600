@@ -32,8 +32,10 @@ void mem_init()
 
 void mem_set8(ushrt addr, byte value)
 {
+    // regardless of settings, should be guaranteed to be a power of 2
     addr &= (MEM_MAX-1);
 
+#ifdef ATARI_2600
     // TIA mirrors
     if((addr & 0x1080) == 0)
     {
@@ -43,8 +45,14 @@ void mem_set8(ushrt addr, byte value)
     }
     // PIA RAM mirrors
     else if((addr & 0x1280) == 0x80)
+#elif defined(MOS_6502)
+    // in the general case (MOS 6502), everything that isn't cartridge/ROM is RAM
+    if(addr < cart_start)
+#endif
     {
+#ifdef ATARI_2600
         addr &= RAM_SIZE-1;
+#endif
         riot_mem[addr] = value;
     }
     // PIA I/O mirrors
@@ -100,7 +108,16 @@ void mem_set8(ushrt addr, byte value)
     // cartridge mirrors
     else if(addr >= cart_start)
     {
+#ifdef MOS_6502_TEST
+        // make ROM writeable for tests
+        // TODO: needs commandline option
+
+        // needs mod because ROM size might not be power of 2
+        addr %= cart_size;
+        cart_mem[addr] = value;
+#else
         MISSING();
+#endif
     }
 }
 
@@ -118,19 +135,24 @@ byte mem_get8(ushrt addr)
     addr &= (MEM_MAX-1);
     //printf("addr %x\n", addr);
 
+#ifdef ATARI_2600
     // TIA mirrors
     if((addr & 0x1080) == 0)
     {
-        // TODO: implement
-        //MISSING();
         addr &= 0b01111111;
         //printf("TIA: read from 0x%x\n", addr);
         return tia_read(addr);
     }
     // PIA RAM mirrors
     else if((addr & 0x1280) == 0x80)
+#elif defined(MOS_6502)
+    // in the general case (MOS 6502), everything that isn't cartridge/ROM is RAM
+    if(addr < cart_start)
+#endif
     {
+#ifdef ATARI_2600
         addr &= RAM_SIZE-1;
+#endif
         return riot_mem[addr];
     }
     // PIA I/O mirrors
@@ -154,7 +176,8 @@ byte mem_get8(ushrt addr)
     // cartridge mirrors
     else if(addr >= cart_start)
     {
-        addr &= (cart_size-1);
+        // needs mod because ROM size might not be power of 2
+        addr %= cart_size;
         //printf("ROM addr %x\n", addr);
         return cart_mem[addr];
     }
