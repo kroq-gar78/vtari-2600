@@ -212,6 +212,9 @@ void cpu_exec()
 
             //printfv("len %d\n", addr_mode_len[addr_mode]);
             pc = next_pc;
+
+            ushrt print_addr = 0x30;
+            printf("0x%04x: 0x%x\n", print_addr, mem_get8(print_addr));
         }
 
         if(graphics_on && (cycle % (NTSC_HEIGHT*NTSC_WIDTH)) == 0)
@@ -313,6 +316,19 @@ bool setflag_v_direct(bool status) // overflow
     }
 }
 
+int get_sign_short(short n)
+{
+    if(n > 0) return 1;
+    else if(n < 0) return -1;
+    else return 0;
+}
+int get_sign_char(char n)
+{
+    if(n > 0) return 1;
+    else if(n < 0) return -1;
+    else return 0;
+}
+
 // the "core" functionality of various instructions
 int _adc(byte a, byte b)
 {
@@ -326,15 +342,9 @@ int _adc(byte a, byte b)
     byte result = a+b+c;
 
     // check overflow
-    if(result_ushrt >= USHRT_MAX)
-    {
-        setflag_c_direct(true);
-        setflag_v_direct(true);
-    }
-    else
-    {
-        reg_p &= (~FLAGS_CARRY) & (~FLAGS_OVERFLOW);
-    }
+    bool overflow = result_ushrt > UCHAR_MAX;
+    setflag_c_direct(overflow);
+    setflag_v_direct(overflow);
 
     setflag_nz(result);
 
@@ -465,9 +475,9 @@ int _sbc(byte a, byte b)
     }
 
     byte c_inv = ((reg_p & FLAGS_CARRY) == 0);
+    short result_short = a - b - c_inv;
     byte result = a - b - c_inv; // need ~C (https://www.dwheeler.com/6502/oneelkruns/asm1step.html)
 
-    // TODO: overflow, carry flags
     setflag_nz(result);
 
     if(reg_p & FLAGS_DECIMAL)
@@ -475,8 +485,9 @@ int _sbc(byte a, byte b)
         result = bcd_to_hex(result);
     }
 
-    setflag_v_direct((result>>7) != (a>>7)); // set V on sign change
-    setflag_c_direct((char)a >= (char)((char)b+c_inv));
+    bool overflow = get_sign_short(result_short) != get_sign_char(result);
+    setflag_v_direct(overflow); // set V if sign incorrect
+    setflag_c_direct(!overflow); // carry is opposite of overflow in SBC
 
     return result;
 }
