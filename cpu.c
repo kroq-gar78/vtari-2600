@@ -175,7 +175,9 @@ void cpu_exec()
 
     while(true)
     {
+#ifdef ATARI_2600
         tia_tick();
+#endif
 
         // first, process the interval timer
         if(cycle%3 == 0)
