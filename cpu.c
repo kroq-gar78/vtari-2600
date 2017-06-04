@@ -1468,7 +1468,8 @@ short inst_rti(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
-    MISSING();
+    reg_p = _pull();
+    next_pc = _pull16();
     return 0;
 }
 short inst_rts(ushrt addr, int addr_mode)
