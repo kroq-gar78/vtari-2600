@@ -667,7 +667,14 @@ short inst_asl(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
-    reg_a = _asl(reg_a);
+    if(addr_mode == ADDRMODE_IMPL)
+    {
+        reg_a = _asl(reg_a);
+    }
+    else
+    {
+        mem_set8(addr_e, _asl(val_8));
+    }
     return 0;
 }
 short inst_bcc(ushrt addr, int addr_mode)
