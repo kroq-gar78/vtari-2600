@@ -111,8 +111,8 @@ void draw_frame()
 #ifdef RENDER_FPS
     // draw the FPS to top-left corner if it's enabled
     SDL_Rect text_rect;
-    char fps_str[10];
-    sprintf(fps_str, "FPS: %.2f", framespersecond);
+    char fps_str[20];
+    snprintf(fps_str, 20, "FPS: %.2f", framespersecond);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
     get_text_and_rect(renderer, 0, 0, fps_str, font, &fps_texture, &text_rect);
     SDL_RenderCopy(renderer, fps_texture, NULL, &text_rect);
@@ -139,8 +139,9 @@ int main(int argc, char* argv[])
 
     char* rom_path = args.inputs[0];
 
-    char window_title[120];
-    sprintf(window_title, "Vtari 2600 - %s", rom_path);
+    char* window_title_base = "Vtari 2600 - ";
+    char* window_title = malloc(strlen(window_title_base) + strlen(rom_path) + 1);
+    sprintf(window_title, "%s%s", window_title_base, rom_path);
 
     // http://stackoverflow.com/a/35989490
     if(graphics_on)
@@ -179,6 +180,7 @@ int main(int argc, char* argv[])
     }
 
     free(cart_mem);
+    free(window_title);
     cmdline_parser_free(&args);
 
     if(munmap(mmap_p, st.st_size) == -1)
