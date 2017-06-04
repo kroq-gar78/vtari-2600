@@ -270,7 +270,7 @@ bool setflag_n(byte num)
 }
 bool setflag_nz(byte num)
 {
-    return setflag_n(num) | setflag_z(num);
+    return setflag_n(num) || setflag_z(num);
 }
 // just set the flag to whatever you want (nothing smart like above)
 bool setflag_c_direct(bool status) // carry
@@ -354,15 +354,14 @@ int _and(byte a, byte b)
     return result;
 }
 
-// `b` is the number of shifts
-int _asl(byte a, byte b)
+int _asl(byte a)
 {
-    byte result = a<<b;
+    byte result = a<<1;
 
     setflag_nz(result);
 
     // carry flag
-    setflag_c_direct( (result>>(8-b)) != 0 );
+    setflag_c_direct( (result>>7) != 0 );
 
     return result;
 }
@@ -420,7 +419,7 @@ int _lsr(byte a)
 {
     byte result = (a>>1);
 
-    setflag_z(result);
+    setflag_nz(result);
     setflag_c_direct(a&1);
 
     return result;
@@ -438,9 +437,9 @@ int _or(byte a, byte b)
 int _rol(byte a)
 {
     byte result = a<<1;
-    result &= (byte)(~1);
     result |= ((reg_p & FLAGS_CARRY) != 0);
 
+    setflag_nz(result);
     setflag_c_direct(a>>7);
 
     return result;
@@ -451,6 +450,7 @@ int _ror(byte a)
     byte result = a>>1;
     result |= ((reg_p & FLAGS_CARRY) != 0) << 7;
 
+    setflag_nz(result);
     setflag_c_direct(a&1);
 
     return result;
@@ -667,7 +667,7 @@ short inst_asl(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
-    reg_a = _asl(reg_a, 1);
+    reg_a = _asl(reg_a);
     return 0;
 }
 short inst_bcc(ushrt addr, int addr_mode)
