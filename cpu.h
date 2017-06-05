@@ -36,6 +36,7 @@ typedef short (*F2)(ushrt a0, int addr_mode); // from p6
 #define FLAGS_IRQ_DISABLE (byte)(1<<2)
 #define FLAGS_DECIMAL (byte)(1<<3)
 #define FLAGS_BREAK (byte)(1<<4)
+#define FLAGS_CONSTANT (byte)(1<<5)
 #define FLAGS_OVERFLOW (byte)(1<<6)
 #define FLAGS_NEGATIVE (byte)(1<<7)
 

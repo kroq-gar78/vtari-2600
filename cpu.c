@@ -9,7 +9,7 @@ byte reg_a = 0;
 byte reg_x = 0;
 byte reg_y = 0;
 byte sp = 0xff;
-byte reg_p = 0x20; // unused bit is 1
+byte reg_p = FLAGS_CONSTANT;
 int timer_int = 1; // timer interval
 bool timer_underflow = false;
 bool cpu_halted = false;
@@ -212,9 +212,6 @@ void cpu_exec()
 
             //printfv("len %d\n", addr_mode_len[addr_mode]);
             pc = next_pc;
-
-            ushrt print_addr = 0x30;
-            printf("0x%04x: 0x%x\n", print_addr, mem_get8(print_addr));
         }
 
         if(graphics_on && (cycle % (NTSC_HEIGHT*NTSC_WIDTH)) == 0)
@@ -1402,7 +1399,7 @@ short inst_plp(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
-    reg_p = _pull();
+    reg_p = _pull() | FLAGS_CONSTANT;
     return 0;
 }
 short inst_rol(ushrt addr, int addr_mode)
