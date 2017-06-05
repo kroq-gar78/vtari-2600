@@ -4,6 +4,7 @@
 #include "cpu.h"
 
 #define CART_SIZE_ATARI (1<<12)
+#define CART_START_ATARI 0x1000
 #define TIA_SIZE 0x3E
 
 #ifdef ATARI_2600

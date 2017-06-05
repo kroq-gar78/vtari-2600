@@ -21,10 +21,38 @@ void mem_init()
     if(args.start_given)
     {
         cart_start = args.start_arg;
+
+        // pad trailing unused bytes with 0's
+        int cart_end = (int)cart_start + cart_size;
+        if(cart_end < MEM_MAX)
+        {
+            int new_size = MEM_MAX - (int)cart_start;
+
+            // realloc logic based off of:
+            // https://stackoverflow.com/a/21006795
+            byte* tmp = realloc(cart_mem, new_size);
+            if(cart_mem == NULL)
+            {
+                fprintf(stderr, "Realloc failed\n");
+                free(cart_mem);
+                exit(1);
+            }
+            else
+            {
+                cart_mem = tmp;
+            }
+
+            // memset gives us unitialized memory, so set new bytes to 0
+            memset(cart_mem+cart_size, 0, new_size - cart_size);
+        }
     }
     else
     {
+#ifdef ATARI_2600
+        cart_start = CART_START_ATARI;
+#else
         cart_start = MEM_MAX - cart_size;
+#endif
     }
 }
 
