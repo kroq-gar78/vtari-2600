@@ -262,3 +262,34 @@ void print_ram()
     }
     printfv("\n");
 }
+
+// writes as a CSV
+// address,value
+void write_ram(FILE* file)
+{
+#ifdef ATARI_2600
+    int length = RAM_SIZE;
+#else
+    int length = cart_start; // since all memory below ROM is RAM
+#endif
+    for(int i = 0; i < length; i++)
+    {
+        fprintf(file, "0x%04x,%02x\n", (RAM_START+i), riot_mem[i]);
+    }
+    fprintf(file, "\n");
+}
+
+// based off of: https://stackoverflow.com/a/11574035
+void write_ram_path(char* path)
+{
+    fprintf(stderr, "Writing RAM to '%s'\n", path);
+    FILE* f = fopen(path, "w");
+    if(f == NULL)
+    {
+        fprintf(stderr, "Unable to open file for writing RAM\n");
+        exit(1);
+    }
+
+    write_ram(f);
+    fclose(f);
+}

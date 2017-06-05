@@ -164,6 +164,12 @@ int main(int argc, char* argv[])
 
     cpu_exec();
 
+    // dump RAM to file (if CLI option given)
+    if(args.dump_ram_given)
+    {
+        write_ram_path(args.dump_ram_arg);
+    }
+
     /*int getwindowsize_h;
     int getwindowsize_w;
     SDL_GetWindowSize(window, &getwindowsize_w, &getwindowsize_h);

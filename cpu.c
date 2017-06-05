@@ -201,7 +201,7 @@ void cpu_exec()
             }
         }
 
-        // tick the CPU
+        // tick the CPU; execute next instruction if enough time has passed
         if((cycle%3 == 0) && !cpu_halted && (--cpu_cycles_left <= 0))
         {
             byte inst_opcode = mem_get8(pc);

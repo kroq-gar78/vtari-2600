@@ -9,6 +9,7 @@ args "--include-getopt --unamed-opts"
 option "entry"   e "entrypoint of the emulator" optional int typestr="address"
 option "start"   s "starting address of ROM" optional int typestr="address"
 option "break"   b "break once the program counter reaches this address" optional int typestr="address"
+option "dump-ram" - "Write RAM out to a CSV file in the format 'address,value'" optional string typestr="file"
 option "no-graphics" - "do not render anything" flag off
 option "verbose" v "verbose output" flag off
 

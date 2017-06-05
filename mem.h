@@ -9,8 +9,10 @@
 
 #ifdef ATARI_2600
 #define RAM_SIZE 128
+#define RAM_START 0x80
 #else
 #define RAM_SIZE (1<<16)
+#define RAM_START 0x00
 #endif
 
 #ifdef MOS_6502
@@ -52,5 +54,7 @@ extern short mem_get16(ushrt addr);
 extern short mem_get16_zpg(ushrt addr);
 extern byte hex_to_bcd(byte value);
 extern byte bcd_to_hex(byte bcd);
+
+extern void write_ram_path(char* path);
 
 #endif
