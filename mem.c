@@ -274,7 +274,7 @@ void write_ram(FILE* file)
 #endif
     for(int i = 0; i < length; i++)
     {
-        fprintf(file, "0x%04x,%02x\n", (RAM_START+i), riot_mem[i]);
+        fprintf(file, "0x%04x,0x%02x\n", (RAM_START+i), riot_mem[i]);
     }
     fprintf(file, "\n");
 }

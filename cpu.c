@@ -218,6 +218,9 @@ void cpu_exec()
 
             //printfv("len %d\n", addr_mode_len[addr_mode]);
             pc = next_pc;
+
+            //ushrt print_addr = 0x210;
+            //printf("0x%04x: 0x%x\n", print_addr, mem_get8(print_addr));
         }
 
         if(graphics_on && (cycle % (NTSC_HEIGHT*NTSC_WIDTH)) == 0)

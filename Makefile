@@ -11,7 +11,8 @@ DIFFFILES = ${patsubst %.ok,%.diff,${OKFILES}}
 SFILES = ${wildcard *.S}
 TESTFILES = ${patsubst %.S,%,${SFILES}}
 
-TESTDIR=testdir/
+TESTDIR=tests/
+TEST_RAMFILE=test_output_ram
 
 CFLAGS := -MD -std=c99 -g -O0 -Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable -DATARI_2600 -DRENDER_FPS $(shell sdl2-config --cflags)
 test: CFLAGS += -DMOS_6502 -DMOS_6502_TEST
@@ -24,6 +25,15 @@ LDLIBS := -lm $(shell sdl2-config --libs) -lSDL2_ttf
 all : $(TARGET)
 
 test: $(TARGET) Makefile
+
+testcase: test
+	@echo "Testing $(TESTDIR)/AllSuiteA.bin"
+	./$(TARGET) -b 0x45c0 -s 0x4000 --dump-ram=$(TEST_RAMFILE) --no-graphics $(TESTDIR)/AllSuiteA.bin
+	@if [ `grep '0x0210' < "$(TEST_RAMFILE)"` = "0x0210,0xff" ] ; then \
+		echo "Test $(TESTDIR)/AllSuiteA.bin passed";\
+	else\
+		echo "Test $(TESTDIR)/AllSuiteA.bin FAILED";\
+	fi
 
 %.o : %.c $(HEADERS) Makefile compiler_flags
 	$(CC) $(CFLAGS) -MD -c $< -o $@
@@ -41,7 +51,7 @@ ${RESFILES} : %.result : %.out %.ok %.diff
 	@( [ -s $*.diff ] && echo "fail") || echo "pass"
 
 clean: Makefile
-	rm -f $(TARGET) *.o *.d *.out *.diff *.result $(TESTFILES) cmdline.c cmdline.h
+	rm -f $(TARGET) *.o *.d *.out *.diff *.result $(TESTFILES) cmdline.c cmdline.h $(TEST_RAMFILE)
 
 cmdline.h: gengetopt.in
 	gengetopt -i gengetopt.in --include-getopt
