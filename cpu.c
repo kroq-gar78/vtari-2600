@@ -538,6 +538,15 @@ ushrt _pull16()
     return ret;
 }
 
+byte _peek()
+{
+    return mem_get8(sp+1);
+}
+ushrt _peek16()
+{
+    return mem_get8(sp+1) | (mem_get8(sp+2)<<8);
+}
+
 
 // interrupts
 // for more on interrupts, see: http://www.pagetable.com/?p=410
@@ -1352,7 +1361,7 @@ short inst_php(ushrt addr, int addr_mode)
         byte val_16 = mem_get16(addr_e);
     }
 
-    _push(reg_p);
+    _push(reg_p | FLAGS_BREAK);
     return 0;
 }
 short inst_pla(ushrt addr, int addr_mode)
