@@ -544,6 +544,14 @@ ushrt _peek16()
     return mem_get8(sp+1) | (mem_get8(sp+2)<<8);
 }
 
+// add 1 clock cycle if jump taken
+// add another if jumping to different page (pgsize = 256 bytes)
+void jump_adjust_clock(ushrt pc, ushrt target)
+{
+    cpu_cycles_left++;
+    if((pc>>8) != (target>>8)) cpu_cycles_left++;
+}
+
 
 // interrupts
 // for more on interrupts, see: http://www.pagetable.com/?p=410
@@ -715,6 +723,7 @@ short inst_bcc(ushrt addr, int addr_mode)
     if(take)
     {
         next_pc = addr_e;
+        jump_adjust_clock(pc, next_pc);
     }
     return take;
 }
@@ -739,6 +748,7 @@ short inst_bcs(ushrt addr, int addr_mode)
     if(take)
     {
         next_pc = addr_e;
+        jump_adjust_clock(pc, next_pc);
     }
     return take;
 }
@@ -763,6 +773,7 @@ short inst_beq(ushrt addr, int addr_mode)
     if(take)
     {
         next_pc = addr_e;
+        jump_adjust_clock(pc, next_pc);
     }
     return take;
 }
@@ -807,6 +818,7 @@ short inst_bmi(ushrt addr, int addr_mode)
     if(take)
     {
         next_pc = addr_e;
+        jump_adjust_clock(pc, next_pc);
     }
     printfv("BMI take %d next_pc %x\n", take, next_pc);
     return take;
@@ -832,6 +844,7 @@ short inst_bne(ushrt addr, int addr_mode)
     if(take)
     {
         next_pc = addr_e;
+        jump_adjust_clock(pc, next_pc);
     }
     return take;
 }
@@ -856,6 +869,7 @@ short inst_bpl(ushrt addr, int addr_mode)
     if(take)
     {
         next_pc = addr_e;
+        jump_adjust_clock(pc, next_pc);
     }
     printfv("bpl take %d target %x\n", take, addr_e);
     return take;
@@ -901,6 +915,7 @@ short inst_bvc(ushrt addr, int addr_mode)
     if(take)
     {
         next_pc = addr_e;
+        jump_adjust_clock(pc, next_pc);
     }
     return take;
 }
@@ -925,6 +940,7 @@ short inst_bvs(ushrt addr, int addr_mode)
     if(take)
     {
         next_pc = addr_e;
+        jump_adjust_clock(pc, next_pc);
     }
     return take;
 }
