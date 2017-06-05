@@ -14,6 +14,9 @@ int timer_int = 1; // timer interval
 bool timer_underflow = false;
 bool cpu_halted = false;
 
+bool test_break = false;
+ushrt break_addr = 0;
+
 ushrt addr_abs(ushrt addr);
 ushrt addr_abs_x(ushrt addr);
 ushrt addr_abs_y(ushrt addr);
@@ -163,6 +166,9 @@ void cpu_init()
     else pc = vec_reset;
     printfv("entrypoint 0x%x\n", pc);
 
+    test_break = args.break_given;
+    if(test_break) break_addr = args.break_arg;
+
     cpu_cycles_left = opcodes_cycles[mem_get8(pc)];
     cycle = 0;
 }
@@ -173,7 +179,7 @@ void cpu_exec()
 {
     SDL_Event event;
 
-    while(true)
+    while(!(test_break && pc == break_addr))
     {
 #ifdef ATARI_2600
         tia_tick();
