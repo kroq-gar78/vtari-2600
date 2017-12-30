@@ -94,6 +94,8 @@ void tia_write(ushrt addr, byte value)
             tia_state |= TIA_STATE_WSYNC;
             break;
         case RSYNC:
+            printfv("TIA: RSYNC pc 0x%x x %d y %d\n", value, tia_x, tia_y);
+            tia_x = 0;
             break;
         case NUSIZ0:
             break;
@@ -218,7 +220,7 @@ void tia_handleKeyboard(SDL_KeyboardEvent* event)
     }*/
 
     // `0` means circuit closed, `1` means circuit open
-    // to use player1, press anything with LShift
+    // to use player1 (instead of player0), press anything with LShift
     // SPACE = fire
     // Z = game reset
     // X = game start
@@ -229,19 +231,19 @@ void tia_handleKeyboard(SDL_KeyboardEvent* event)
     switch(event->keysym.sym)
     {
         case SDLK_RIGHT:
-            bit = 7-player1;
+            bit = 7-(player1 ? 4 : 0);
             joystick = true;
             break;
         case SDLK_LEFT:
-            bit = 6-player1;
+            bit = 6-(player1 ? 4 : 0);
             joystick = true;
             break;
         case SDLK_DOWN:
-            bit = 5-player1;
+            bit = 5-(player1 ? 4 : 0);
             joystick = true;
             break;
         case SDLK_UP:
-            bit = 4-player1;
+            bit = 4-(player1 ? 4 : 0);
             joystick = true;
             break;
         case SDLK_SPACE:

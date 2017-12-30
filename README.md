@@ -48,6 +48,8 @@ To fire, press Space (you can't see the effect).
 To reset the game press `z`.
 To select the game press `x`.
 
+To play as the second player, hold down LSHFT.
+
 You will need to reset (and possibly select) to start Space Invaders.
 Movement is (strangely) reversed in this game.
 

@@ -1,3 +1,9 @@
+TIA:
+ * Collisions (e.g. CXM0P, CXM0FB)
+ * Read INPT[0-5]
+ * Write NUSIZ[01], COLUP0, COLUPF, etc.
+ * Audio
+
 Options:
- - exit at PC
- - writeable ROM
+ * exit at PC
+ * writeable ROM

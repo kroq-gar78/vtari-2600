@@ -71,7 +71,7 @@
 #define INPT4 0x3C
 #define INPT5 0x3D
 
-// dimensions and sizes
+// dimensions and sizes for NTSC
 #define NTSC_WIDTH 228
 #define NTSC_HEIGHT 262
 #define DISPLAY_H_START 68 // horizontal start
