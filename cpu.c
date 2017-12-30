@@ -227,12 +227,12 @@ void cpu_exec()
 
             // fetch and execute
             F2 inst = opcodes[inst_opcode];
-            (*inst)(pc, addr_mode);
+            short extra_cycles = (*inst)(pc, addr_mode); // needed in conditional branches
 
             //printfv("len %d\n", addr_mode_len[addr_mode]);
             pc = next_pc;
             byte next_opcode = mem_get8(next_pc);
-            cpu_cycles_left = opcodes_cycles[next_opcode];
+            cpu_cycles_left = opcodes_cycles[next_opcode] + extra_cycles;
 
             //ushrt print_addr = 0x210;
             //printf("0x%04x: 0x%x\n", print_addr, mem_get8(print_addr));
@@ -568,12 +568,20 @@ ushrt _peek16()
     return mem_get8(sp+1) | (mem_get8(sp+2)<<8);
 }
 
-// add 1 clock cycle if jump taken
-// add another if jumping to different page (pgsize = 256 bytes)
-void jump_adjust_clock(ushrt pc, ushrt target)
-{
-    cpu_cycles_left++;
-    if((pc>>8) != (target>>8)) cpu_cycles_left++;
+// Wraps the logic for conditional branches. `addr_e` is the target address
+// Add 1 clock cycle if jump taken. Add another if jumping to different page
+// (pgsize = 256 bytes).
+// This doesn't actually take the jump. It just says how many cycles to add.
+short cond_branch_wrapper(bool cond, ushrt addr_e) {
+    short extra_cycles = 0;
+    if(cond)
+    {
+        next_pc = addr_e;
+        extra_cycles++;
+        if((pc>>8) != (next_pc>>8)) extra_cycles++;
+    }
+    printfv("branch cond %d target %x\n", cond, addr_e);
+    return extra_cycles;
 }
 
 
@@ -744,12 +752,7 @@ short inst_bcc(ushrt addr, int addr_mode)
     }
 
     bool take = (reg_p & FLAGS_CARRY) == 0;
-    if(take)
-    {
-        next_pc = addr_e;
-        jump_adjust_clock(pc, next_pc);
-    }
-    return take;
+    return cond_branch_wrapper(take, addr_e);
 }
 short inst_bcs(ushrt addr, int addr_mode)
 {
@@ -769,12 +772,7 @@ short inst_bcs(ushrt addr, int addr_mode)
     }
 
     bool take = (reg_p & FLAGS_CARRY) != 0;
-    if(take)
-    {
-        next_pc = addr_e;
-        jump_adjust_clock(pc, next_pc);
-    }
-    return take;
+    return cond_branch_wrapper(take, addr_e);
 }
 short inst_beq(ushrt addr, int addr_mode)
 {
@@ -794,12 +792,7 @@ short inst_beq(ushrt addr, int addr_mode)
     }
 
     bool take = (reg_p & FLAGS_ZERO) != 0;
-    if(take)
-    {
-        next_pc = addr_e;
-        jump_adjust_clock(pc, next_pc);
-    }
-    return take;
+    return cond_branch_wrapper(take, addr_e);
 }
 short inst_bit(ushrt addr, int addr_mode)
 {
@@ -839,13 +832,7 @@ short inst_bmi(ushrt addr, int addr_mode)
     }
 
     bool take = (reg_p & FLAGS_NEGATIVE) != 0;
-    if(take)
-    {
-        next_pc = addr_e;
-        jump_adjust_clock(pc, next_pc);
-    }
-    printfv("BMI take %d next_pc %x\n", take, next_pc);
-    return take;
+    return cond_branch_wrapper(take, addr_e);
 }
 short inst_bne(ushrt addr, int addr_mode)
 {
@@ -865,12 +852,7 @@ short inst_bne(ushrt addr, int addr_mode)
     }
 
     bool take = (reg_p & FLAGS_ZERO) == 0;
-    if(take)
-    {
-        next_pc = addr_e;
-        jump_adjust_clock(pc, next_pc);
-    }
-    return take;
+    return cond_branch_wrapper(take, addr_e);
 }
 short inst_bpl(ushrt addr, int addr_mode)
 {
@@ -890,13 +872,7 @@ short inst_bpl(ushrt addr, int addr_mode)
     }
 
     bool take = (reg_p & FLAGS_NEGATIVE) == 0;
-    if(take)
-    {
-        next_pc = addr_e;
-        jump_adjust_clock(pc, next_pc);
-    }
-    printfv("bpl take %d target %x\n", take, addr_e);
-    return take;
+    return cond_branch_wrapper(take, addr_e);
 }
 short inst_brk(ushrt addr, int addr_mode)
 {
@@ -936,12 +912,7 @@ short inst_bvc(ushrt addr, int addr_mode)
     }
 
     bool take = (reg_p & FLAGS_OVERFLOW) == 0;
-    if(take)
-    {
-        next_pc = addr_e;
-        jump_adjust_clock(pc, next_pc);
-    }
-    return take;
+    return cond_branch_wrapper(take, addr_e);
 }
 short inst_bvs(ushrt addr, int addr_mode)
 {
@@ -961,12 +932,7 @@ short inst_bvs(ushrt addr, int addr_mode)
     }
 
     bool take = (reg_p & FLAGS_OVERFLOW) != 0;
-    if(take)
-    {
-        next_pc = addr_e;
-        jump_adjust_clock(pc, next_pc);
-    }
-    return take;
+    return cond_branch_wrapper(take, addr_e);
 }
 short inst_clc(ushrt addr, int addr_mode)
 {
