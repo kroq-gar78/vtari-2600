@@ -27,6 +27,7 @@ On Ubuntu/Debian, the following packages are needed:
 
  * `libsdl2-dev`
  * `libsdl2-ttf-dev`
+ * `gengetopt`
 
 Running `make all` will produce the executable `cpu`.
 
@@ -59,7 +60,7 @@ In the original console, this chip handled rendering graphics to the screen.
 I essentially simulated the scanning electron beam of the TV in this module.
 Keyboard input is also handled here.
 
-One part I enjoyed was generating skeleton code for all of the ~150 opcodes.
+One part I enjoyed was generating skeleton code for all of the ~150 opcodes, which I did in `inst.py`.
 I parsed the table using regex's and split the table into two: one with the base instruction (e.g. ADC), and one with the addressing mode (e.g. absolute).
 This allowed me to cut the number of functions by at least half.
 In the instruction skeletons (e.g. `inst_adc`), I determined the addressing mode and fetched 8 bits *and* 16 bits at the given address, even if I didn't need to.
