@@ -89,7 +89,8 @@ byte* ldr_mmap_file(char *filename)
 void draw_frame()
 {
     // clear the screen before drawing anything
-    SDL_RenderClear(renderer);
+    // but, this might not actually be necessary (and might be slower)
+    //SDL_RenderClear(renderer);
 
     // go through the grid and set colors
     for(int y = v_start; y < v_end; y++)

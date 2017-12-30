@@ -180,7 +180,7 @@ void cpu_init()
     if(test_break) break_addr = args.break_arg;
 
     cpu_cycles_left = opcodes_cycles[mem_get8(pc)];
-    cycle = 0;
+    cycle = 1;
 }
 
 // CPU EXECUTION
@@ -212,14 +212,17 @@ void cpu_exec()
         }
 
         // tick the CPU; execute next instruction if enough time has passed
-        if((cycle%3 == 0) && !cpu_halted && (--cpu_cycles_left <= 0))
+        if((cycle%3 == 0) && !cpu_halted)
+        {
+            cpu_cycles_left--;
+        }
+        if(cpu_cycles_left <= 0)
         {
             byte inst_opcode = mem_get8(pc);
             int addr_mode = addr_modes[inst_opcode];
             printfv("pc %x inst %x tia_x %d tia_y %d\n", pc, mem_get8(pc), tia_x, tia_y);
             printfv("A %x X %x Y %x\n", reg_a, reg_x, reg_y);
             next_pc = pc + addr_mode_len[addr_mode];
-            cpu_cycles_left = opcodes_cycles[inst_opcode];
             //printfv("SWCHA 0x%02x INPT4 0x%02x IPT5 0x%02x\n", pia_mem[SWCHA], tia_mem[INPT4], tia_mem[INPT5]);
 
             // fetch and execute
@@ -228,6 +231,8 @@ void cpu_exec()
 
             //printfv("len %d\n", addr_mode_len[addr_mode]);
             pc = next_pc;
+            byte next_opcode = mem_get8(next_pc);
+            cpu_cycles_left = opcodes_cycles[next_opcode];
 
             //ushrt print_addr = 0x210;
             //printf("0x%04x: 0x%x\n", print_addr, mem_get8(print_addr));
