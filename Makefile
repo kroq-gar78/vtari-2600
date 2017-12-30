@@ -11,29 +11,33 @@ DIFFFILES = ${patsubst %.ok,%.diff,${OKFILES}}
 SFILES = ${wildcard *.S}
 TESTFILES = ${patsubst %.S,%,${SFILES}}
 
-TESTDIR=tests/
+TESTDIR=tests
 TEST_RAMFILE=test_output_ram
 
 CFLAGS := -MD -std=c99 -g -O0 -Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable -DATARI_2600 -DRENDER_FPS $(shell sdl2-config --cflags)
-test: CFLAGS += -DMOS_6502 -DMOS_6502_TEST
-test: CFLAGS := $(filter-out -DATARI_2600, $(CFLAGS))
+testbuild: CFLAGS += -DMOS_6502 -DMOS_6502_TEST
+testbuild: CFLAGS := $(filter-out -DATARI_2600, $(CFLAGS))
 
 LDLIBS := -lm $(shell sdl2-config --libs) -lSDL2_ttf
 
-.PHONY: all test force
+.PHONY: all force test
 
 all : $(TARGET)
 
-test: $(TARGET) Makefile
+testbuild: $(TARGET) Makefile
 
-testcase: test
+$(TESTDIR)/AllSuiteA.result: testbuild
 	@echo "Testing $(TESTDIR)/AllSuiteA.bin"
 	./$(TARGET) -b 0x45c0 -s 0x4000 --dump-ram=$(TEST_RAMFILE) --no-graphics $(TESTDIR)/AllSuiteA.bin
 	@if [ `grep '0x0210' < "$(TEST_RAMFILE)"` = "0x0210,0xff" ] ; then \
+		echo "pass" > "$(TESTDIR)/AllSuiteA.result";\
 		echo "Test $(TESTDIR)/AllSuiteA.bin passed";\
 	else\
+		echo "fail" > "$(TESTDIR)/AllSuiteA.result";\
 		echo "Test $(TESTDIR)/AllSuiteA.bin FAILED";\
 	fi
+
+test: $(TESTDIR)/AllSuiteA.result
 
 %.o : %.c $(HEADERS) Makefile compiler_flags
 	$(CC) $(CFLAGS) -MD -c $< -o $@
