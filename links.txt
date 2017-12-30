@@ -2,15 +2,10 @@
 Sources:
  * kernels (for testing image rendering): http://www.randomterrain.com/atari-2600-memories-tutorial-andrew-davie-08.html
  * `macro.h` and `vcs.h`: from DASM
- * Jake Crouch for catching R and B being swapped in the color palette
 
 
 # Other sources
 
- * Makefile modeled after my pc Makefile
- * mem.[ch] modeled after my pc mem.[ch]
- * file loading from loader.c in my pc
- * SDL2 headers (from Ubuntu package libsdl2-dev)
  * GNU FreeSans (GPL) -- distributable located in `FreeSans/`
 
 # Links
