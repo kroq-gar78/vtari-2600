@@ -1,3 +1,5 @@
+#include <math.h>
+
 #include "cpu.h"
 #include "fps.h"
 #include "mem.h"
@@ -166,6 +168,14 @@ void cpu_init()
     else pc = vec_reset;
     printfv("entrypoint 0x%x\n", pc);
 
+    if(args.frame_rate_given) frame_rate = args.frame_rate_arg;
+    else frame_rate = 60;
+
+    double frame_sleep_tmp = 1000;
+    frame_sleep_tmp /= frame_rate;
+    frame_sleep = (int)ceil(frame_sleep_tmp);
+    printfv("frame sleep time %d, effective frame rate %f\n", frame_sleep, 1000/((double)frame_sleep));
+
     test_break = args.break_given;
     if(test_break) break_addr = args.break_arg;
 
@@ -228,7 +238,7 @@ void cpu_exec()
             fpsthink();
             draw_frame();
             frame_num++;
-            SDL_Delay(17); // 17 ms ~= 60Hz; guarantee max 60Hz framerate
+            SDL_Delay(frame_sleep); // 17 ms ~= 60Hz; guarantee max 60Hz framerate
         }
 
         // render once every full frame drawn; multiply by 3 to guarantee its divisibility by 3

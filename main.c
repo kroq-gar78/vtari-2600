@@ -24,6 +24,8 @@ byte* mmap_p; // pointer to mmap'd file
 SDL_Renderer* renderer;
 SDL_Window* window;
 unsigned int frame_num = 0;
+unsigned int frame_rate = 0;
+unsigned int frame_sleep = 0;
 
 // account for the blanks, overscan, etc.
 int v_start = DISPLAY_V_START;

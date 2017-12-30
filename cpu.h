@@ -77,6 +77,8 @@ extern void cpu_exec();
 // graphics-related things
 // these really should really be in a separate header
 extern unsigned int frame_num;
+extern unsigned int frame_rate;
+extern unsigned int frame_sleep;
 extern void draw_frame();
 extern struct gengetopt_args_info args;
 extern bool graphics_on;

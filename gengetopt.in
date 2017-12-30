@@ -6,6 +6,7 @@ purpose "Emulates an Atari 2600 (MOS 6507), or a MOS 6502 processor based on pre
 args "--include-getopt --unamed-opts"
 
 # Options
+option "frame-rate" r "maximum frame rate (Hz)" optional int typestr="int"
 option "entry"   e "entrypoint of the emulator" optional int typestr="address"
 option "start"   s "starting address of ROM" optional int typestr="address"
 option "break"   b "break once the program counter reaches this address" optional int typestr="address"
