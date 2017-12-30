@@ -8,3 +8,5 @@ testdir/*
 cpu
 graphics_test
 compiler_flags
+roms/
+test_output_rom

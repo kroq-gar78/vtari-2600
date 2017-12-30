@@ -31,13 +31,14 @@ On Ubuntu/Debian, the following packages are needed:
 
 Running `make all` will produce the executable `cpu`.
 
-    To run an Atari 2600 binary, simply run 
+To run an Atari 2600 binary, simply run
 
 ```
-./cpu <filename> >/dev/null
+./cpu <filename>
 ```
 
-(Warning: there is a lot of debug output, so make sure to include `>/dev/null`).
+Use the `--help` flag to see other options.
+(Warning: `--verbose` produces a lot of debug output).
 
 There are example tests in `tests/` from a website (cited in `links.txt`) that do show simple things (e.g. color test, sprites, moving sprites).
 
@@ -49,6 +50,16 @@ To select the game press `x`.
 
 You will need to reset (and possibly select) to start Space Invaders.
 Movement is (strangely) reversed in this game.
+
+### Testing
+
+Run:
+
+```
+make clean test
+```
+
+And check for the word "fail" or "FAIL" in the output, or in `tests/*.result` files.
 
 ## Structure
 
