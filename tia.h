@@ -76,6 +76,7 @@
 #define NTSC_HEIGHT 262
 #define DISPLAY_H_START 68 // horizontal start
 #define DISPLAY_H_END 228 // horizontal end
+#define DISPLAY_VSYNC 3 // number of VSYNC lines at the start of each frame
 #define DISPLAY_V_START 40 // vertical start (going down)
 #define DISPLAY_V_END 232 // vertical end
 #define COLOR_CLOCK_WIDTH 2 // pixels per color cycle

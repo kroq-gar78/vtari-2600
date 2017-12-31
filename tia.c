@@ -12,6 +12,7 @@ int tia_y = 0;
 
 byte tia_mem[TIA_SIZE];
 byte tia_display[NTSC_HEIGHT][NTSC_WIDTH];
+byte tia_sprite_disable[TIA_SIZE]; // disable rendering sprites on the line that they're reset
 
 
 // from javatari.js: src/main/atari/tia/TiaPalettes.js
@@ -204,7 +205,12 @@ void tia_write(ushrt addr, byte value)
     }
     else
     {
-        tia_mem[addr] = tia_x;
+        // Disable rendering until next line. Not sure why this is correct
+        // (no documentation says to), but Stella does, so I'll do it too
+        byte old_val = tia_mem[addr];
+        tia_mem[addr] = tia_x+5;
+        tia_sprite_disable[addr] = old_val != tia_mem[addr];
+        printfv("TIA: RES %d pc 0x%x x- %d y %d\n", addr, pc, tia_x-DISPLAY_H_START+5, tia_y);
     }
 }
 
@@ -466,24 +472,30 @@ void tia_tick()
     // TODO: NUSIZx (number and size of players)
     byte sprite_arr[TIA_SPRITE_ARRAY_LEN];
     sprite_nusiz_array(tia_mem[GRP0], tia_mem[NUSIZ0], sprite_arr);
-    sprite_draw_nusiz(tia_mem[RESP0], sprite_arr, tia_mem[COLUP0], tia_mem[REFP0], &tia_mem[VDELP0]);
+    if(!tia_sprite_disable[RESP0]) sprite_draw_nusiz(tia_mem[RESP0], sprite_arr, tia_mem[COLUP0], tia_mem[REFP0], &tia_mem[VDELP0]);
     sprite_nusiz_array(tia_mem[GRP1], tia_mem[NUSIZ1], sprite_arr);
-    sprite_draw_nusiz(tia_mem[RESP1], sprite_arr, tia_mem[COLUP1], tia_mem[REFP1], &tia_mem[VDELP1]);
+    if(!tia_sprite_disable[RESP1]) sprite_draw_nusiz(tia_mem[RESP1], sprite_arr, tia_mem[COLUP1], tia_mem[REFP1], &tia_mem[VDELP1]);
 
     //sprite_draw(tia_mem[RESP0], tia_mem[GRP0], tia_mem[COLUP0], tia_mem[REFP0], &tia_mem[VDELP0]);
     //sprite_draw(tia_mem[RESP1], tia_mem[GRP1], tia_mem[COLUP1], tia_mem[REFP1], &tia_mem[VDELP1]);
     byte m0_size = (tia_mem[ENAM0] & 2) ? (tia_mem[NUSIZ0]>>4)&(0b11) : 0;
     byte m1_size = (tia_mem[ENAM1] & 2) ? (tia_mem[NUSIZ1]>>4)&(0b11) : 0;
-    sprite_draw(tia_mem[RESM0], (1<<m0_size)-1, tia_mem[COLUP0], 0, NULL);
-    sprite_draw(tia_mem[RESM1], (1<<m1_size)-1, tia_mem[COLUP1], 0, NULL);
+    if(!tia_sprite_disable[RESM0]) sprite_draw(tia_mem[RESM0], (1<<m0_size)-1, tia_mem[COLUP0], 0, NULL);
+    if(!tia_sprite_disable[RESM1]) sprite_draw(tia_mem[RESM1], (1<<m1_size)-1, tia_mem[COLUP1], 0, NULL);
     byte ball_size = (tia_mem[ENABL] & 2) ? (tia_mem[CTRLPF]>>4)&(0b11) : 0;
-    sprite_draw(tia_mem[RESBL], (1<<ball_size)-1, tia_mem[COLUPF], 0, &tia_mem[VDELBL]); // TODO: color of ball
+    if(!tia_sprite_disable[RESBL]) sprite_draw(tia_mem[RESBL], (1<<ball_size)-1, tia_mem[COLUPF], 0, &tia_mem[VDELBL]); // TODO: color of ball
 
     // update TIA beam position
     tia_x = (tia_x+1)%NTSC_WIDTH;
     if(tia_x == 0) // new scanline
     {
         tia_y++;
+
+        // reset the "do not draw" variable on sprites
+        int sprite_locs[] = {RESP0, RESP1, RESM0, RESM1, RESBL};
+        for(int i = 0; i < sizeof(sprite_locs)/sizeof(sprite_locs[0]); i++) {
+            tia_sprite_disable[sprite_locs[i]] = false;
+        }
     }
     // must render on "next" color cycle, otherwise instruction executes 1 CPU cycle too early
     if(tia_x == 1)
