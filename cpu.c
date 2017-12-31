@@ -580,7 +580,7 @@ short cond_branch_wrapper(bool cond, ushrt addr_e) {
         extra_cycles++;
         if((pc>>8) != (next_pc>>8)) extra_cycles++;
     }
-    printfv("branch cond %d target %x\n", cond, addr_e);
+    //printfv("branch cond %d target %x extra_cycles %d\n", cond, addr_e, extra_cycles);
     return extra_cycles;
 }
 

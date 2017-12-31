@@ -4,6 +4,14 @@ TIA:
  * Write NUSIZ[01], COLUP0, COLUPF, etc.
  * Audio
 
+Bugs:
+ * Fix kernel21:
+     * 2 lines below the end of the PF, there should be a blank line between the columns, but there isn't
+     * 1 part of each column is offset to the right a lot, but they shouldn't be there
+
+Notes:
+ * Write in README about disabling rendering of a sprite on the line on which it is set. See `tia.c`
+
 Options:
  * exit at PC
  * writeable ROM

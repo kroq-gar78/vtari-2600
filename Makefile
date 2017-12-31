@@ -14,7 +14,7 @@ TESTFILES = ${patsubst %.S,%,${SFILES}}
 TESTDIR=tests
 TEST_RAMFILE=test_output_ram
 
-CFLAGS := -MD -std=c99 -g -O0 -Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable -DATARI_2600 -DRENDER_FPS $(shell sdl2-config --cflags)
+CFLAGS := -MD -std=c99 -g3 -O0 -Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable -DATARI_2600 -DRENDER_FPS $(shell sdl2-config --cflags)
 testbuild: CFLAGS += -DMOS_6502 -DMOS_6502_TEST
 testbuild: CFLAGS := $(filter-out -DATARI_2600, $(CFLAGS))
 

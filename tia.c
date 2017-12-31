@@ -124,6 +124,7 @@ void tia_write(ushrt addr, byte value)
             break;
         case PF2:
             break;
+        // handle resets after the switch statement (group them all together)
         case RESP0:
             break;
         case RESP1:
@@ -483,6 +484,10 @@ void tia_tick()
     if(tia_x == 0) // new scanline
     {
         tia_y++;
+    }
+    // must render on "next" color cycle, otherwise instruction executes 1 CPU cycle too early
+    if(tia_x == 1)
+    {
         if(tia_state & TIA_STATE_WSYNC)
         {
             cpu_halted = false;
