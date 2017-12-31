@@ -347,35 +347,44 @@ byte* sprite_nusiz_array(byte sprite, byte nusiz, byte* ret)
     memset(ret, 0, TIA_SPRITE_ARRAY_LEN);
     ret[0] = sprite;
     nusiz &= 0b111;
+    int size;
 
-    if((nusiz&0b11) == 0b001)
-    {
-        ret[2] = sprite;
-    }
-    if((nusiz&0b11) == 0b010) // it's not "else if" on purpose
-    {
-        ret[4] = sprite;
-    }
-    else if(nusiz == 0b100)
-    {
-        ret[8] = sprite;
-    }
-    else if(nusiz == 0b110)
-    {
-        ret[4] = sprite;
-        ret[8] = sprite;
-    }
-    else if(nusiz == 0b101 || nusiz == 0b111) // player size
-    {
-        int size = (nusiz == 0b101) ? 2 : 4;
-        for(int i = 0; i < size; i++)
-        {
-            for(int j = 0; j < 8; j++)
+    switch(nusiz) {
+        case 0: // 1 copy
+            // do nothing; already done above
+            break;
+        case 1: // 2 copies, close spacing
+            ret[2] = sprite;
+            break;
+        case 2: // 2 copies, medium spacing
+            ret[4] = sprite;
+            break;
+        case 3: // 3 copies, close spacing
+            ret[2] = sprite;
+            ret[4] = sprite;
+            break;
+        case 4: // 2 copies, wide spacing
+            ret[8] = sprite;
+            break;
+        case 6: // 3 copies, medium spacing
+            ret[4] = sprite;
+            ret[8] = sprite;
+            break;
+        case 5: // 2x size player
+        case 7: // 4x size player
+            size = (nusiz == 0b101) ? 2 : 4;
+            ret[0] = 0; // the others should have been cleared out already
+            for(int i = 0; i < size; i++) // loop through blocks (i.e. groups of 8 bits)
             {
-                ret[i>>3] |= ((sprite&(1<<(j/size))) != 0) << j;
+                for(int j = 7; j >= 0; j--) // loop through bits
+                {
+                    // there were way too many dumb errors here
+                    int sprite_bit = 1<<(((size-i-1)*8 + j)/size);
+                    ret[i] |= ((sprite & sprite_bit) != 0) << j;
+                }
+                //printfv("TIA nusiz i %d val %x\n", i, ret[i>>3]);
             }
-            printfv("TIA nusiz i %d val %x\n", i, ret[i>>3]);
-        }
+            break;
     }
 
     return ret;
